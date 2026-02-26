@@ -4,13 +4,14 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
   <!-- هدرهای امنیتی -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.emailjs.com;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>PBDO | پنل مدیریت</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
   <style>
     *{font-family:'Vazirmatn',sans-serif;}
@@ -258,6 +259,19 @@ async function sha256(str){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+// ======= EMAILJS CONFIGURATION =======
+// Service ID: service_pbdo
+// Public Key: sVwS8e4sMYnzhlraY
+//
+// Template های مورد نیاز در EmailJS Dashboard:
+// 1. template_received - ایمیل تایید دریافت درخواست
+// 2. template_approved - ایمیل تایید همکاری
+// 3. template_rejected - ایمیل رد درخواست
+//
+// پارامترهای Template: {{to_name}}, {{to_email}}, {{from_name}}, {{specialty}}, {{message}}
+// =======================================
+emailjs.init('sVwS8e4sMYnzhlraY');
+
 // کاربران با رمزهای hash‌شده (SHA-256)
 const USERS=[
   {username:'superadmin',passwordHash:'289289a10d882fc09c95ef25756ba300df1e7951528ad7c375b0e68c49b8bd64',role:'super_admin',name:'مدیر ارشد'},
@@ -462,7 +476,21 @@ function approveCollab(id){
     collabs[idx].status='approved';
     localStorage.setItem('pbdo_collaborations',JSON.stringify(collabs));
     logAction(currentUser,'تایید همکاری',collabs[idx].name+' - '+collabs[idx].specialty);
-    renderCollaborations();updateCollabCount();
+    // ارسال ایمیل تایید
+    emailjs.send('service_pbdo','template_approved',{
+      to_name:collabs[idx].name,
+      to_email:collabs[idx].email,
+      from_name:'سازمان پدافند زیستی PBDO',
+      specialty:collabs[idx].specialty||'',
+      message:'با خوشحالی اعلام می‌کنیم که درخواست همکاری شما در سازمان پدافند زیستی عمومی (PBDO) مورد تایید قرار گرفت. تیم ما به زودی برای هماهنگی بیشتر با شما تماس خواهد گرفت.'
+    }).then(function(){
+      alert('✅ درخواست تایید شد و ایمیل اطلاع‌رسانی ارسال گردید');
+    }).catch(function(error){
+      console.log('EmailJS Error:',error);
+      alert('✅ درخواست تایید شد (ایمیل ارسال نشد - لطفاً دستی اطلاع دهید)');
+    }).finally(function(){
+      renderCollaborations();updateCollabCount();
+    });
   }
 }
 
@@ -473,7 +501,21 @@ function rejectCollab(id){
     collabs[idx].status='rejected';
     localStorage.setItem('pbdo_collaborations',JSON.stringify(collabs));
     logAction(currentUser,'رد همکاری',collabs[idx].name+' - '+collabs[idx].specialty);
-    renderCollaborations();updateCollabCount();
+    // ارسال ایمیل اطلاع‌رسانی رد
+    emailjs.send('service_pbdo','template_rejected',{
+      to_name:collabs[idx].name,
+      to_email:collabs[idx].email,
+      from_name:'سازمان پدافند زیستی PBDO',
+      specialty:collabs[idx].specialty||'',
+      message:'با تشکر از علاقه‌مندی شما، متأسفانه درخواست همکاری شما در حال حاضر مورد تایید قرار نگرفت. شما می‌توانید در آینده مجدداً درخواست خود را ارسال نمایید.'
+    }).then(function(){
+      alert('❌ درخواست رد شد و ایمیل اطلاع‌رسانی ارسال گردید');
+    }).catch(function(error){
+      console.log('EmailJS Error:',error);
+      alert('❌ درخواست رد شد (ایمیل ارسال نشد)');
+    }).finally(function(){
+      renderCollaborations();updateCollabCount();
+    });
   }
 }
 
