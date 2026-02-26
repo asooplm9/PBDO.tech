@@ -1,17 +1,23 @@
-const CACHE_NAME = 'pbdo-v1';
+const CACHE_NAME = 'pbdo-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/monitoring.html',
+  '/radar.html',
+  '/report.html',
+  '/about.html',
   '/admin.html',
-  '/404.html',
-  '/privacy.html',
-  '/terms.html',
   '/contact.html',
   '/faq.html',
   '/status.html',
+  '/privacy.html',
+  '/terms.html',
+  '/404.html',
   '/logo.svg',
   '/manifest.json',
-  '/print.css'
+  '/print.css',
+  '/styles.css',
+  '/scripts.js'
 ];
 
 self.addEventListener('install', function(event) {

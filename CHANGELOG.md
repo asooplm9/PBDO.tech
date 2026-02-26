@@ -5,6 +5,25 @@ All notable changes to PBDO.tech will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-02-26
+
+### Added — Professional Platform Overhaul
+- **monitoring.html** — Province-by-province monitoring page with all 31 provinces, sortable/filterable table, threat level badges, detail modal, and canvas charts
+- **radar.html** — Full-screen animated radar with rotating sweep, contact blips, mode switching (biological/aerial/water), speed control, Web Audio API beep alerts, fullscreen mode
+- **report.html** — Public reporting system with anonymous option, GPS location, file upload, math captcha, tracking code generation, and report status tracking
+- **about.html** — Professional organization about page with timeline, org chart, leadership cards, achievements, and partner organizations
+- **styles.css** — Shared stylesheet with RTL layout, dark theme, glassmorphism effects, component classes, and animations
+- **scripts.js** — Shared JavaScript with Jalali calendar, sample data initialization, province data, tracking code generation
+- **Mini radar section** in `index.html` — Animated radar canvas in dashboard with live stats panel
+- **Full navigation** updated across all pages — all 7 pages linked in every nav bar
+- **Alerts management section** in `admin.html` — CRUD for alerts/news with level selection and active toggle
+- **Emergency banner** in `index.html` — Slot for critical national alerts
+- **Jalali date/time display** in `index.html` — Live Persian calendar display
+- **Leaflet map** in `contact.html` — Interactive map showing headquarters location
+- **Emergency hotline** in `contact.html` — Prominent emergency number display
+- **Service worker** updated (v2) — Added caching for all new pages and shared assets
+- **sitemap.xml** updated — Added monitoring.html, radar.html, report.html, about.html
+
 ## [2.0.0] - 2026-02-26
 
 ### Added
