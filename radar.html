@@ -381,10 +381,10 @@ function sanitizeHTML(str) {
 function toJalali(gy, gm, gd) {
   const g_d_no = [31,28,31,30,31,30,31,31,30,31,30,31];
   const j_d_no = [31,31,31,31,31,31,30,30,30,30,30,29];
-  if (gy > 1600) { gy -= 1600; } else { gy -= 1; }
-  let g_day_no = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+  const gyAdj = gy > 1600 ? gy - 1600 : gy - 1;
+  let g_day_no = 365 * gyAdj + Math.floor((gyAdj + 3) / 4) - Math.floor((gyAdj + 99) / 100) + Math.floor((gyAdj + 399) / 400);
   for (let i = 0; i < gm - 1; i++) g_day_no += g_d_no[i];
-  if (gm > 2 && ((gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0)) g_day_no++;
+  if (gm > 2 && ((gyAdj % 4 === 0 && gyAdj % 100 !== 0) || gyAdj % 400 === 0)) g_day_no++;
   g_day_no += gd - 1;
   let j_day_no = g_day_no - 79;
   const j_np = Math.floor(j_day_no / 12053);
@@ -566,10 +566,10 @@ function drawRadar() {
   /* ---- concentric rings ---- */
   const ringCount = 4;
   const ringLabels = [
-    {frac: 0.25, label: toPersianNum(Math.round(currentRange * 0.25)) + ' کم'},
-    {frac: 0.50, label: toPersianNum(Math.round(currentRange * 0.50)) + ' کم'},
-    {frac: 0.75, label: toPersianNum(Math.round(currentRange * 0.75)) + ' کم'},
-    {frac: 1.00, label: toPersianNum(currentRange)                    + ' کم'},
+    {frac: 0.25, label: toPersianNum(Math.round(currentRange * 0.25)) + ' کیلومتر'},
+    {frac: 0.50, label: toPersianNum(Math.round(currentRange * 0.50)) + ' کیلومتر'},
+    {frac: 0.75, label: toPersianNum(Math.round(currentRange * 0.75)) + ' کیلومتر'},
+    {frac: 1.00, label: toPersianNum(currentRange)                    + ' کیلومتر'},
   ];
   for (let i = 1; i <= ringCount; i++) {
     const rr = R * (i / ringCount);
@@ -886,7 +886,7 @@ canvas.addEventListener('mousemove', function(e) {
 
   const overlay = document.getElementById('coordOverlay');
   if (overlay) {
-    overlay.textContent = `X: ${toPersianNum(Math.round(mx - cx))} Y: ${toPersianNum(Math.round(my - cy))}  |  عرض: ${lat}°  طول: ${lon}°  (${toPersianNum(kmDist)} کم)`;
+    overlay.textContent = `X: ${toPersianNum(Math.round(mx - cx))} Y: ${toPersianNum(Math.round(my - cy))}  |  عرض: ${lat}°  طول: ${lon}°  (${toPersianNum(kmDist)} کیلومتر)`;
   }
 });
 
