@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- هدرهای امنیتی -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>PBDO | رادار پایش تهدیدات</title>
+  <meta name="description" content="رادار پایش زنده تهدیدات زیستی — سازمان پدافند زیستی عمومی PBDO"/>
+  <link rel="canonical" href="https://pbdo.tech/radar.html"/>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0a0a;color:#e0e8ff;margin:0;overflow-x:hidden;}
+
+    /* ---- neon helpers ---- */
+    .neon-green{color:#00ff88;text-shadow:0 0 8px #00ff88,0 0 20px #00ff88;}
+    .neon-cyan{color:#00f0ff;text-shadow:0 0 8px #00f0ff,0 0 20px #00f0ff;}
+
+    /* ---- glassmorphism nav ---- */
+    nav.main-nav{
+      position:fixed;top:0;width:100%;z-index:200;
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      background:rgba(10,10,10,.82);
+      border-bottom:1px solid rgba(0,240,255,.15);
+    }
+
+    /* ---- radar container ---- */
+    #radarWrap{
+      position:relative;
+      display:flex;align-items:center;justify-content:center;
+    }
+    #radarCanvas{
+      border-radius:50%;
+      box-shadow:0 0 40px rgba(0,255,136,.25),0 0 80px rgba(0,255,136,.1),inset 0 0 30px rgba(0,0,0,.6);
+      cursor:crosshair;
+      max-width:100%;
+    }
+    #coordOverlay{
+      position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,.75);border:1px solid #00ff8855;
+      color:#00ff88;font-size:11px;padding:4px 12px;border-radius:20px;
+      pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap;
+    }
+    #radarWrap:hover #coordOverlay{opacity:1;}
+
+    /* ---- scan lines overlay ---- */
+    #radarWrap::after{
+      content:'';position:absolute;inset:0;border-radius:50%;
+      background:repeating-linear-gradient(
+        0deg,transparent,transparent 2px,rgba(0,255,136,.02) 2px,rgba(0,255,136,.02) 4px
+      );pointer-events:none;
+    }
+
+    /* ---- control panel ---- */
+    .panel{background:#0d1a0d;border:1px solid rgba(0,255,136,.2);border-radius:14px;padding:18px;}
+    .panel-title{color:#00ff88;font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+    /* ---- mode buttons ---- */
+    .mode-btn{
+      background:#0a120a;border:1px solid rgba(0,255,136,.3);color:#aaa;
+      padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;
+      transition:all .2s;flex:1;text-align:center;
+    }
+    .mode-btn:hover{border-color:#00ff88;color:#00ff88;}
+    .mode-btn.active{background:rgba(0,255,136,.15);border-color:#00ff88;color:#00ff88;box-shadow:0 0 10px rgba(0,255,136,.2);}
+
+    /* ---- speed/range buttons ---- */
+    .ctrl-btn{
+      background:#0a120a;border:1px solid rgba(0,255,136,.25);color:#888;
+      padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit;
+      transition:all .2s;
+    }
+    .ctrl-btn:hover{border-color:#00ff88;color:#00ff88;}
+    .ctrl-btn.active{background:rgba(0,255,136,.12);border-color:#00ff88;color:#00ff88;}
+
+    /* ---- threat log ---- */
+    #threatLog{
+      max-height:260px;overflow-y:auto;
+      display:flex;flex-direction:column;gap:4px;
+    }
+    #threatLog::-webkit-scrollbar{width:4px;}
+    #threatLog::-webkit-scrollbar-thumb{background:#00ff8840;border-radius:2px;}
+
+    .log-entry{
+      display:flex;align-items:flex-start;gap:8px;
+      padding:7px 10px;border-radius:8px;
+      font-size:11px;border:1px solid transparent;
+      animation:logSlide .3s ease;
+    }
+    @keyframes logSlide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+    .log-bio   {background:rgba(0,255,136,.06);border-color:rgba(0,255,136,.2);color:#00ff88;}
+    .log-aerial{background:rgba(0,200,255,.06);border-color:rgba(0,200,255,.2);color:#00c8ff;}
+    .log-water {background:rgba(0,100,255,.06);border-color:rgba(0,100,255,.2);color:#4499ff;}
+    .log-high  {background:rgba(255,60,60,.07) ;border-color:rgba(255,60,60,.25);color:#ff6060;}
+    .log-ts    {color:#555;font-size:10px;margin-top:1px;}
+
+    /* ---- status items ---- */
+    .status-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,255,136,.08);font-size:12px;}
+    .status-row:last-child{border-bottom:none;}
+    .status-label{color:#666;}
+    .status-val{color:#00ff88;font-weight:600;}
+
+    /* ---- toggle switch ---- */
+    .toggle-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;}
+    .toggle-track{
+      width:42px;height:22px;border-radius:11px;
+      background:#1a1a1a;border:1px solid rgba(0,255,136,.3);
+      position:relative;transition:background .2s;flex-shrink:0;
+    }
+    .toggle-track.on{background:rgba(0,255,136,.25);border-color:#00ff88;}
+    .toggle-thumb{
+      position:absolute;top:3px;right:3px;
+      width:14px;height:14px;border-radius:50%;
+      background:#555;transition:all .2s;
+    }
+    .toggle-track.on .toggle-thumb{right:auto;left:3px;background:#00ff88;box-shadow:0 0 6px #00ff88;}
+    .toggle-label{font-size:12px;color:#888;}
+    .toggle-track.on + .toggle-label{color:#00ff88;}
+
+    /* ---- fullscreen / pause ---- */
+    .action-btn{
+      background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);
+      color:#00ff88;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;
+      font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px;
+    }
+    .action-btn:hover{background:rgba(0,255,136,.18);box-shadow:0 0 12px rgba(0,255,136,.2);}
+
+    /* ---- dot pulse ---- */
+    @keyframes dotPulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+    .dot-live{display:inline-block;width:7px;height:7px;background:#00ff88;border-radius:50%;
+      animation:dotPulse 1.2s infinite;box-shadow:0 0 6px #00ff88;}
+
+    /* ---- mobile menu ---- */
+    #mobileMenu{
+      position:fixed;top:0;right:-100%;width:75%;max-width:280px;height:100%;
+      background:#060c0a;border-left:1px solid rgba(0,255,136,.2);z-index:300;
+      transition:right .3s ease;padding:80px 20px 20px;display:flex;flex-direction:column;gap:12px;
+    }
+    #mobileMenu.open{right:0;}
+    #mobileOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:299;}
+    #mobileOverlay.open{display:block;}
+
+    /* ---- range slider ---- */
+    input[type=range]{
+      -webkit-appearance:none;appearance:none;height:4px;
+      background:rgba(0,255,136,.2);border-radius:2px;outline:none;cursor:pointer;
+    }
+    input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+      background:#00ff88;box-shadow:0 0 6px #00ff88;
+    }
+
+    /* fullscreen mode */
+    :fullscreen #radarCanvas,:fullscreen canvas{max-width:none;}
+  </style>
+</head>
+<body>
+
+<!-- ===================== SKIP LINK ===================== -->
+<a href="#mainContent" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 bg-green-500 text-black px-4 py-2 rounded z-50">رفتن به محتوای اصلی</a>
+
+<!-- ===================== NAVIGATION ===================== -->
+<nav class="main-nav" role="navigation" aria-label="منوی اصلی">
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-6">
+    <a href="index.html" class="text-lg font-black neon-cyan shrink-0" aria-label="صفحه خانه PBDO">🛡️ PBDO</a>
+
+    <!-- desktop nav -->
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a href="index.html"      class="hover:text-green-400 transition">خانه</a>
+      <a href="monitoring.html" class="hover:text-green-400 transition">پایش زنده</a>
+      <a href="radar.html"      class="text-green-400 border-b border-green-400 pb-0.5">رادار</a>
+      <a href="report.html"     class="hover:text-green-400 transition">گزارش مردمی</a>
+      <a href="about.html"      class="hover:text-green-400 transition">درباره ما</a>
+      <a href="contact.html"    class="hover:text-green-400 transition">تماس با ما</a>
+      <a href="admin.html"      class="text-xs px-4 py-2 rounded border border-green-500/50 text-green-400 hover:bg-green-500/10 transition">ورود مدیران</a>
+    </div>
+
+    <!-- datetime -->
+    <div class="hidden lg:block text-xs text-green-400 font-mono shrink-0" id="navDateTime">—</div>
+
+    <!-- hamburger -->
+    <button id="hamburgerBtn" class="md:hidden text-green-400 p-2" aria-label="باز کردن منو" onclick="openMobileMenu()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- mobile menu -->
+<div id="mobileOverlay" onclick="closeMobileMenu()"></div>
+<nav id="mobileMenu" aria-label="منوی موبایل">
+  <a href="index.html"      class="py-2 border-b border-green-900/20 hover:text-green-400 transition">خانه</a>
+  <a href="monitoring.html" class="py-2 border-b border-green-900/20 hover:text-green-400 transition">پایش زنده</a>
+  <a href="radar.html"      class="py-2 border-b border-green-900/20 text-green-400">رادار</a>
+  <a href="report.html"     class="py-2 border-b border-green-900/20 hover:text-green-400 transition">گزارش مردمی</a>
+  <a href="about.html"      class="py-2 border-b border-green-900/20 hover:text-green-400 transition">درباره ما</a>
+  <a href="contact.html"    class="py-2 border-b border-green-900/20 hover:text-green-400 transition">تماس با ما</a>
+  <a href="admin.html"      class="mt-2 text-center block px-4 py-2 border border-green-500/50 rounded text-green-400 hover:bg-green-500/10 transition">ورود مدیران</a>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<main id="mainContent" class="pt-20 pb-10 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4">
+
+    <!-- page header -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="dot-live"></span>
+          <span class="text-xs text-green-400 font-medium">سیستم رادار فعال است</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black neon-green">رادار پایش تهدیدات</h1>
+        <p class="text-gray-500 text-sm mt-1">نمایش زنده تهدیدات شناسایی‌شده در پوشش رادار ملی PBDO</p>
+      </div>
+      <div class="text-right text-xs text-gray-500" id="headerDateTime">—</div>
+    </div>
+
+    <!-- two-column layout -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <!-- ======= LEFT: Radar Display ======= -->
+      <div class="xl:col-span-2 flex flex-col gap-4">
+
+        <!-- radar canvas wrap -->
+        <div class="panel">
+          <div class="panel-title">📡 نمایش رادار زنده</div>
+          <div id="radarWrap" class="flex items-center justify-center py-2">
+            <canvas id="radarCanvas" width="500" height="500" aria-label="بوم رادار پایش تهدیدات"></canvas>
+            <div id="coordOverlay">X: — &nbsp; Y: — &nbsp; | &nbsp; عرض: — &nbsp; طول: —</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======= RIGHT: Controls ======= -->
+      <div class="flex flex-col gap-4">
+
+        <!-- mode selector -->
+        <div class="panel">
+          <div class="panel-title">⚙️ حالت رادار</div>
+          <div class="flex gap-2">
+            <button class="mode-btn active" data-mode="bio"    onclick="setMode('bio',this)">🧬 بیولوژیکی</button>
+            <button class="mode-btn"        data-mode="aerial" onclick="setMode('aerial',this)">✈️ هوایی</button>
+            <button class="mode-btn"        data-mode="water"  onclick="setMode('water',this)">💧 آبی</button>
+          </div>
+        </div>
+
+        <!-- status panel -->
+        <div class="panel" id="radarStatus">
+          <div class="panel-title">📊 وضعیت رادار</div>
+          <div class="status-row"><span class="status-label">وضعیت رادار</span><span class="status-val">فعال ✅</span></div>
+          <div class="status-row"><span class="status-label">آخرین اسکن</span><span class="status-val text-xs" id="lastScanTime">—</span></div>
+          <div class="status-row"><span class="status-label">تهدیدات شناسایی‌شده</span><span class="status-val" id="threatCount">۰</span></div>
+          <div class="status-row"><span class="status-label">پوشش</span><span class="status-val">۱۰۰٪</span></div>
+          <div class="status-row"><span class="status-label">زاویه فعلی</span><span class="status-val" id="currentAngle">۰°</span></div>
+        </div>
+
+        <!-- controls -->
+        <div class="panel">
+          <div class="panel-title">🎛️ کنترل رادار</div>
+
+          <!-- speed -->
+          <div class="mb-4">
+            <div class="text-xs text-gray-500 mb-2">سرعت چرخش</div>
+            <div class="flex gap-2">
+              <button class="ctrl-btn" data-speed="0.3" onclick="setSpeed(0.3,this)">کند</button>
+              <button class="ctrl-btn active" data-speed="0.7" onclick="setSpeed(0.7,this)">عادی</button>
+              <button class="ctrl-btn" data-speed="1.6" onclick="setSpeed(1.6,this)">سریع</button>
+            </div>
+          </div>
+
+          <!-- range -->
+          <div class="mb-4">
+            <div class="text-xs text-gray-500 mb-2">برد رادار: <span id="rangeLabel" class="text-green-400">۲۰۰ کیلومتر</span></div>
+            <div class="flex gap-2 flex-wrap">
+              <button class="ctrl-btn" data-range="50"  onclick="setRange(50,this)">۵۰ کم</button>
+              <button class="ctrl-btn" data-range="100" onclick="setRange(100,this)">۱۰۰</button>
+              <button class="ctrl-btn active" data-range="200" onclick="setRange(200,this)">۲۰۰</button>
+              <button class="ctrl-btn" data-range="500" onclick="setRange(500,this)">۵۰۰</button>
+            </div>
+          </div>
+
+          <!-- audio toggle -->
+          <div class="mb-4">
+            <div class="toggle-wrap" onclick="toggleAudio()">
+              <div class="toggle-track" id="audioTrack">
+                <div class="toggle-thumb"></div>
+              </div>
+              <span class="toggle-label" id="audioLabel">هشدار صوتی خاموش</span>
+            </div>
+          </div>
+
+          <!-- action buttons -->
+          <div class="flex gap-2 flex-wrap">
+            <button class="action-btn" id="pauseBtn" onclick="togglePause()">⏸ توقف</button>
+            <button class="action-btn" onclick="requestFullscreen()">⛶ تمام‌صفحه</button>
+          </div>
+        </div>
+
+        <!-- threat log -->
+        <div class="panel">
+          <div class="panel-title">🔴 گزارش تهدیدات <span class="text-gray-600 text-xs font-normal mr-auto">(جدیدترین در بالا)</span></div>
+          <div id="threatLog">
+            <div class="text-xs text-gray-600 text-center py-4">در انتظار اولین اسکن…</div>
+          </div>
+        </div>
+
+      </div><!-- end right col -->
+    </div><!-- end grid -->
+  </div><!-- end max-w -->
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="mt-10 border-t border-green-900/20 py-12 bg-black/40">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <div>
+        <div class="text-lg font-black neon-cyan mb-3">🛡️ PBDO</div>
+        <p class="text-gray-400 text-sm leading-7">
+          سازمان پدافند زیستی عمومی — پیشرو در پایش تهدیدات زیستی،
+          امنیت بیولوژیک و دفاع هوشمند برای ایران
+        </p>
+        <div class="mt-3 inline-block text-xs bg-green-900/30 border border-green-500/30 text-green-400 px-3 py-1 rounded-full">
+          ⚡ Powered by PBDO
+        </div>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-green-400 mb-3">دسترسی سریع</h3>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li><a href="index.html"      class="hover:text-green-400 transition">خانه</a></li>
+          <li><a href="monitoring.html" class="hover:text-green-400 transition">پایش زنده</a></li>
+          <li><a href="radar.html"      class="text-green-400">رادار</a></li>
+          <li><a href="report.html"     class="hover:text-green-400 transition">گزارش مردمی</a></li>
+          <li><a href="about.html"      class="hover:text-green-400 transition">درباره ما</a></li>
+          <li><a href="contact.html"    class="hover:text-green-400 transition">تماس با ما</a></li>
+          <li><a href="admin.html"      class="hover:text-green-400 transition">ورود مدیران</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-green-400 mb-3">اطلاعات تماس</h3>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li>📧 admin@pbdo.tech</li>
+          <li>🌐 pbdo.tech</li>
+          <li>📍 ایران، تهران</li>
+          <li class="pt-2 text-xs text-gray-600">سیستم رادار ۲۴/۷ فعال است</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-green-900/20 pt-6 text-center text-xs text-gray-600">
+      <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی — تمام حقوق محفوظ است</p>
+      <p class="mt-1 text-gray-700">این سامانه تحت نظارت مستقیم تیم امنیت سایبری PBDO قرار دارد</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+/* ============================================================
+   SECURITY: sanitizeHTML
+   ============================================================ */
+function sanitizeHTML(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* ============================================================
+   JALALI DATE (inline algorithm)
+   ============================================================ */
+function toJalali(gy, gm, gd) {
+  const g_d_no = [31,28,31,30,31,30,31,31,30,31,30,31];
+  const j_d_no = [31,31,31,31,31,31,30,30,30,30,30,29];
+  if (gy > 1600) { gy -= 1600; } else { gy -= 1; }
+  let g_day_no = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+  for (let i = 0; i < gm - 1; i++) g_day_no += g_d_no[i];
+  if (gm > 2 && ((gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0)) g_day_no++;
+  g_day_no += gd - 1;
+  let j_day_no = g_day_no - 79;
+  const j_np = Math.floor(j_day_no / 12053);
+  j_day_no %= 12053;
+  let jy = 979 + 33 * j_np + 4 * Math.floor(j_day_no / 1461);
+  j_day_no %= 1461;
+  if (j_day_no >= 366) { jy += Math.floor((j_day_no - 1) / 365); j_day_no = (j_day_no - 1) % 365; }
+  let jm = 0, jd = 0;
+  for (let i = 0; i < 11 && j_day_no >= j_d_no[i]; i++) { j_day_no -= j_d_no[i]; jm++; }
+  jd = j_day_no + 1;
+  return {y: jy, m: jm + 1, d: jd};
+}
+
+function jalaliNow() {
+  const now = new Date();
+  const j = toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return `${j.d} ${months[j.m-1]} ${j.y}  |  ${hh}:${mm}:${ss}`;
+}
+
+function jalaliTime() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return `${hh}:${mm}:${ss}`;
+}
+
+function toPersianNum(n) {
+  return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
+function openMobileMenu() {
+  document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('mobileOverlay').classList.add('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobileOverlay').classList.remove('open');
+}
+
+/* ============================================================
+   RADAR STATE
+   ============================================================ */
+const canvas = document.getElementById('radarCanvas');
+const ctx    = canvas.getContext('2d');
+
+let sweepAngle   = 0;       // radians
+let speedDeg     = 0.7;     // degrees per frame
+let currentRange = 200;     // km
+let radarMode    = 'bio';
+let isPaused     = false;
+let audioEnabled = false;
+let totalThreats = 0;
+let animFrameId  = null;
+let audioCtx     = null;
+
+/* contact dot pool */
+const contacts = [];
+
+/* ============================================================
+   THREAT DEFINITIONS PER MODE
+   ============================================================ */
+const THREAT_TYPES = {
+  bio: [
+    {label:'آنتراکس',      severity:'high',   icon:'⚠️'},
+    {label:'آلودگی هوا',   severity:'medium', icon:'🟡'},
+    {label:'پاتوژن ناشناخته', severity:'high', icon:'🔴'},
+    {label:'ویروس تنفسی',  severity:'medium', icon:'🟠'},
+    {label:'آلاینده زیستی',severity:'low',    icon:'🟢'},
+  ],
+  aerial: [
+    {label:'پرنده مشکوک',  severity:'low',    icon:'🟢'},
+    {label:'پهپاد ناشناس', severity:'high',   icon:'🔴'},
+    {label:'هواپیمای بدون مجوز', severity:'high', icon:'⚠️'},
+    {label:'ترافیک هوایی', severity:'low',    icon:'🟢'},
+    {label:'جسم پرنده',    severity:'medium', icon:'🟡'},
+  ],
+  water: [
+    {label:'آلودگی آب',    severity:'medium', icon:'🟡'},
+    {label:'نشت شیمیایی', severity:'high',   icon:'🔴'},
+    {label:'باکتری آبی',   severity:'medium', icon:'🟠'},
+    {label:'آلاینده صنعتی',severity:'high',   icon:'⚠️'},
+    {label:'تغییر pH',     severity:'low',    icon:'🟢'},
+  ],
+};
+
+/* ============================================================
+   CONTACT (BLIP) MANAGEMENT
+   ============================================================ */
+function spawnContact() {
+  const minR = 0.08, maxR = 0.88;
+  const r   = minR + Math.random() * (maxR - minR);
+  const ang = Math.random() * Math.PI * 2;
+  const types = THREAT_TYPES[radarMode];
+  const t = types[Math.floor(Math.random() * types.length)];
+  contacts.push({
+    r,          // normalized radius [0,1]
+    ang,        // angle in radians
+    opacity: 0,
+    phase: 'grow', // grow | hold | fade
+    holdTimer: 0,
+    lit: false,    // lit when sweep passes
+    type: t,
+    reported: false,
+  });
+}
+
+function updateContacts(sweepRad) {
+  const sweepTolerance = (speedDeg * Math.PI / 180) * 6; // ~6 frames of tolerance
+  for (let i = contacts.length - 1; i >= 0; i--) {
+    const c = contacts[i];
+
+    /* check if sweep passes over this contact */
+    if (!c.reported) {
+      let diff = ((sweepRad - c.ang) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+      if (diff < sweepTolerance) {
+        c.lit = true;
+        c.reported = true;
+        c.opacity = 1;
+        addThreatLog(c.type);
+        totalThreats++;
+        updateStatus();
+        if (audioEnabled) playBeep(c.type.severity);
+      }
+    }
+
+    /* lifecycle */
+    if (c.phase === 'grow') {
+      c.opacity = Math.min(1, c.opacity + 0.04);
+      if (c.opacity >= 1) { c.phase = 'hold'; c.holdTimer = 180 + Math.random() * 240; }
+    } else if (c.phase === 'hold') {
+      c.holdTimer--;
+      if (c.holdTimer <= 0) c.phase = 'fade';
+      /* subtle pulse */
+      c.opacity = 0.65 + 0.35 * Math.sin(Date.now() / 300 + i);
+    } else {
+      c.opacity -= 0.008;
+      if (c.opacity <= 0) { contacts.splice(i, 1); }
+    }
+  }
+}
+
+/* ============================================================
+   DRAW RADAR
+   ============================================================ */
+function drawRadar() {
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const R  = Math.min(W, H) / 2 - 4;
+
+  /* ---- background ---- */
+  ctx.clearRect(0, 0, W, H);
+
+  /* deep dark fill */
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+  bgGrad.addColorStop(0, '#001400');
+  bgGrad.addColorStop(0.6, '#001800');
+  bgGrad.addColorStop(1, '#000d00');
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+  ctx.restore();
+
+  /* clip to circle for all subsequent drawing */
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.clip();
+
+  /* ---- concentric rings ---- */
+  const ringCount = 4;
+  const ringLabels = [
+    {frac: 0.25, label: toPersianNum(Math.round(currentRange * 0.25)) + ' کم'},
+    {frac: 0.50, label: toPersianNum(Math.round(currentRange * 0.50)) + ' کم'},
+    {frac: 0.75, label: toPersianNum(Math.round(currentRange * 0.75)) + ' کم'},
+    {frac: 1.00, label: toPersianNum(currentRange)                    + ' کم'},
+  ];
+  for (let i = 1; i <= ringCount; i++) {
+    const rr = R * (i / ringCount);
+    ctx.beginPath();
+    ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(0,255,136,${0.08 + (i / ringCount) * 0.06})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    /* ring label */
+    ctx.fillStyle = 'rgba(0,255,136,0.35)';
+    ctx.font = `${Math.max(10, W * 0.021)}px Vazirmatn, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(ringLabels[i - 1].label, cx + 6, cy - rr + 14);
+  }
+
+  /* ---- cross-hair lines ---- */
+  ctx.strokeStyle = 'rgba(0,255,136,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 6]);
+  ctx.beginPath(); ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* diagonal lines (45°) */
+  ctx.strokeStyle = 'rgba(0,255,136,0.06)';
+  const d = R * Math.cos(Math.PI / 4);
+  ctx.beginPath(); ctx.moveTo(cx - d, cy - d); ctx.lineTo(cx + d, cy + d); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + d, cy - d); ctx.lineTo(cx - d, cy + d); ctx.stroke();
+
+  /* ---- cardinal direction labels ---- */
+  const lblFont = `bold ${Math.max(11, W * 0.026)}px Vazirmatn, sans-serif`;
+  const lblOff  = 14;
+  ctx.font = lblFont;
+  ctx.fillStyle = 'rgba(0,255,136,0.7)';
+  ctx.textAlign = 'center';
+  ctx.fillText('شمال', cx, cy - R + lblOff);
+  ctx.fillText('جنوب', cx, cy + R - 4);
+  ctx.textAlign = 'right';
+  ctx.fillText('شرق', cx + R - 4, cy + 4);
+  ctx.textAlign = 'left';
+  ctx.fillText('غرب', cx - R + 4, cy + 4);
+  ctx.textAlign = 'center';
+
+  /* ---- sweep trail (fade arcs) ---- */
+  const trailSteps = 28;
+  const trailArc   = Math.PI * 0.62;
+  for (let i = 0; i < trailSteps; i++) {
+    const frac = i / trailSteps;
+    const startA = sweepAngle - trailArc * frac;
+    const endA   = sweepAngle - trailArc * (frac + 1 / trailSteps);
+    const alpha  = (1 - frac) * 0.18;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R - 2, startA, endA, true);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(0,255,136,${alpha})`;
+    ctx.fill();
+  }
+
+  /* ---- sweep line ---- */
+  const lineGrad = ctx.createLinearGradient(cx, cy, cx + R * Math.cos(sweepAngle), cy + R * Math.sin(sweepAngle));
+  lineGrad.addColorStop(0, 'rgba(0,255,136,0)');
+  lineGrad.addColorStop(0.5, 'rgba(0,255,136,0.5)');
+  lineGrad.addColorStop(1, 'rgba(0,255,136,1)');
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + R * Math.cos(sweepAngle), cy + R * Math.sin(sweepAngle));
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#00ff88';
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  /* ---- contact dots ---- */
+  contacts.forEach((c, idx) => {
+    const px = cx + c.r * R * Math.cos(c.ang);
+    const py = cy + c.r * R * Math.sin(c.ang);
+    const sz = c.type.severity === 'high' ? 5 : 4;
+
+    /* glow */
+    const dotColor = c.type.severity === 'high' ? '255,60,60'
+                   : c.type.severity === 'medium' ? '255,200,0'
+                   : '0,255,136';
+    ctx.beginPath();
+    ctx.arc(px, py, sz + 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${dotColor},${c.opacity * 0.2})`;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(px, py, sz, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${dotColor},${c.opacity})`;
+    ctx.shadowBlur = c.lit ? 16 : 6;
+    ctx.shadowColor = `rgb(${dotColor})`;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    /* label on lit */
+    if (c.lit) {
+      ctx.font = `10px Vazirmatn, sans-serif`;
+      ctx.fillStyle = `rgba(${dotColor},${c.opacity * 0.85})`;
+      ctx.textAlign = 'right';
+      ctx.fillText(c.type.label, px - 8, py - 8);
+      ctx.textAlign = 'center';
+    }
+  });
+
+  /* ---- center dot ---- */
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#00ff88';
+  ctx.shadowBlur = 12; ctx.shadowColor = '#00ff88';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  /* ---- outer border ---- */
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(0,255,136,0.4)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.restore(); /* end clip */
+}
+
+/* ============================================================
+   ANIMATION LOOP
+   ============================================================ */
+let lastSpawnTime = 0;
+const SPAWN_INTERVAL_MIN = 10000;
+const SPAWN_INTERVAL_MAX = 28000;
+let nextSpawnDelay = SPAWN_INTERVAL_MIN + Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN);
+
+function animate(ts) {
+  animFrameId = requestAnimationFrame(animate);
+  if (isPaused) return;
+
+  /* advance sweep */
+  sweepAngle += speedDeg * Math.PI / 180;
+  if (sweepAngle >= Math.PI * 2) sweepAngle -= Math.PI * 2;
+
+  /* update contacts */
+  updateContacts(sweepAngle);
+
+  /* spawn new contact? */
+  if (ts - lastSpawnTime > nextSpawnDelay) {
+    if (contacts.length < 10) spawnContact();
+    lastSpawnTime = ts;
+    nextSpawnDelay = SPAWN_INTERVAL_MIN + Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN);
+  }
+
+  drawRadar();
+  updateAngleDisplay();
+}
+
+/* ============================================================
+   STATUS & UI UPDATES
+   ============================================================ */
+function updateStatus() {
+  const el = document.getElementById('threatCount');
+  if (el) el.textContent = toPersianNum(totalThreats);
+  const lst = document.getElementById('lastScanTime');
+  if (lst) lst.textContent = jalaliTime();
+}
+
+function updateAngleDisplay() {
+  const el = document.getElementById('currentAngle');
+  if (el) {
+    const deg = Math.round((sweepAngle * 180 / Math.PI + 360) % 360);
+    el.textContent = toPersianNum(deg) + '°';
+  }
+}
+
+function updateDatetime() {
+  const str = jalaliNow();
+  const nav = document.getElementById('navDateTime');
+  const hdr = document.getElementById('headerDateTime');
+  if (nav) nav.textContent = str;
+  if (hdr) hdr.textContent = str;
+}
+
+/* ============================================================
+   THREAT LOG
+   ============================================================ */
+const MAX_LOG = 20;
+
+function addThreatLog(threatType) {
+  const log = document.getElementById('threatLog');
+  if (!log) return;
+
+  /* remove placeholder */
+  const ph = log.querySelector('.text-gray-600');
+  if (ph) ph.remove();
+
+  const ts = jalaliTime();
+  const lat = (30 + Math.random() * 10).toFixed(3);
+  const lon = (47 + Math.random() * 12).toFixed(3);
+
+  const cssClass = threatType.severity === 'high' ? 'log-high'
+                 : radarMode === 'aerial'          ? 'log-aerial'
+                 : radarMode === 'water'           ? 'log-water'
+                 : 'log-bio';
+
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${cssClass}`;
+  entry.innerHTML =
+    `<span class="shrink-0">${sanitizeHTML(threatType.icon)}</span>` +
+    `<div class="flex-1 min-w-0">` +
+      `<div class="font-semibold truncate">${sanitizeHTML(threatType.label)}</div>` +
+      `<div class="log-ts">عرض: ${sanitizeHTML(lat)}° | طول: ${sanitizeHTML(lon)}°</div>` +
+    `</div>` +
+    `<div class="log-ts shrink-0">${sanitizeHTML(ts)}</div>`;
+
+  log.insertBefore(entry, log.firstChild);
+
+  /* enforce max entries */
+  while (log.children.length > MAX_LOG) log.removeChild(log.lastChild);
+}
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+function setMode(mode, btn) {
+  radarMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function setSpeed(deg, btn) {
+  speedDeg = deg;
+  document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function setRange(km, btn) {
+  currentRange = km;
+  document.querySelectorAll('[data-range]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const lbl = document.getElementById('rangeLabel');
+  if (lbl) lbl.textContent = toPersianNum(km) + ' کیلومتر';
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  const btn = document.getElementById('pauseBtn');
+  if (btn) btn.textContent = isPaused ? '▶ ادامه' : '⏸ توقف';
+}
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const track = document.getElementById('audioTrack');
+  const label = document.getElementById('audioLabel');
+  if (track) track.classList.toggle('on', audioEnabled);
+  if (label) label.textContent = audioEnabled ? 'هشدار صوتی روشن' : 'هشدار صوتی خاموش';
+  /* init AudioContext on first user interaction */
+  if (audioEnabled && !audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+}
+
+function requestFullscreen() {
+  const el = document.getElementById('radarWrap');
+  if (!el) return;
+  try {
+    if (el.requestFullscreen)       el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } catch(e) {}
+}
+
+/* ============================================================
+   WEB AUDIO BEEP
+   ============================================================ */
+function playBeep(severity) {
+  if (!audioCtx) return;
+  try {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = severity === 'high' ? 880 : severity === 'medium' ? 660 : 440;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.35);
+  } catch(e) {}
+}
+
+/* ============================================================
+   CANVAS COORDINATE HOVER
+   ============================================================ */
+canvas.addEventListener('mousemove', function(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top)  * scaleY;
+  const cx = canvas.width  / 2;
+  const cy = canvas.height / 2;
+  const R  = Math.min(canvas.width, canvas.height) / 2 - 4;
+
+  const dx = (mx - cx) / R;
+  const dy = (my - cy) / R;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const kmDist = (dist * currentRange).toFixed(0);
+
+  /* rough geo approx centered on Tehran */
+  const baseLat = 35.7, baseLon = 51.4;
+  const latOff  = (-dy * currentRange / 111).toFixed(2);
+  const lonOff  = ( dx * currentRange / (111 * Math.cos(baseLat * Math.PI / 180))).toFixed(2);
+  const lat = (baseLat + parseFloat(latOff)).toFixed(2);
+  const lon = (baseLon + parseFloat(lonOff)).toFixed(2);
+
+  const overlay = document.getElementById('coordOverlay');
+  if (overlay) {
+    overlay.textContent = `X: ${toPersianNum(Math.round(mx - cx))} Y: ${toPersianNum(Math.round(my - cy))}  |  عرض: ${lat}°  طول: ${lon}°  (${toPersianNum(kmDist)} کم)`;
+  }
+});
+
+/* ============================================================
+   RESPONSIVE CANVAS SIZING
+   ============================================================ */
+function resizeCanvas() {
+  const wrap = document.getElementById('radarWrap');
+  if (!wrap) return;
+  const available = Math.min(wrap.clientWidth, 500);
+  if (available > 0 && available !== canvas.width) {
+    canvas.width  = available;
+    canvas.height = available;
+  }
+}
+
+/* ============================================================
+   SEED INITIAL CONTACTS
+   ============================================================ */
+function seedContacts() {
+  const count = 5 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < count; i++) {
+    spawnContact();
+    /* stagger phases so they don't all appear at once */
+    contacts[contacts.length - 1].phase = 'hold';
+    contacts[contacts.length - 1].opacity = 0.4 + Math.random() * 0.5;
+    contacts[contacts.length - 1].holdTimer = Math.random() * 300;
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', function() {
+  resizeCanvas();
+  seedContacts();
+  updateDatetime();
+  updateStatus();
+  animFrameId = requestAnimationFrame(animate);
+
+  /* datetime tick */
+  setInterval(function() { updateDatetime(); updateStatus(); }, 1000);
+});
+
+window.addEventListener('resize', resizeCanvas);
+</script>
+</body>
+</html>
