@@ -30,6 +30,8 @@
     .btn-outline{background:transparent;color:#00f0ff;border:1px solid #00f0ff;font-weight:600;padding:12px 28px;border-radius:8px;cursor:pointer;transition:all .3s;}
     .btn-outline:hover{background:#00f0ff22;}
     nav{position:fixed;top:40px;width:100%;z-index:100;backdrop-filter:blur(12px);background:rgba(10,15,30,.85);border-bottom:1px solid #00f0ff22;}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;}
+    .modal.active{display:flex;}
     input,select,textarea{background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:100%;box-sizing:border-box;}
     input:focus,select:focus,textarea:focus{outline:none;border-color:#00f0ff;box-shadow:0 0 8px #00f0ff44;}
     ::-webkit-scrollbar{width:6px;}
@@ -39,60 +41,23 @@
     td{padding:10px 12px;border-bottom:1px solid #ffffff11;font-size:14px;}
     tr:hover td{background:#ffffff08;}
     .hero-grid{background-image:linear-gradient(rgba(0,240,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.05) 1px,transparent 1px);background-size:40px 40px;}
-    @keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 6px #00f0ff99);}50%{filter:drop-shadow(0 0 18px #00f0ffff) drop-shadow(0 0 32px #00f0ff66);}}
-    .logo-animated{animation:logoPulse 3s ease-in-out infinite;}
-    @keyframes rotateDNA{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-    .dna-ring{transform-origin:50px 50px;animation:rotateDNA 8s linear infinite;}
   </style>
 </head>
 <body>
 
 <div class="ticker-wrap">
   <span class="ticker text-white text-sm font-bold px-4">
-    🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴
+    🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴ &nbsp;|&nbsp; 🛡️ Project Aegis: عملیاتی &nbsp;|&nbsp; 🔬 Thermal Laser Project: مرحله آزمایش
   </span>
 </div>
 
 <nav>
-  <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-    <!-- PBDO Logo Navbar -->
-    <div class="flex items-center gap-3">
-      <svg class="logo-animated" width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Outer hexagon border -->
-        <polygon points="50,4 93,27 93,73 50,96 7,73 7,27" fill="#0a0f1e" stroke="#00f0ff" stroke-width="2.5"/>
-        <!-- Inner hex fill -->
-        <polygon points="50,12 86,31 86,69 50,88 14,69 14,31" fill="#0d1a2e" stroke="#00f0ff44" stroke-width="1"/>
-        <!-- DNA helix ring (rotating) -->
-        <g class="dna-ring">
-          <circle cx="50" cy="50" r="28" fill="none" stroke="#00f0ff22" stroke-width="1" stroke-dasharray="4 4"/>
-        </g>
-        <!-- Bio-shield center -->
-        <path d="M50 22 L68 30 L68 52 Q68 66 50 74 Q32 66 32 52 L32 30 Z" fill="#0a1a2e" stroke="#00f0ff" stroke-width="2"/>
-        <!-- Biohazard arcs -->
-        <circle cx="50" cy="50" r="7" fill="none" stroke="#00f0ff" stroke-width="2"/>
-        <path d="M50 43 A12 12 0 0 1 60 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M60 57 A12 12 0 0 1 40 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M40 57 A12 12 0 0 1 50 43" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Vertical sword line -->
-        <line x1="50" y1="24" x2="50" y2="72" stroke="#00f0ffcc" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="44" y1="36" x2="56" y2="36" stroke="#00f0ffcc" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="50" cy="25" r="2.5" fill="#00f0ff"/>
-        <!-- Corner dots (cyber feel) -->
-        <circle cx="50" cy="6" r="2" fill="#00f0ff"/>
-        <circle cx="91" cy="28" r="2" fill="#00f0ff"/>
-        <circle cx="91" cy="72" r="2" fill="#00f0ff"/>
-        <circle cx="50" cy="94" r="2" fill="#00f0ff"/>
-        <circle cx="9" cy="72" r="2" fill="#00f0ff"/>
-        <circle cx="9" cy="28" r="2" fill="#00f0ff"/>
-      </svg>
-      <div>
-        <div class="text-lg font-black neon-blue leading-none">PBDO</div>
-        <div class="text-gray-400" style="font-size:9px;letter-spacing:1px;">PUBLIC BIO DEFENSE ORG</div>
-      </div>
-    </div>
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="text-xl font-black neon-blue">🛡️ PBDO</div>
     <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
       <a href="#home" class="hover:text-cyan-400 transition">خانه</a>
       <a href="#dashboard" class="hover:text-cyan-400 transition">داشبورد</a>
+      <a href="#projects" class="hover:text-cyan-400 transition">پروژه‌ها</a>
       <a href="#collaborate" class="hover:text-cyan-400 transition">همکاری</a>
       <a href="admin.html" class="btn-primary text-sm py-2 px-4">ورود به پنل</a>
     </div>
@@ -103,39 +68,6 @@
   <div class="max-w-7xl mx-auto px-4 text-center">
     <div class="inline-block bg-red-900/30 border border-red-500 text-red-400 text-xs px-4 py-1 rounded-full mb-6 pulse">
       🔴 سیستم در وضعیت هشدار فعال
-    </div>
-    <!-- Hero Logo -->
-    <div class="flex justify-center mb-8">
-      <svg class="logo-animated" width="160" height="160" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Outer hexagon border -->
-        <polygon points="50,4 93,27 93,73 50,96 7,73 7,27" fill="#0a0f1e" stroke="#00f0ff" stroke-width="2.5"/>
-        <!-- Second hex ring -->
-        <polygon points="50,10 88,30 88,70 50,90 12,70 12,30" fill="none" stroke="#00f0ff33" stroke-width="1"/>
-        <!-- Inner hex fill -->
-        <polygon points="50,12 86,31 86,69 50,88 14,69 14,31" fill="#0d1a2e" stroke="#00f0ff44" stroke-width="1"/>
-        <!-- Rotating dashed ring -->
-        <g class="dna-ring">
-          <circle cx="50" cy="50" r="28" fill="none" stroke="#00f0ff44" stroke-width="1" stroke-dasharray="4 4"/>
-        </g>
-        <!-- Bio-shield -->
-        <path d="M50 22 L68 30 L68 52 Q68 66 50 74 Q32 66 32 52 L32 30 Z" fill="#0a1a2e" stroke="#00f0ff" stroke-width="2"/>
-        <!-- Biohazard symbol -->
-        <circle cx="50" cy="50" r="7" fill="none" stroke="#00f0ff" stroke-width="2"/>
-        <path d="M50 43 A12 12 0 0 1 60 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M60 57 A12 12 0 0 1 40 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M40 57 A12 12 0 0 1 50 43" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Sword -->
-        <line x1="50" y1="24" x2="50" y2="72" stroke="#00f0ffcc" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="44" y1="36" x2="56" y2="36" stroke="#00f0ffcc" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="50" cy="25" r="2.5" fill="#00f0ff"/>
-        <!-- Cyber corner dots -->
-        <circle cx="50" cy="6" r="2" fill="#00f0ff"/>
-        <circle cx="91" cy="28" r="2" fill="#00f0ff"/>
-        <circle cx="91" cy="72" r="2" fill="#00f0ff"/>
-        <circle cx="50" cy="94" r="2" fill="#00f0ff"/>
-        <circle cx="9" cy="72" r="2" fill="#00f0ff"/>
-        <circle cx="9" cy="28" r="2" fill="#00f0ff"/>
-      </svg>
     </div>
     <h1 class="text-4xl md:text-7xl font-black mb-4 neon-blue">سازمان پدافند زیستی</h1>
     <h2 class="text-2xl md:text-4xl font-bold text-white/60 mb-6">Public Bio Defense Organization</h2>
@@ -163,176 +95,4 @@
     <h2 class="text-3xl font-black neon-blue mb-2">📡 داشبورد پایش ملی ۲۴ ساعته</h2>
     <p class="text-gray-400 mb-8">رصد لحظه‌ای وضعیت زیستی تمام شهرهای ایران</p>
     <div class="flex flex-wrap gap-4 mb-6">
-      <select id="filterProvince" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto;">
-        <option value="">همه استان‌ها</option>
-        <option>تهران</option><option>اصفهان</option><option>خراسان رضوی</option>
-        <option>فارس</option><option>آذربایجان شرقی</option><option>خوزستان</option>
-        <option>گیلان</option><option>کرمانشاه</option><option>قم</option><option>همدان</option>
-        <option>هرمزگان</option><option>البرز</option>
-      </select>
-      <select id="filterStatus" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto;">
-        <option value="">همه وضعیت‌ها</option>
-        <option value="green">عادی 🟢</option>
-        <option value="yellow">احتیاط 🟡</option>
-        <option value="red">هشدار 🔴</option>
-      </select>
-    </div>
-    <div class="neon-border rounded-xl overflow-hidden mb-8">
-      <div id="map"></div>
-    </div>
-    <div class="neon-border rounded-xl overflow-hidden overflow-x-auto">
-      <table id="cityTable">
-        <thead>
-          <tr><th>شهر</th><th>استان</th><th>وضعیت</th><th>آخرین گزارش</th><th>به‌روزرسانی</th></tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section id="collaborate" class="py-20">
-  <div class="max-w-3xl mx-auto px-4">
-    <h2 class="text-3xl font-black neon-blue mb-2">🤝 پورتال همکاری نخبگان</h2>
-    <p class="text-gray-400 mb-8">به تیم پیشرو PBDO بپیوندید</p>
-    <div class="card">
-      <form onsubmit="submitForm(event)">
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی"/></div>
-          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" required placeholder="email@example.com" dir="ltr"/></div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="text-sm text-gray-400 block mb-2">تخصص *</label>
-            <select required>
-              <option value="">انتخاب کنید</option>
-              <option>بیوتکنولوژی</option><option>هوش مصنوعی</option><option>فوتونیک و لیزر</option>
-              <option>امنیت سایبری</option><option>علوم دامپزشکی</option><option>مهندسی ژنتیک</option>
-              <option>داده‌کاوی</option><option>سایر</option>
-            </select>
-          </div>
-          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" min="0" placeholder="۰"/></div>
-        </div>
-        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..."></textarea></div>
-        <div class="mb-6">
-          <label class="text-sm text-gray-400 block mb-2">آپلود رزومه (CV)</label>
-          <input type="file" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
-          <p class="text-xs text-gray-500 mt-1">فرمت‌های مجاز: PDF، DOC، DOCX - حداکثر ۵ مگابایت</p>
-        </div>
-        <button type="submit" class="btn-primary w-full" id="submitBtn">📤 ارسال درخواست همکاری</button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<footer class="py-12 border-t border-cyan-900/30">
-  <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
-    <div>
-      <div class="flex items-center gap-3 mb-3">
-        <svg width="38" height="38" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 5px #00f0ff88)">
-          <polygon points="50,4 93,27 93,73 50,96 7,73 7,27" fill="#0a0f1e" stroke="#00f0ff" stroke-width="2.5"/>
-          <polygon points="50,12 86,31 86,69 50,88 14,69 14,31" fill="#0d1a2e" stroke="#00f0ff44" stroke-width="1"/>
-          <path d="M50 22 L68 30 L68 52 Q68 66 50 74 Q32 66 32 52 L32 30 Z" fill="#0a1a2e" stroke="#00f0ff" stroke-width="2"/>
-          <circle cx="50" cy="50" r="7" fill="none" stroke="#00f0ff" stroke-width="2"/>
-          <path d="M50 43 A12 12 0 0 1 60 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M60 57 A12 12 0 0 1 40 57" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M40 57 A12 12 0 0 1 50 43" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="50" y1="24" x2="50" y2="72" stroke="#00f0ffcc" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="44" y1="36" x2="56" y2="36" stroke="#00f0ffcc" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="50" cy="25" r="2.5" fill="#00f0ff"/>
-          <!-- Corner dots (cyber feel) -->
-          <circle cx="50" cy="6" r="2" fill="#00f0ff"/>
-          <circle cx="91" cy="28" r="2" fill="#00f0ff"/>
-          <circle cx="91" cy="72" r="2" fill="#00f0ff"/>
-          <circle cx="50" cy="94" r="2" fill="#00f0ff"/>
-          <circle cx="9" cy="72" r="2" fill="#00f0ff"/>
-          <circle cx="9" cy="28" r="2" fill="#00f0ff"/>
-        </svg>
-        <div>
-          <div class="text-xl font-black neon-blue leading-none">PBDO</div>
-          <div class="text-gray-500" style="font-size:8px;letter-spacing:1px;">PUBLIC BIO DEFENSE ORG</div>
-        </div>
-      </div>
-      <p class="text-gray-500 text-sm leading-7">سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری</p>
-    </div>
-    <div>
-      <h4 class="font-bold text-cyan-400 mb-4">دسترسی سریع</h4>
-      <ul class="space-y-2 text-sm text-gray-400">
-        <li><a href="#dashboard" class="hover:text-cyan-400">داشبورد پایش</a></li>
-        <li><a href="#collaborate" class="hover:text-cyan-400">همکاری</a></li>
-        <li><a href="admin.html" class="hover:text-cyan-400">پنل مدیریت</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="font-bold text-cyan-400 mb-4">تماس</h4>
-      <ul class="space-y-2 text-sm text-gray-400">
-        <li>📧 admin@pbdo.tech</li>
-        <li>🌐 pbdo.tech</li>
-      </ul>
-    </div>
-  </div>
-  <div class="text-center text-gray-600 text-sm mt-8 pt-8 border-t border-gray-800">
-    © ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است
-  </div>
-</footer>
-
-<script>
-const cities=[
-  {name:'تهران',province:'تهران',status:'green',lat:35.6892,lng:51.3890,report:'وضعیت عادی - هیچ تهدیدی شناسایی نشده',time:'۱۰ دقیقه پیش'},
-  {name:'مشهد',province:'خراسان رضوی',status:'green',lat:36.2972,lng:59.6067,report:'پایش مستمر - شاخص‌ها در محدوده نرمال',time:'۱۵ دقیقه پیش'},
-  {name:'اصفهان',province:'اصفهان',status:'green',lat:32.6546,lng:51.6680,report:'وضعیت پایدار',time:'۸ دقیقه پیش'},
-  {name:'شیراز',province:'فارس',status:'green',lat:29.5918,lng:52.5837,report:'کنترل منظم انجام شد',time:'۲۰ دقیقه پیش'},
-  {name:'تبریز',province:'آذربایجان شرقی',status:'green',lat:38.0962,lng:46.2738,report:'وضعیت عادی',time:'۱۲ دقیقه پیش'},
-  {name:'کرج',province:'البرز',status:'green',lat:35.8400,lng:50.9391,report:'پایش فعال - بدون ناهنجاری',time:'۵ دقیقه پیش'},
-  {name:'اهواز',province:'خوزستان',status:'yellow',lat:31.3183,lng:48.6706,report:'⚠️ افزایش جزئی در نمونه‌های محیطی - پایش تشدید شده',time:'۳ دقیقه پیش'},
-  {name:'کرمانشاه',province:'کرمانشاه',status:'yellow',lat:34.3142,lng:47.0650,report:'⚠️ احتیاط: تغییر الگوی زیستی در حال بررسی',time:'۷ دقیقه پیش'},
-  {name:'رشت',province:'گیلان',status:'yellow',lat:37.2808,lng:49.5832,report:'⚠️ رطوبت بالا - افزایش ریسک',time:'۱۸ دقیقه پیش'},
-  {name:'قم',province:'قم',status:'yellow',lat:34.6416,lng:50.8746,report:'⚠️ گزارش‌های احتیاطی دریافت شده',time:'۲۵ دقیقه پیش'},
-  {name:'همدان',province:'همدان',status:'yellow',lat:34.7990,lng:48.5147,report:'⚠️ پایش دامپزشکی در حال انجام',time:'۳۰ دقیقه پیش'},
-  {name:'آبادان',province:'خوزستان',status:'red',lat:30.3392,lng:48.3037,report:'🚨 هشدار سطح ۲: عوامل ناشناخته شناسایی شده - تیم میدانی اعزام شد',time:'۲ دقیقه پیش'},
-  {name:'بندرعباس',province:'هرمزگان',status:'red',lat:27.1832,lng:56.2666,report:'🚨 هشدار: نمونه‌های مشکوک در آزمایشگاه تأیید شد',time:'۱ دقیقه پیش'},
-  {name:'خرمشهر',province:'خوزستان',status:'red',lat:30.4376,lng:48.1892,report:'🚨 منطقه قرمز - محدودیت تردد اعمال شده',time:'۴ دقیقه پیش'},
-  {name:'قزوین',province:'قزوین',status:'green',lat:36.2688,lng:50.0041,report:'وضعیت پایدار و عادی',time:'۲۲ دقیقه پیش'}
-];
-
-function getColor(s){return s==='green'?'#39ff14':s==='yellow'?'#ffd700':'#ff003c';}
-function getBadge(s){return s==='green'?'status-green':s==='yellow'?'status-yellow':'status-red';}
-function getLabel(s){return s==='green'?'🟢 عادی':s==='yellow'?'🟡 احتیاط':'🔴 هشدار';}
-
-const map=L.map('map',{center:[32.4279,53.6880],zoom:5});
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
-cities.forEach(c=>{
-  const icon=L.divIcon({html:`<div style="width:14px;height:14px;background:${getColor(c.status)};border-radius:50%;border:2px solid white;box-shadow:0 0 8px ${getColor(c.status)};"></div>`,className:'',iconSize:[14,14]});
-  L.marker([c.lat,c.lng],{icon}).addTo(map).bindPopup(`<div style="font-family:Vazirmatn,sans-serif;direction:rtl;min-width:200px"><b>${c.name}</b><br/><span style="color:${getColor(c.status)}">${getLabel(c.status)}</span><br/><small>${c.report}</small><br/><small style="color:#aaa">${c.time}</small></div>`);
-});
-
-function renderTable(data){
-  document.getElementById('tableBody').innerHTML=data.map(c=>`<tr data-status="${c.status}" data-province="${c.province}">
-    <td class="font-bold">${c.name}</td><td>${c.province}</td>
-    <td><span class="${getBadge(c.status)}">${getLabel(c.status)}</span></td>
-    <td class="text-sm">${c.report}</td>
-    <td class="text-xs text-gray-400">${c.time}</td>
-  </tr>`).join('');
-}
-renderTable(cities);
-
-function filterTable(){
-  const prov=document.getElementById('filterProvince').value;
-  const stat=document.getElementById('filterStatus').value;
-  renderTable(cities.filter(c=>(!prov||c.province===prov)&&(!stat||c.status===stat)));
-}
-
-function animateCounter(id,target,suffix=''){let c=0;const step=Math.ceil(target/40);
-  const t=setInterval(()=>{c=Math.min(c+step,target);document.getElementById(id).textContent=c+suffix;if(c>=target)clearInterval(t);},40);
-}
-animateCounter('c1',31);animateCounter('c2',2);animateCounter('c3',120,'+');animateCounter('c4',3);
-
-function submitForm(e){
-  e.preventDefault();
-  const btn=document.getElementById('submitBtn');
-  btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
-  setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);
-}
-</script>
-</body>
-</html>
+      <select id="filterProvince" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto
