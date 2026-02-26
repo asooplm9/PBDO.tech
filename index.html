@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PBDO | سازمان پدافند زیستی عمومی</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0f1e;color:#e0e8ff;margin:0;}
+    .ticker-wrap{background:#ff003c;overflow:hidden;white-space:nowrap;padding:6px 0;}
+    .ticker{display:inline-block;animation:ticker 35s linear infinite;}
+    @keyframes ticker{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}
+    .neon-blue{color:#00f0ff;text-shadow:0 0 8px #00f0ff,0 0 20px #00f0ff;}
+    .neon-green{color:#39ff14;text-shadow:0 0 8px #39ff14;}
+    .neon-border{border:1px solid #00f0ff55;box-shadow:0 0 10px #00f0ff22;}
+    #map{height:450px;border-radius:12px;}
+    .status-green{background:#39ff1422;color:#39ff14;border:1px solid #39ff14;padding:2px 10px;border-radius:20px;font-size:12px;}
+    .status-yellow{background:#ffd70022;color:#ffd700;border:1px solid #ffd700;padding:2px 10px;border-radius:20px;font-size:12px;}
+    .status-red{background:#ff003c22;color:#ff003c;border:1px solid #ff003c;padding:2px 10px;border-radius:20px;font-size:12px;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+    .pulse{animation:pulse 2s infinite;}
+    .card{background:#0d1528;border:1px solid #00f0ff33;border-radius:12px;padding:24px;transition:all .3s;}
+    .card:hover{border-color:#00f0ff;box-shadow:0 0 20px #00f0ff33;transform:translateY(-4px);}
+    .btn-primary{background:linear-gradient(135deg,#00f0ff,#0066ff);color:#000;font-weight:700;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;transition:all .3s;}
+    .btn-primary:hover{box-shadow:0 0 20px #00f0ff66;transform:scale(1.05);}
+    .btn-outline{background:transparent;color:#00f0ff;border:1px solid #00f0ff;font-weight:600;padding:12px 28px;border-radius:8px;cursor:pointer;transition:all .3s;}
+    .btn-outline:hover{background:#00f0ff22;}
+    nav{position:fixed;top:40px;width:100%;z-index:100;backdrop-filter:blur(12px);background:rgba(10,15,30,.85);border-bottom:1px solid #00f0ff22;}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;}
+    .modal.active{display:flex;}
+    input,select,textarea{background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:100%;box-sizing:border-box;}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#00f0ff;box-shadow:0 0 8px #00f0ff44;}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-thumb{background:#00f0ff55;border-radius:3px;}
+    table{width:100%;border-collapse:collapse;}
+    th{background:#0d1528;color:#00f0ff;padding:12px;text-align:right;border-bottom:1px solid #00f0ff33;}
+    td{padding:10px 12px;border-bottom:1px solid #ffffff11;font-size:14px;}
+    tr:hover td{background:#ffffff08;}
+    .hero-grid{background-image:linear-gradient(rgba(0,240,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.05) 1px,transparent 1px);background-size:40px 40px;}
+  </style>
+</head>
+<body>
+
+<div class="ticker-wrap">
+  <span class="ticker text-white text-sm font-bold px-4">
+    🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴ &nbsp;|&nbsp; 🛡️ Project Aegis: عملیاتی &nbsp;|&nbsp; 🔬 Thermal Laser Project: مرحله آزمایش
+  </span>
+</div>
+
+<nav>
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="text-xl font-black neon-blue">🛡️ PBDO</div>
+    <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
+      <a href="#home" class="hover:text-cyan-400 transition">خانه</a>
+      <a href="#dashboard" class="hover:text-cyan-400 transition">داشبورد</a>
+      <a href="#projects" class="hover:text-cyan-400 transition">پروژه‌ها</a>
+      <a href="#collaborate" class="hover:text-cyan-400 transition">همکاری</a>
+      <a href="admin.html" class="btn-primary text-sm py-2 px-4">ورود به پنل</a>
+    </div>
+  </div>
+</nav>
+
+<section id="home" class="hero-grid min-h-screen flex items-center pt-32 pb-20">
+  <div class="max-w-7xl mx-auto px-4 text-center">
+    <div class="inline-block bg-red-900/30 border border-red-500 text-red-400 text-xs px-4 py-1 rounded-full mb-6 pulse">
+      🔴 سیستم در وضعیت هشدار فعال
+    </div>
+    <h1 class="text-4xl md:text-7xl font-black mb-4 neon-blue">سازمان پدافند زیستی</h1>
+    <h2 class="text-2xl md:text-4xl font-bold text-white/60 mb-6">Public Bio Defense Organization</h2>
+    <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-10 leading-8">
+      پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات و طراحی معماری‌های دفاع لیزری با بهره‌گیری از هوش مصنوعی، اپتیک و فوتونیک
+    </p>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <button onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})" class="btn-primary">📊 مشاهده داشبورد</button>
+      <button onclick="document.getElementById('collaborate').scrollIntoView({behavior:'smooth'})" class="btn-outline">🤝 همکاری با ما</button>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 border-y border-cyan-900/30">
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    <div class="card"><div class="text-4xl font-black neon-blue" id="c1">0</div><div class="text-gray-400 mt-2">استان رصدشده</div></div>
+    <div class="card"><div class="text-4xl font-black neon-green" id="c2">0</div><div class="text-gray-400 mt-2">پروژه فعال</div></div>
+    <div class="card"><div class="text-4xl font-black" style="color:#ffd700" id="c3">0</div><div class="text-gray-400 mt-2">متخصص همکار</div></div>
+    <div class="card"><div class="text-4xl font-black" style="color:#ff003c" id="c4">0</div><div class="text-gray-400 mt-2">هشدار فعال</div></div>
+  </div>
+</section>
+
+<section id="dashboard" class="py-20">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2">📡 داشبورد پایش ملی ۲۴ ساعته</h2>
+    <p class="text-gray-400 mb-8">رصد لحظه‌ای وضعیت زیستی تمام شهرهای ایران</p>
+    <div class="flex flex-wrap gap-4 mb-6">
+      <select id="filterProvince" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto;">
+        <option value="">همه استان‌ها</option>
+        <option>تهران</option><option>اصفهان</option><option>خراسان رضوی</option>
+        <option>فارس</option><option>آذربایجان شرقی</option><option>خوزستان</option>
+        <option>گیلان</option><option>کرمانشاه</option><option>قم</option><option>همدان</option>
+        <option>هرمزگان</option><option>البرز</option>
+      </select>
+      <select id="filterStatus" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto;">
+        <option value="">همه وضعیت‌ها</option>
+        <option value="green">عادی 🟢</option>
+        <option value="yellow">احتیاط 🟡</option>
+        <option value="red">هشدار 🔴</option>
+      </select>
+    </div>
+    <div class="neon-border rounded-xl overflow-hidden mb-8">
+      <div id="map"></div>
+    </div>
+    <div class="neon-border rounded-xl overflow-hidden overflow-x-auto">
+      <table id="cityTable">
+        <thead>
+          <tr><th>شهر</th><th>استان</th><th>وضعیت</th><th>آخرین گزارش</th><th>به‌روزرسانی</th></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="py-20 bg-gradient-to-b from-transparent to-blue-950/20">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2">🔬 پروژه‌های تحقیقاتی</h2>
+    <p class="text-gray-400 mb-10">سامانه‌های دفاعی پیشرفته PBDO</p>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="card">
+        <div class="text-5xl mb-4">🛡️</div>
+        <h3 class="text-2xl font-bold neon-blue mb-3">Project Aegis</h3>
+        <p class="text-gray-400 leading-7 mb-6">سیستم دفاع لیزری چندلایه با قابلیت شناسایی و خنثی‌سازی تهدیدات زیستی در لحظه. ادغام هوش مصنوعی با سیستم‌های اپتیکی برای دقت بی‌نظیر.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="status-green">AI</span>
+          <span class="status-green">Laser</span>
+          <span class="status-green">Defense</span>
+          <span class="status-yellow">عملیاتی</span>
+        </div>
+        <button onclick="openVault()" class="btn-outline w-full">🔒 مشاهده مستندات محرمانه</button>
+      </div>
+      <div class="card">
+        <div class="text-5xl mb-4">🔥</div>
+        <h3 class="text-2xl font-bold mb-3" style="color:#ff6b35;text-shadow:0 0 8px #ff6b35">Thermal Laser Project</h3>
+        <p class="text-gray-400 leading-7 mb-6">پروژه لیزر حرارتی پیشرفته با بهره‌گیری از فوتونیک و علم مواد. طراحی شده برای محیط‌های بیولوژیک حساس با حداقل آسیب جانبی.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="status-green">Photonics</span>
+          <span class="status-green">Thermal</span>
+          <span class="status-green">Military</span>
+          <span class="status-yellow">مرحله آزمایش</span>
+        </div>
+        <button onclick="openVault()" class="btn-outline w-full" style="border-color:#ff6b35;color:#ff6b35">🔒 مشاهده مستندات محرمانه</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="collaborate" class="py-20">
+  <div class="max-w-3xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2">🤝 پورتال همکاری نخبگان</h2>
+    <p class="text-gray-400 mb-8">به تیم پیشرو PBDO بپیوندید</p>
+    <div class="card">
+      <form onsubmit="submitForm(event)">
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" required placeholder="email@example.com" dir="ltr"/></div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="text-sm text-gray-400 block mb-2">تخصص *</label>
+            <select required>
+              <option value="">انتخاب کنید</option>
+              <option>بیوتکنولوژی</option><option>هوش مصنوعی</option><option>فوتونیک و لیزر</option>
+              <option>امنیت سایبری</option><option>علوم دامپزشکی</option><option>مهندسی ژنتیک</option>
+              <option>داده‌کاوی</option><option>سایر</option>
+            </select>
+          </div>
+          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" min="0" placeholder="۰"/></div>
+        </div>
+        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..."></textarea></div>
+        <div class="mb-6">
+          <label class="text-sm text-gray-400 block mb-2">آپلود رزومه (CV)</label>
+          <input type="file" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
+          <p class="text-xs text-gray-500 mt-1">فرمت‌های مجاز: PDF، DOC، DOCX - حداکثر ۵ مگابایت</p>
+        </div>
+        <button type="submit" class="btn-primary w-full" id="submitBtn">📤 ارسال درخواست همکاری</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="py-12 border-t border-cyan-900/30">
+  <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+    <div>
+      <div class="text-2xl font-black neon-blue mb-3">🛡️ PBDO</div>
+      <p class="text-gray-500 text-sm leading-7">سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری</p>
+    </div>
+    <div>
+      <h4 class="font-bold text-cyan-400 mb-4">دسترسی سریع</h4>
+      <ul class="space-y-2 text-sm text-gray-400">
+        <li><a href="#dashboard" class="hover:text-cyan-400">داشبورد پایش</a></li>
+        <li><a href="#projects" class="hover:text-cyan-400">پروژه‌ها</a></li>
+        <li><a href="#collaborate" class="hover:text-cyan-400">همکاری</a></li>
+        <li><a href="admin.html" class="hover:text-cyan-400">پنل مدیریت</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold text-cyan-400 mb-4">تماس</h4>
+      <ul class="space-y-2 text-sm text-gray-400">
+        <li>📧 info@pbdo.tech</li>
+        <li>🌐 pbdo.tech</li>
+        <li>🔒 اطلاعات محرمانه: vault@pbdo.tech</li>
+      </ul>
+    </div>
+  </div>
+  <div class="text-center text-gray-600 text-sm mt-8 pt-8 border-t border-gray-800">
+    © ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است
+  </div>
+</footer>
+
+<div id="vaultModal" class="modal">
+  <div class="card max-w-md w-full mx-4" style="max-height:80vh;overflow-y:auto;">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-bold neon-blue">🔐 Secure Vault</h3>
+      <button onclick="closeVault()" class="text-gray-400 hover:text-white text-xl">✕</button>
+    </div>
+    <div id="vaultLogin">
+      <p class="text-gray-400 mb-4 text-sm">دسترسی به مستندات فنی محرمانه نیاز به کلید دسترسی دارد.</p>
+      <input type="password" id="vaultPass" placeholder="کلید دسترسی را وارد کنید" class="mb-3" dir="ltr"/>
+      <div id="vaultError" class="text-red-400 text-sm mb-3 hidden">❌ کلید دسترسی اشتباه است</div>
+      <button onclick="checkVault()" class="btn-primary w-full">🔓 ورود</button>
+    </div>
+    <div id="vaultContent" class="hidden">
+      <div class="text-green-400 text-sm mb-4">✅ دسترسی مجاز — مستندات محرمانه</div>
+      <ul class="space-y-3 text-sm">
+        <li class="card p-3"><span class="neon-blue">📄</span> Aegis-TechSpec-v3.2.pdf</li>
+        <li class="card p-3"><span class="neon-blue">📄</span> ThermalLaser-Architecture-2025.pdf</li>
+        <li class="card p-3"><span class="neon-blue">📄</span> BioThreat-CounterMeasures-Manual.pdf</li>
+        <li class="card p-3"><span class="neon-blue">📄</span> AI-Integration-Protocol-v2.pdf</li>
+        <li class="card p-3"><span class="neon-blue">📄</span> National-MonitoringSystem-Specs.pdf</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======= SUPABASE CONFIGURATION =======
+// برای فعال‌سازی دیتابیس، کامنت‌های زیر را بردارید:
+// const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'
+// const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'
+// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+// مثال واکشی داده: const { data } = await supabase.from('city_monitoring').select('*')
+// ====================================== 
+
+const cities=[
+  {name:'تهران',province:'تهران',status:'green',lat:35.6892,lng:51.3890,report:'وضعیت عادی - هیچ تهدیدی شناسایی نشده',time:'۱۰ دقیقه پیش'},
+  {name:'مشهد',province:'خراسان رضوی',status:'green',lat:36.2972,lng:59.6067,report:'پایش مستمر - شاخص‌ها در محدوده نرمال',time:'۱۵ دقیقه پیش'},
+  {name:'اصفهان',province:'اصفهان',status:'green',lat:32.6546,lng:51.6680,report:'وضعیت پایدار',time:'۸ دقیقه پیش'},
+  {name:'شیراز',province:'فارس',status:'green',lat:29.5918,lng:52.5837,report:'کنترل منظم انجام شد',time:'۲۰ دقیقه پیش'},
+  {name:'تبریز',province:'آذربایجان شرقی',status:'green',lat:38.0962,lng:46.2738,report:'وضعیت عادی',time:'۱۲ دقیقه پیش'},
+  {name:'کرج',province:'البرز',status:'green',lat:35.8400,lng:50.9391,report:'پایش فعال - بدون ناهنجاری',time:'۵ دقیقه پیش'},
+  {name:'اهواز',province:'خوزستان',status:'yellow',lat:31.3183,lng:48.6706,report:'⚠️ افزایش جزئی در نمونه‌های محیطی - پایش تشدید شده',time:'۳ دقیقه پیش'},
+  {name:'کرمانشاه',province:'کرمانشاه',status:'yellow',lat:34.3142,lng:47.0650,report:'⚠️ احتیاط: تغییر الگوی زیستی در حال بررسی',time:'۷ دقیقه پیش'},
+  {name:'رشت',province:'گیلان',status:'yellow',lat:37.2808,lng:49.5832,report:'⚠️ رطوبت بالا - افزایش ریسک',time:'۱۸ دقیقه پیش'},
+  {name:'قم',province:'قم',status:'yellow',lat:34.6416,lng:50.8746,report:'⚠️ گزارش‌های احتیاطی دریافت شده',time:'۲۵ دقیقه پیش'},
+  {name:'همدان',province:'همدان',status:'yellow',lat:34.7990,lng:48.5147,report:'⚠️ پایش دامپزشکی در حال انجام',time:'۳۰ دقیقه پیش'},
+  {name:'آبادان',province:'خوزستان',status:'red',lat:30.3392,lng:48.3037,report:'🚨 هشدار سطح ۲: عوامل ناشناخته شناسایی شده - تیم میدانی اعزام شد',time:'۲ دقیقه پیش'},
+  {name:'بندرعباس',province:'هرمزگان',status:'red',lat:27.1832,lng:56.2666,report:'🚨 هشدار: نمونه‌های مشکوک در آزمایشگاه تأیید شد',time:'۱ دقیقه پیش'},
+  {name:'خرمشهر',province:'خوزستان',status:'red',lat:30.4376,lng:48.1892,report:'🚨 منطقه قرمز - محدودیت تردد اعمال شده',time:'۴ دقیقه پیش'},
+  {name:'قزوین',province:'قزوین',status:'green',lat:36.2688,lng:50.0041,report:'وضعیت پایدار و عادی',time:'۲۲ دقیقه پیش'}
+];
+
+function getColor(s){return s==='green'?'#39ff14':s==='yellow'?'#ffd700':'#ff003c';}
+function getBadge(s){return s==='green'?'status-green':s==='yellow'?'status-yellow':'status-red';}
+function getLabel(s){return s==='green'?'🟢 عادی':s==='yellow'?'🟡 احتیاط':'🔴 هشدار';}
+
+const map=L.map('map',{center:[32.4279,53.6880],zoom:5});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
+cities.forEach(c=>{
+  const icon=L.divIcon({html:`<div style="width:14px;height:14px;background:${getColor(c.status)};border-radius:50%;border:2px solid white;box-shadow:0 0 8px ${getColor(c.status)};"></div>`,className:'',iconSize:[14,14]});
+  L.marker([c.lat,c.lng],{icon}).addTo(map).bindPopup(`<div style="font-family:Vazirmatn,sans-serif;direction:rtl;min-width:200px"><b>${c.name}</b><br/><span style="color:${getColor(c.status)}">${getLabel(c.status)}</span><br/><small>${c.report}</small><br/><small style="color:#aaa">${c.time}</small></div>`);
+});
+
+function renderTable(data){
+  document.getElementById('tableBody').innerHTML=data.map(c=>`<tr data-status="${c.status}" data-province="${c.province}">
+    <td class="font-bold">${c.name}</td><td>${c.province}</td>
+    <td><span class="${getBadge(c.status)}">${getLabel(c.status)}</span></td>
+    <td class="text-sm">${c.report}</td>
+    <td class="text-xs text-gray-400">${c.time}</td>
+  </tr>`).join('');
+}
+renderTable(cities);
+
+function filterTable(){
+  const prov=document.getElementById('filterProvince').value;
+  const stat=document.getElementById('filterStatus').value;
+  renderTable(cities.filter(c=>(!prov||c.province===prov)&&(!stat||c.status===stat)));
+}
+
+function animateCounter(id,target,suffix=''){  let c=0;const step=Math.ceil(target/40);
+  const t=setInterval(()=>{c=Math.min(c+step,target);document.getElementById(id).textContent=c+suffix;if(c>=target)clearInterval(t);},40);
+}
+animateCounter('c1',31);animateCounter('c2',2);animateCounter('c3',120,'+');animateCounter('c4',3);
+
+function openVault(){document.getElementById('vaultModal').classList.add('active');}
+function closeVault(){
+  document.getElementById('vaultModal').classList.remove('active');
+  document.getElementById('vaultPass').value='';
+  document.getElementById('vaultError').classList.add('hidden');
+  document.getElementById('vaultLogin').classList.remove('hidden');
+  document.getElementById('vaultContent').classList.add('hidden');
+}
+function checkVault(){
+  if(document.getElementById('vaultPass').value==='PBDO@vault2025'){
+    document.getElementById('vaultLogin').classList.add('hidden');
+    document.getElementById('vaultContent').classList.remove('hidden');
+  }else{document.getElementById('vaultError').classList.remove('hidden');}
+}
+function submitForm(e){
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn');
+  btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
+  setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);
+}
+document.getElementById('vaultModal').addEventListener('click',function(e){if(e.target===this)closeVault();});
+</script>
+</body>
+</html>
