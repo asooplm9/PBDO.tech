@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- هدرهای امنیتی -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>PBDO | پایش زنده استان‌ها</title>
+  <meta name="description" content="پایش زنده تهدیدات زیستی در ۳۱ استان کشور — سازمان پدافند زیستی عمومی PBDO"/>
+  <link rel="canonical" href="https://pbdo.tech/monitoring.html"/>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0a0a;color:#e0e8ff;margin:0;}
+
+    /* ---- neon helpers ---- */
+    .neon-green{color:#00ff88;text-shadow:0 0 8px #00ff88,0 0 20px #00ff88;}
+    .neon-cyan{color:#00f0ff;text-shadow:0 0 8px #00f0ff,0 0 20px #00f0ff;}
+    .neon-border{border:1px solid #00f0ff55;box-shadow:0 0 10px #00f0ff22;}
+
+    /* ---- glassmorphism nav ---- */
+    nav.main-nav{
+      position:fixed;top:0;width:100%;z-index:200;
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      background:rgba(10,10,10,.82);
+      border-bottom:1px solid rgba(0,240,255,.15);
+    }
+
+    /* ---- emergency banner ---- */
+    #emergencyBanner{
+      display:none;background:linear-gradient(90deg,#ff003c,#ff6600);
+      color:#fff;text-align:center;padding:10px 16px;font-weight:700;
+      animation:pulse 1.5s infinite;z-index:300;position:fixed;
+      top:64px;width:100%;left:0;
+    }
+
+    /* ---- ticker ---- */
+    .ticker-wrap{background:rgba(255,0,60,.15);border-bottom:1px solid #ff003c44;overflow:hidden;white-space:nowrap;padding:6px 0;}
+    .ticker{display:inline-block;animation:ticker 40s linear infinite;}
+    @keyframes ticker{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}
+
+    /* ---- cards ---- */
+    .card{background:#0d0d0d;border:1px solid rgba(0,240,255,.18);border-radius:14px;padding:22px;transition:all .3s;}
+    .card:hover{border-color:#00f0ff;box-shadow:0 0 22px rgba(0,240,255,.2);transform:translateY(-3px);}
+
+    /* ---- stat cards ---- */
+    .stat-card{background:#111;border:1px solid rgba(0,240,255,.15);border-radius:12px;padding:16px 22px;text-align:center;}
+
+    /* ---- table ---- */
+    #provincesTable{width:100%;border-collapse:collapse;}
+    #provincesTable thead th{
+      background:#111;color:#00f0ff;padding:12px 14px;
+      text-align:right;font-weight:700;font-size:.85rem;
+      border-bottom:2px solid rgba(0,240,255,.25);cursor:pointer;
+      white-space:nowrap;user-select:none;
+    }
+    #provincesTable thead th:hover{background:#1a1a1a;}
+    #provincesTable thead th .sort-icon{opacity:.4;margin-right:4px;font-size:.75rem;}
+    #provincesTable thead th.sorted .sort-icon{opacity:1;color:#00ff88;}
+    #provincesTable tbody tr{
+      border-bottom:1px solid rgba(255,255,255,.06);
+      cursor:pointer;transition:background .2s;
+    }
+    #provincesTable tbody tr:hover{background:rgba(0,240,255,.06);}
+    #provincesTable tbody td{padding:11px 14px;font-size:.88rem;vertical-align:middle;}
+
+    /* ---- threat badges ---- */
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:.78rem;font-weight:700;}
+    .badge-green {background:rgba(0,255,136,.15);color:#00ff88;border:1px solid rgba(0,255,136,.4);}
+    .badge-yellow{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.4);}
+    .badge-orange{background:rgba(255,102,0,.15);color:#ff6600;border:1px solid rgba(255,102,0,.4);}
+    .badge-red   {background:rgba(255,0,60,.15);color:#ff003c;border:1px solid rgba(255,0,60,.4);}
+
+    /* ---- status dot ---- */
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+    .dot-green {background:#00ff88;box-shadow:0 0 6px #00ff88;}
+    .dot-yellow{background:#ffd700;box-shadow:0 0 6px #ffd700;}
+    .dot-orange{background:#ff6600;box-shadow:0 0 6px #ff6600;}
+    .dot-red   {background:#ff003c;box-shadow:0 0 6px #ff003c;animation:pulse 1.2s infinite;}
+
+    /* ---- modal ---- */
+    #provinceModal{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.85);z-index:500;
+      align-items:center;justify-content:center;padding:16px;
+    }
+    #provinceModal.active{display:flex;}
+    .modal-box{
+      background:#0d0d0d;border:1px solid rgba(0,240,255,.3);
+      border-radius:18px;width:100%;max-width:780px;max-height:90vh;
+      overflow-y:auto;padding:28px;position:relative;
+      box-shadow:0 0 60px rgba(0,240,255,.15);
+    }
+    .modal-box::-webkit-scrollbar{width:6px;}
+    .modal-box::-webkit-scrollbar-track{background:#111;}
+    .modal-box::-webkit-scrollbar-thumb{background:#00f0ff44;border-radius:4px;}
+
+    /* ---- inputs ---- */
+    input[type=text],select{
+      background:#111;border:1px solid rgba(0,240,255,.3);
+      color:#e0e8ff;padding:9px 14px;border-radius:9px;
+      font-family:'Vazirmatn',sans-serif;font-size:.88rem;
+      outline:none;transition:border-color .2s;
+    }
+    input[type=text]:focus,select:focus{border-color:#00f0ff;}
+
+    /* ---- canvas charts ---- */
+    canvas.chart{border-radius:12px;background:#111;}
+
+    /* ---- animations ---- */
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+    .fade-in{animation:fadeIn .35s ease forwards;}
+
+    /* ---- scrollbar ---- */
+    ::-webkit-scrollbar{width:7px;}
+    ::-webkit-scrollbar-track{background:#0a0a0a;}
+    ::-webkit-scrollbar-thumb{background:#00f0ff33;border-radius:4px;}
+
+    /* ---- button ---- */
+    .btn{padding:8px 20px;border-radius:8px;font-weight:700;cursor:pointer;border:none;transition:all .25s;font-family:'Vazirmatn',sans-serif;font-size:.85rem;}
+    .btn-cyan{background:linear-gradient(135deg,#00f0ff,#0088cc);color:#000;}
+    .btn-cyan:hover{box-shadow:0 0 18px rgba(0,240,255,.5);}
+    .btn-ghost{background:transparent;border:1px solid rgba(0,240,255,.35);color:#00f0ff;}
+    .btn-ghost:hover{background:rgba(0,240,255,.08);}
+    .btn-danger{background:rgba(255,0,60,.15);border:1px solid rgba(255,0,60,.4);color:#ff003c;}
+
+    /* ---- detail row ---- */
+    .detail-row{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+    .detail-label{color:#888;font-size:.82rem;min-width:120px;}
+    .detail-value{color:#e0e8ff;font-size:.88rem;font-weight:600;}
+
+    /* ---- filter bar ---- */
+    .filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+
+    /* ---- responsive ---- */
+    @media(max-width:768px){
+      #provincesTable thead th:nth-child(5),
+      #provincesTable tbody td:nth-child(5){display:none;}
+      .filter-bar{flex-direction:column;align-items:stretch;}
+    }
+    @media(max-width:640px){
+      #provincesTable thead th:nth-child(3),
+      #provincesTable tbody td:nth-child(3){display:none;}
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ========== EMERGENCY BANNER ========== -->
+<div id="emergencyBanner" role="alert">
+  🚨 هشدار اضطراری: وضعیت بحرانی در استان — تمام واحدها در آماده‌باش کامل
+</div>
+
+<!-- ========== MAIN NAV ========== -->
+<nav class="main-nav" role="navigation" aria-label="منوی اصلی">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <a href="index.html" class="text-lg font-black neon-cyan shrink-0" aria-label="صفحه خانه PBDO">🛡️ PBDO</a>
+
+    <!-- desktop links -->
+    <div class="hidden lg:flex items-center gap-5 text-sm font-semibold flex-wrap justify-end">
+      <a href="index.html"       class="hover:text-cyan-400 transition">خانه</a>
+      <a href="monitoring.html"  class="text-green-400 border-b border-green-400 pb-0.5">پایش زنده</a>
+      <a href="radar.html"       class="hover:text-cyan-400 transition">رادار</a>
+      <a href="report.html"      class="hover:text-cyan-400 transition">گزارش مردمی</a>
+      <a href="about.html"       class="hover:text-cyan-400 transition">درباره ما</a>
+      <a href="contact.html"     class="hover:text-cyan-400 transition">تماس با ما</a>
+      <a href="admin.html"       class="btn btn-cyan text-xs px-4 py-2">ورود مدیران</a>
+    </div>
+
+    <!-- date/time -->
+    <div id="currentDateTime" class="hidden lg:block text-xs text-gray-400 shrink-0 font-mono ltr text-left" dir="ltr" aria-live="polite"></div>
+
+    <!-- hamburger -->
+    <button id="hamburgerBtn" class="lg:hidden p-2 flex flex-col gap-1.5" onclick="toggleMobileMenu()" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobileNav">
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+    </button>
+  </div>
+
+  <!-- mobile menu -->
+  <div id="mobileNav" class="hidden lg:hidden flex-col border-t border-cyan-900/30 bg-black/90 px-4 py-4 gap-3 text-sm font-semibold">
+    <a href="index.html"      class="py-2 border-b border-cyan-900/20 hover:text-cyan-400">خانه</a>
+    <a href="monitoring.html" class="py-2 border-b border-cyan-900/20 text-green-400">پایش زنده</a>
+    <a href="radar.html"      class="py-2 border-b border-cyan-900/20 hover:text-cyan-400">رادار</a>
+    <a href="report.html"     class="py-2 border-b border-cyan-900/20 hover:text-cyan-400">گزارش مردمی</a>
+    <a href="about.html"      class="py-2 border-b border-cyan-900/20 hover:text-cyan-400">درباره ما</a>
+    <a href="contact.html"    class="py-2 border-b border-cyan-900/20 hover:text-cyan-400">تماس با ما</a>
+    <a href="admin.html"      class="btn btn-cyan mt-2 text-center block">ورود مدیران</a>
+    <div id="currentDateTimeMobile" class="text-xs text-gray-500 pt-2 font-mono" dir="ltr"></div>
+  </div>
+</nav>
+
+<!-- ========== TICKER ========== -->
+<div class="ticker-wrap" style="margin-top:57px;" aria-hidden="true">
+  <span class="ticker text-sm font-bold px-4" style="color:#e0e8ff;">
+    📡 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 🟡 هشدار سطح ۲ در استان اصفهان &nbsp;|&nbsp; 🟠 وضعیت احتیاط در تهران و خوزستان &nbsp;|&nbsp; 🟢 ۲۶ استان در وضعیت عادی &nbsp;|&nbsp; 🔬 رصد مستمر ۲۴/۷ در تمام نقاط کشور &nbsp;|&nbsp; 🛡️ Project Aegis: عملیاتی
+  </span>
+</div>
+
+<!-- ========== MAIN CONTENT ========== -->
+<main class="max-w-7xl mx-auto px-4 py-10">
+
+  <!-- ---- PAGE TITLE ---- -->
+  <section class="mb-8 text-center" aria-labelledby="pageTitle">
+    <div class="inline-flex items-center gap-2 bg-green-900/20 border border-green-500/30 text-green-400 text-xs px-4 py-1.5 rounded-full mb-4">
+      <span class="dot dot-green"></span> سیستم پایش زنده فعال است
+    </div>
+    <h1 id="pageTitle" class="text-3xl md:text-5xl font-black neon-cyan mb-3">پایش زنده استان‌ها</h1>
+    <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto leading-7">
+      نمایش وضعیت لحظه‌ای سطح تهدیدات زیستی در تمام ۳۱ استان کشور. داده‌ها هر ۳۰ ثانیه یک‌بار به‌روزرسانی می‌شوند.
+    </p>
+  </section>
+
+  <!-- ---- SUMMARY STATS ---- -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" aria-label="آمار کلی">
+    <div class="stat-card">
+      <div class="text-2xl font-black neon-cyan">۳۱</div>
+      <div class="text-gray-400 text-xs mt-1">تعداد کل استان‌ها</div>
+    </div>
+    <div class="stat-card">
+      <div class="text-2xl font-black neon-green" id="statActive">—</div>
+      <div class="text-gray-400 text-xs mt-1">فعال (سبز)</div>
+    </div>
+    <div class="stat-card">
+      <div class="text-2xl font-black" style="color:#ffd700;" id="statWarning">—</div>
+      <div class="text-gray-400 text-xs mt-1">هشدار (زرد/نارنجی)</div>
+    </div>
+    <div class="stat-card">
+      <div class="text-2xl font-black" style="color:#ff003c;" id="statCritical">—</div>
+      <div class="text-gray-400 text-xs mt-1">بحرانی (قرمز)</div>
+    </div>
+  </section>
+
+  <!-- ---- FILTER CONTROLS ---- -->
+  <section class="card mb-6" aria-label="فیلترها">
+    <div class="filter-bar">
+      <div class="flex-1 min-w-[180px]">
+        <label for="searchProvince" class="text-xs text-gray-400 mb-1 block">جستجوی استان</label>
+        <input type="text" id="searchProvince" placeholder="نام استان یا مرکز…" oninput="applyFilters()" aria-label="جستجوی استان"/>
+      </div>
+      <div class="min-w-[160px]">
+        <label for="threatFilter" class="text-xs text-gray-400 mb-1 block">سطح تهدید</label>
+        <select id="threatFilter" onchange="applyFilters()" aria-label="فیلتر سطح تهدید">
+          <option value="all">همه</option>
+          <option value="green">🟢 سبز</option>
+          <option value="yellow">🟡 زرد</option>
+          <option value="orange">🟠 نارنجی</option>
+          <option value="red">🔴 قرمز</option>
+        </select>
+      </div>
+      <div class="min-w-[180px]">
+        <label for="sortBy" class="text-xs text-gray-400 mb-1 block">مرتب‌سازی</label>
+        <select id="sortBy" onchange="applyFilters()" aria-label="مرتب‌سازی">
+          <option value="name">نام</option>
+          <option value="threat">سطح تهدید</option>
+          <option value="sensors">تعداد حسگر</option>
+          <option value="lastCheck">آخرین بررسی</option>
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button class="btn btn-ghost" onclick="resetFilters()">پاک‌سازی</button>
+      </div>
+    </div>
+    <div id="filterCount" class="text-xs text-gray-500 mt-3">نمایش ۳۱ از ۳۱ استان</div>
+  </section>
+
+  <!-- ---- PROVINCES TABLE ---- -->
+  <section class="card mb-10 overflow-x-auto" aria-label="جدول پایش استان‌ها">
+    <table id="provincesTable" role="grid" aria-label="جدول وضعیت استان‌ها">
+      <thead>
+        <tr>
+          <th onclick="sortTable('name')"     data-col="name">     استان         <span class="sort-icon">▼</span></th>
+          <th onclick="sortTable('capital')"  data-col="capital">  مرکز          <span class="sort-icon">▼</span></th>
+          <th onclick="sortTable('threat')"   data-col="threat">   سطح تهدید     <span class="sort-icon">▼</span></th>
+          <th onclick="sortTable('sensors')"  data-col="sensors">  حسگرهای فعال  <span class="sort-icon">▼</span></th>
+          <th onclick="sortTable('lastCheck')" data-col="lastCheck">آخرین بررسی  <span class="sort-icon">▼</span></th>
+          <th>وضعیت</th>
+          <th>جزئیات</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- populated by JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ---- REAL-TIME CHARTS ---- -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10" aria-label="نمودارهای زنده">
+    <div class="card">
+      <h2 class="text-sm font-bold text-cyan-400 mb-4">📈 روند سطح تهدید — ۲۴ ساعت گذشته (ایران)</h2>
+      <canvas id="lineChart" class="chart w-full" height="200" aria-label="نمودار خطی روند تهدید ۲۴ ساعته"></canvas>
+    </div>
+    <div class="card">
+      <h2 class="text-sm font-bold text-cyan-400 mb-4">📊 گزارش‌ها به تفکیک استان — ۱۰ استان برتر</h2>
+      <canvas id="barChart" class="chart w-full" height="200" aria-label="نمودار میله‌ای گزارش‌ها به تفکیک استان"></canvas>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== PROVINCE DETAIL MODAL ========== -->
+<div id="provinceModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="closeModalOnBackdrop(event)">
+  <div class="modal-box fade-in" id="modalBox">
+    <button class="absolute top-4 left-4 btn btn-ghost text-xs" onclick="closeModal()" aria-label="بستن">✕ بستن</button>
+
+    <div class="flex items-start gap-4 mb-6">
+      <div id="modalThreatBadge"></div>
+      <div>
+        <h2 id="modalTitle" class="text-xl font-black neon-cyan mb-1"></h2>
+        <div class="text-gray-400 text-sm" id="modalCapital"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div class="stat-card"><div class="text-lg font-black neon-green" id="modalSensors">—</div><div class="text-gray-400 text-xs mt-1">حسگر فعال</div></div>
+      <div class="stat-card"><div class="text-lg font-black neon-cyan" id="modalAlerts">—</div><div class="text-gray-400 text-xs mt-1">هشدار ۲۴ ساعته</div></div>
+      <div class="stat-card"><div class="text-lg font-black" style="color:#ffd700" id="modalReports">—</div><div class="text-gray-400 text-xs mt-1">گزارش مردمی</div></div>
+      <div class="stat-card"><div class="text-sm font-bold text-gray-300" id="modalLastCheck">—</div><div class="text-gray-400 text-xs mt-1">آخرین بررسی</div></div>
+    </div>
+
+    <!-- cities -->
+    <div class="mb-6">
+      <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">شهرهای تحت پایش</h3>
+      <div id="modalCities" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- recent alerts -->
+    <div class="mb-6">
+      <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">هشدارهای اخیر</h3>
+      <div id="modalAlertsList" class="space-y-2"></div>
+    </div>
+
+    <!-- 24h trend mini chart -->
+    <div>
+      <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">روند ۲۴ ساعته استان</h3>
+      <canvas id="modalChart" class="chart w-full" height="120" aria-label="روند ۲۴ ساعته استان"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="mt-10 border-t border-cyan-900/20 py-12 bg-black/40">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+
+      <!-- org info -->
+      <div>
+        <div class="text-lg font-black neon-cyan mb-3">🛡️ PBDO</div>
+        <p class="text-gray-400 text-sm leading-7">
+          سازمان پدافند زیستی عمومی — پیشرو در پایش تهدیدات زیستی،
+          امنیت بیولوژیک و دفاع هوشمند برای ایران
+        </p>
+        <div class="mt-3 inline-block text-xs bg-green-900/30 border border-green-500/30 text-green-400 px-3 py-1 rounded-full">
+          ⚡ Powered by PBDO
+        </div>
+      </div>
+
+      <!-- quick links -->
+      <div>
+        <h3 class="text-sm font-bold text-cyan-400 mb-3">دسترسی سریع</h3>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li><a href="index.html"      class="hover:text-cyan-400 transition">خانه</a></li>
+          <li><a href="monitoring.html" class="hover:text-cyan-400 transition text-green-400">پایش زنده</a></li>
+          <li><a href="radar.html"      class="hover:text-cyan-400 transition">رادار</a></li>
+          <li><a href="report.html"     class="hover:text-cyan-400 transition">گزارش مردمی</a></li>
+          <li><a href="about.html"      class="hover:text-cyan-400 transition">درباره ما</a></li>
+          <li><a href="contact.html"    class="hover:text-cyan-400 transition">تماس با ما</a></li>
+          <li><a href="admin.html"      class="hover:text-cyan-400 transition">ورود مدیران</a></li>
+        </ul>
+      </div>
+
+      <!-- contact -->
+      <div>
+        <h3 class="text-sm font-bold text-cyan-400 mb-3">اطلاعات تماس</h3>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li>📧 admin@pbdo.tech</li>
+          <li>🌐 pbdo.tech</li>
+          <li>📍 ایران، تهران</li>
+          <li class="pt-2 text-xs text-gray-600">سیستم پایش ۲۴/۷ فعال است</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-cyan-900/20 pt-6 text-center text-xs text-gray-600">
+      <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی — تمام حقوق محفوظ است</p>
+      <p class="mt-1 text-gray-700">این سامانه تحت نظارت مستقیم تیم امنیت سایبری PBDO قرار دارد</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== SCRIPTS ========== -->
+<script src="scripts.js" defer></script>
+<script>
+/* ============================================================
+   PROVINCE DATA
+   ============================================================ */
+const PROVINCE_CITIES = {
+  'آذربایجان شرقی':   ['تبریز','مراغه','مرند','اهر','بناب','میانه','سراب','شبستر','هشترود','ملکان'],
+  'آذربایجان غربی':   ['ارومیه','خوی','مهاباد','بوکان','سلماس','میاندوآب','سردشت','نقده','پیرانشهر','اشنویه'],
+  'اردبیل':           ['اردبیل','پارس‌آباد','خلخال','مشگین‌شهر','گرمی','نمین','نیر','سرعین','بیله‌سوار','کوثر'],
+  'اصفهان':           ['اصفهان','کاشان','خمینی‌شهر','نجف‌آباد','شاهین‌شهر','فلاورجان','شهرضا','اردستان','نائین','تیران'],
+  'البرز':            ['کرج','کمال‌شهر','نظرآباد','ساوجبلاغ','طالقان','اشتهارد','هشتگرد','چهارباغ','فردیس','گرمدره'],
+  'ایلام':            ['ایلام','دهلران','مهران','ایوان','آبدانان','دره‌شهر','بدره','چوار','ملکشاهی','سیروان'],
+  'بوشهر':            ['بوشهر','برازجان','بندردیلم','خورموج','کنگان','عسلویه','جم','دشتستان','تنگستان','دشتی'],
+  'تهران':            ['تهران','شهریار','ری','اسلامشهر','ورامین','پاکدشت','دماوند','فیروزکوه','بهارستان','ملارد'],
+  'چهارمحال و بختیاری':['شهرکرد','بروجن','فارسان','لردگان','اردل','کیار','کوهرنگ','سامان','بن','هفشجان'],
+  'خراسان جنوبی':     ['بیرجند','قاینات','فردوس','بشرویه','نهبندان','سربیشه','درمیان','زیرکوه','خوسف','طبس'],
+  'خراسان رضوی':      ['مشهد','نیشابور','سبزوار','تربت‌حیدریه','کاشمر','قوچان','تربت‌جام','فریمان','گناباد','چناران'],
+  'خراسان شمالی':     ['بجنورد','شیروان','اسفراین','جاجرم','آشخانه','فاروج','مانه و سملقان','گرمه','راز','صفی‌آباد'],
+  'خوزستان':          ['اهواز','مسجدسلیمان','آبادان','خرمشهر','دزفول','شوشتر','اندیمشک','بهبهان','ماهشهر','آغاجاری'],
+  'زنجان':            ['زنجان','ابهر','خرمدره','قیدار','سلطانیه','ایجرود','طارم','ماهنشان','خدابنده','سجاسرود'],
+  'سمنان':            ['سمنان','شاهرود','دامغان','گرمسار','مهدی‌شهر','آرادان','میامی','شمیرانات','سرخه','بسطام'],
+  'سیستان و بلوچستان':['زاهدان','زابل','ایرانشهر','چابهار','سراوان','نیکشهر','خاش','دلگان','کنارک','هامون'],
+  'فارس':             ['شیراز','مرودشت','جهرم','فسا','کازرون','آباده','لارستان','لامرد','نیریز','اقلید'],
+  'قزوین':            ['قزوین','بوئین‌زهرا','تاکستان','آبیک','البرز','آوج','محمدیه','اقبالیه','کوهین','رامند'],
+  'قم':               ['قم','جعفریه','قنوات','کهک','سلفچگان','دستجرد','خلجستان','مارکده','جعفریه','نخل'],
+  'کردستان':          ['سنندج','سقز','مریوان','بانه','قروه','بیجار','کامیاران','دیواندره','سروآباد','دهگلان'],
+  'کرمان':            ['کرمان','سیرجان','رفسنجان','بم','جیرفت','زرند','بافت','کهنوج','انار','شهربابک'],
+  'کرمانشاه':         ['کرمانشاه','اسلام‌آباد غرب','سنقر','هرسین','صحنه','کنگاور','پاوه','گیلانغرب','ثلاث‌باباجانی','روانسر'],
+  'کهگیلویه و بویراحمد':['یاسوج','دوگنبدان','دهدشت','سی‌سخت','پاتاوه','باشت','کهگیلویه','چرام','بویراحمد','مارگون'],
+  'گلستان':           ['گرگان','گنبدکاووس','گرگان','آق‌قلا','بندرگز','علی‌آباد کتول','مینودشت','رامیان','آزادشهر','کلاله'],
+  'گیلان':            ['رشت','انزلی','لاهیجان','لنگرود','آستارا','رودبار','صومعه‌سرا','فومن','طوالش','شفت'],
+  'لرستان':           ['خرم‌آباد','بروجرد','کوهدشت','دورود','الیگودرز','ازنا','پلدختر','نورآباد','سلسله','رومشکان'],
+  'مازندران':         ['ساری','بابل','آمل','قائم‌شهر','نوشهر','چالوس','بابلسر','تنکابن','محمودآباد','نکا'],
+  'مرکزی':            ['اراک','ساوه','خمین','محلات','دلیجان','تفرش','کمیجان','شازند','آشتیان','زرندیه'],
+  'هرمزگان':          ['بندرعباس','بندر لنگه','میناب','قشم','حاجی‌آباد','رودان','ابوموسی','کیش','بندرجاسک','پارسیان'],
+  'همدان':            ['همدان','ملایر','نهاوند','تویسرکان','اسدآباد','بهار','رزن','کبودراهنگ','فامنین','سامن'],
+  'یزد':              ['یزد','میبد','اردکان','ابرکوه','تفت','بافق','مهریز','صدوق','خاتم','زارچ']
+};
+
+const RAW_PROVINCES = [
+  {name:'آذربایجان شرقی',  capital:'تبریز',        threat:'green',  sensors:42},
+  {name:'آذربایجان غربی',  capital:'ارومیه',        threat:'green',  sensors:38},
+  {name:'اردبیل',          capital:'اردبیل',        threat:'green',  sensors:29},
+  {name:'اصفهان',          capital:'اصفهان',        threat:'yellow', sensors:55},
+  {name:'البرز',           capital:'کرج',           threat:'yellow', sensors:48},
+  {name:'ایلام',           capital:'ایلام',          threat:'green',  sensors:22},
+  {name:'بوشهر',           capital:'بوشهر',          threat:'green',  sensors:27},
+  {name:'تهران',           capital:'تهران',          threat:'orange', sensors:80},
+  {name:'چهارمحال و بختیاری', capital:'شهرکرد',     threat:'green',  sensors:19},
+  {name:'خراسان جنوبی',   capital:'بیرجند',        threat:'green',  sensors:24},
+  {name:'خراسان رضوی',    capital:'مشهد',          threat:'yellow', sensors:60},
+  {name:'خراسان شمالی',   capital:'بجنورد',        threat:'green',  sensors:21},
+  {name:'خوزستان',         capital:'اهواز',          threat:'orange', sensors:65},
+  {name:'زنجان',           capital:'زنجان',          threat:'green',  sensors:25},
+  {name:'سمنان',           capital:'سمنان',          threat:'green',  sensors:20},
+  {name:'سیستان و بلوچستان', capital:'زاهدان',      threat:'yellow', sensors:35},
+  {name:'فارس',            capital:'شیراز',          threat:'green',  sensors:50},
+  {name:'قزوین',           capital:'قزوین',          threat:'green',  sensors:30},
+  {name:'قم',              capital:'قم',             threat:'yellow', sensors:33},
+  {name:'کردستان',         capital:'سنندج',          threat:'green',  sensors:28},
+  {name:'کرمان',           capital:'کرمان',          threat:'green',  sensors:37},
+  {name:'کرمانشاه',        capital:'کرمانشاه',       threat:'green',  sensors:32},
+  {name:'کهگیلویه و بویراحمد', capital:'یاسوج',     threat:'green',  sensors:17},
+  {name:'گلستان',          capital:'گرگان',          threat:'green',  sensors:26},
+  {name:'گیلان',           capital:'رشت',            threat:'green',  sensors:40},
+  {name:'لرستان',          capital:'خرم‌آباد',       threat:'green',  sensors:23},
+  {name:'مازندران',        capital:'ساری',           threat:'yellow', sensors:52},
+  {name:'مرکزی',           capital:'اراک',           threat:'green',  sensors:31},
+  {name:'هرمزگان',         capital:'بندرعباس',       threat:'green',  sensors:36},
+  {name:'همدان',           capital:'همدان',          threat:'green',  sensors:29},
+  {name:'یزد',             capital:'یزد',            threat:'green',  sensors:22}
+];
+
+/* ============================================================
+   UTILITY HELPERS
+   ============================================================ */
+
+/** Sanitize HTML to prevent XSS */
+function sanitizeHTML(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(String(str)));
+  return div.innerHTML;
+}
+
+/** Convert Gregorian to Jalali */
+function toJalali(gy, gm, gd) {
+  const g_d_no = [0,31,59,90,120,151,181,212,243,273,304,334];
+  let jy, jm, jd, j_d_no, i, gy2;
+  gy2 = (gm > 2) ? gy + 1 : gy;
+  let g_d_no2 = 365 * gy + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400);
+  for (i = 0; i < gm - 1; i++) g_d_no2 += g_d_no[i];
+  g_d_no2 += gd - 1;
+  j_d_no = g_d_no2 - 79;
+  const j_np = Math.floor(j_d_no / 12053);
+  j_d_no %= 12053;
+  jy = 979 + 33 * j_np + 4 * Math.floor(j_d_no / 1461);
+  j_d_no %= 1461;
+  if (j_d_no >= 366) { jy += Math.floor((j_d_no - 1) / 365); j_d_no = (j_d_no - 1) % 365; }
+  const j_d = [0,31,31,31,31,31,31,30,30,30,30,30,29];
+  for (i = 0; i < 12; i++) { if (j_d_no >= j_d[i]) { j_d_no -= j_d[i]; } else { jm = i; jd = j_d_no + 1; break; } }
+  if (jm === undefined) { jm = 11; jd = j_d_no + 1; } // edge-case fallback
+  return {y: jy, m: jm + 1, d: jd};
+}
+
+function jalaliNow() {
+  const now = new Date();
+  const j = toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return `${j.d} ${months[j.m-1]} ${j.y}  |  ${hh}:${mm}:${ss}`;
+}
+
+function toPersianNum(n) {
+  return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+/* ============================================================
+   PROVINCE STATE
+   ============================================================ */
+let provinces = [];
+let sortCol = 'name';
+let sortDir = 1; // 1=asc, -1=desc
+
+const THREAT_ORDER = {green:0, yellow:1, orange:2, red:3};
+const THREAT_LABEL = {green:'سبز', yellow:'زرد', orange:'نارنجی', red:'قرمز'};
+const THREAT_EMOJI = {green:'🟢', yellow:'🟡', orange:'🟠', red:'🔴'};
+
+function loadProvinces() {
+  const stored = localStorage.getItem('pbdo_provinces');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // merge stored overrides into base data
+      provinces = RAW_PROVINCES.map(p => {
+        const override = parsed.find(s => s.name === p.name);
+        return override ? {...p, ...override} : {...p};
+      });
+      return;
+    } catch(e) { /* fall through */ }
+  }
+  provinces = RAW_PROVINCES.map(p => ({...p}));
+}
+
+function enrichProvinces() {
+  const now = Date.now();
+  provinces.forEach((p, i) => {
+    if (!p.lastCheck) p.lastCheck = new Date(now - (i * 73 + 12) * 60000);
+    if (!p.alertCount) p.alertCount = THREAT_ORDER[p.threat] * 3 + Math.floor(Math.random()*4);
+    if (!p.reportCount) p.reportCount = Math.floor(Math.random()*20) + 5;
+  });
+}
+
+/* ============================================================
+   RENDER TABLE
+   ============================================================ */
+function renderTable(list) {
+  const tbody = document.getElementById('tableBody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-10">نتیجه‌ای یافت نشد</td></tr>`;
+    return;
+  }
+  // Use data-idx (numeric index into provinces[]) so no user-controlled text enters event handlers
+  tbody.innerHTML = list.map(p => {
+    const lc = new Date(p.lastCheck);
+    const minAgo = Math.floor((Date.now() - lc.getTime()) / 60000);
+    const timeStr = minAgo < 60 ? `${toPersianNum(minAgo)} دقیقه پیش` : `${toPersianNum(Math.floor(minAgo/60))} ساعت پیش`;
+    const online = minAgo < 30;
+    const idx = provinces.indexOf(p);
+    return `<tr class="province-row" data-idx="${idx}" tabindex="0" role="row">
+      <td class="font-semibold">${sanitizeHTML(p.name)}</td>
+      <td class="text-gray-400">${sanitizeHTML(p.capital)}</td>
+      <td><span class="badge badge-${p.threat}">${THREAT_EMOJI[p.threat]} ${THREAT_LABEL[p.threat]}</span></td>
+      <td class="font-mono neon-green text-sm">${toPersianNum(p.sensors)}</td>
+      <td class="text-gray-400 text-xs">${timeStr}</td>
+      <td><span class="flex items-center gap-2"><span class="dot dot-${online ? p.threat : 'gray'}"></span><span class="text-xs text-gray-400">${online ? 'آنلاین' : 'آفلاین'}</span></span></td>
+      <td><button class="btn btn-ghost text-xs px-3 py-1 detail-btn" data-idx="${idx}" aria-label="جزئیات">مشاهده</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// Single delegated listener on tbody — attached once in DOMContentLoaded
+function attachTableDelegation() {
+  const tbody = document.getElementById('tableBody');
+  tbody.addEventListener('click', e => {
+    const btn = e.target.closest('.detail-btn');
+    const row = e.target.closest('.province-row');
+    if (btn) { e.stopPropagation(); openModalByIdx(Number(btn.dataset.idx)); return; }
+    if (row) openModalByIdx(Number(row.dataset.idx));
+  });
+  tbody.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const row = e.target.closest('.province-row');
+      if (row) openModalByIdx(Number(row.dataset.idx));
+    }
+  });
+}
+
+function openModalByIdx(idx) {
+  const p = provinces[idx];
+  if (p) openModal(p.name);
+}
+
+/* ============================================================
+   FILTER & SORT
+   ============================================================ */
+function applyFilters() {
+  const q = document.getElementById('searchProvince').value.trim().toLowerCase();
+  const tf = document.getElementById('threatFilter').value;
+  const sb = document.getElementById('sortBy').value;
+  sortCol = sb;
+
+  let filtered = provinces.filter(p => {
+    const matchQ = !q || p.name.includes(q) || p.capital.includes(q);
+    const matchT = tf === 'all' || p.threat === tf;
+    return matchQ && matchT;
+  });
+
+  filtered.sort((a, b) => {
+    let va, vb;
+    switch(sortCol) {
+      case 'threat':   va = THREAT_ORDER[a.threat]; vb = THREAT_ORDER[b.threat]; break;
+      case 'sensors':  va = a.sensors; vb = b.sensors; break;
+      case 'lastCheck':va = new Date(a.lastCheck).getTime(); vb = new Date(b.lastCheck).getTime(); break;
+      default:         va = a.name; vb = b.name;
+    }
+    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+  });
+
+  renderTable(filtered);
+  document.getElementById('filterCount').textContent =
+    `نمایش ${toPersianNum(filtered.length)} از ${toPersianNum(provinces.length)} استان`;
+  updateStats();
+
+  // update sorted column headers
+  document.querySelectorAll('#provincesTable thead th[data-col]').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.col === sortCol);
+  });
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+  document.getElementById('sortBy').value = col === 'capital' ? 'name' : col;
+  applyFilters();
+}
+
+function resetFilters() {
+  document.getElementById('searchProvince').value = '';
+  document.getElementById('threatFilter').value = 'all';
+  document.getElementById('sortBy').value = 'name';
+  sortDir = 1;
+  applyFilters();
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats() {
+  const active   = provinces.filter(p => p.threat === 'green').length;
+  const warning  = provinces.filter(p => p.threat === 'yellow' || p.threat === 'orange').length;
+  const critical = provinces.filter(p => p.threat === 'red').length;
+  document.getElementById('statActive').textContent   = toPersianNum(active);
+  document.getElementById('statWarning').textContent  = toPersianNum(warning);
+  document.getElementById('statCritical').textContent = toPersianNum(critical);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(name) {
+  const p = provinces.find(x => x.name === name);
+  if (!p) return;
+
+  document.getElementById('modalTitle').textContent    = p.name;
+  document.getElementById('modalCapital').textContent  = `مرکز استان: ${p.capital}`;
+  document.getElementById('modalSensors').textContent  = toPersianNum(p.sensors);
+  document.getElementById('modalAlerts').textContent   = toPersianNum(p.alertCount || 0);
+  document.getElementById('modalReports').textContent  = toPersianNum(p.reportCount || 0);
+
+  const lc = new Date(p.lastCheck);
+  const minAgo = Math.floor((Date.now() - lc.getTime()) / 60000);
+  document.getElementById('modalLastCheck').textContent =
+    minAgo < 60 ? `${toPersianNum(minAgo)} دقیقه پیش` : `${toPersianNum(Math.floor(minAgo/60))} ساعت پیش`;
+
+  document.getElementById('modalThreatBadge').innerHTML =
+    `<span class="badge badge-${p.threat} text-lg">${THREAT_EMOJI[p.threat]} ${THREAT_LABEL[p.threat]}</span>`;
+
+  // cities
+  const cities = PROVINCE_CITIES[p.name] || [];
+  document.getElementById('modalCities').innerHTML = cities.map(c =>
+    `<span class="text-xs bg-cyan-900/20 border border-cyan-700/30 text-cyan-300 px-3 py-1 rounded-full">${sanitizeHTML(c)}</span>`
+  ).join('');
+
+  // alerts list
+  const alertTemplates = {
+    green:  ['وضعیت عادی — هیچ تهدیدی شناسایی نشده','پایش مستمر در حال انجام است','تمام حسگرها در وضعیت سبز'],
+    yellow: ['افزایش جزئی در شاخص‌های محیطی','هشدار سطح ۱ صادر شد','تیم واکنش سریع در آماده‌باش'],
+    orange: ['شناسایی نمونه مشکوک در منطقه صنعتی','هشدار سطح ۲ — بازرسی در حال انجام','محدودیت تردد در مناطق خاص اعمال شد'],
+    red:    ['بحران زیستی تأیید شد','ستاد بحران تشکیل شده','عملیات کنترل آلودگی آغاز شده']
+  };
+  const alerts = alertTemplates[p.threat];
+  document.getElementById('modalAlertsList').innerHTML = alerts.map((a, i) => {
+    const col = p.threat === 'green' ? '#00ff88' : p.threat === 'yellow' ? '#ffd700' : p.threat === 'orange' ? '#ff6600' : '#ff003c';
+    return `<div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)">
+      <span style="color:${col};font-size:.9rem">●</span>
+      <span class="text-sm text-gray-300">${sanitizeHTML(a)}</span>
+    </div>`;
+  }).join('');
+
+  // mini chart
+  setTimeout(() => drawModalChart(p), 50);
+
+  const modal = document.getElementById('provinceModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalBox').focus();
+}
+
+function closeModal() {
+  document.getElementById('provinceModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnBackdrop(e) {
+  if (e.target === document.getElementById('provinceModal')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ============================================================
+   CHARTS — vanilla Canvas API
+   ============================================================ */
+function drawLineChart() {
+  const canvas = document.getElementById('lineChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 500;
+  const H = 200;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  // grid
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = H * 0.1 + (H * 0.8) * (i / 4);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W - 16, y); ctx.stroke();
+  }
+
+  // 24h data points (simulate threat index 0-100)
+  const hours = 25;
+  const data = Array.from({length: hours}, (_, i) => {
+    const base = 20 + 10 * Math.sin(i * 0.4) + 8 * Math.cos(i * 0.7);
+    return Math.max(5, Math.min(90, base + (Math.random() * 10 - 5)));
+  });
+
+  const xStep = (W - 56) / (hours - 1);
+  const yScale = (H * 0.8) / 100;
+
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(0,240,255,.35)');
+  grad.addColorStop(1, 'rgba(0,240,255,.02)');
+  ctx.beginPath();
+  ctx.moveTo(40, H * 0.9);
+  data.forEach((v, i) => ctx.lineTo(40 + i * xStep, H * 0.9 - v * yScale));
+  ctx.lineTo(40 + (hours-1) * xStep, H * 0.9);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // line
+  ctx.beginPath();
+  ctx.strokeStyle = '#00f0ff';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  data.forEach((v, i) => {
+    const x = 40 + i * xStep;
+    const y = H * 0.9 - v * yScale;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // dots at hours 0, 6, 12, 18, 24
+  [0, 6, 12, 18, 24].forEach(h => {
+    if (h >= hours) return;
+    const x = 40 + h * xStep;
+    const y = H * 0.9 - data[h] * yScale;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#00f0ff';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,240,255,.7)';
+    ctx.font = '10px Vazirmatn,sans-serif';
+    ctx.fillText(`${h}h`, x - 8, H - 4);
+  });
+
+  // y-axis label
+  ctx.fillStyle = 'rgba(0,240,255,.5)';
+  ctx.font = '10px Vazirmatn,sans-serif';
+  ctx.fillText('۱۰۰', 0, H * 0.1 + 4);
+  ctx.fillText('۰', 8, H * 0.9 + 4);
+}
+
+function drawBarChart() {
+  const canvas = document.getElementById('barChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 500;
+  const H = 200;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const top10 = [...provinces]
+    .sort((a, b) => b.reportCount - a.reportCount)
+    .slice(0, 10);
+
+  const maxVal = Math.max(...top10.map(p => p.reportCount), 1);
+  const barW = Math.floor((W - 60) / top10.length) - 6;
+  const chartH = H * 0.75;
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 4; i++) {
+    const y = H * 0.1 + chartH * (1 - i / 4);
+    ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(W - 10, y); ctx.stroke();
+  }
+
+  top10.forEach((p, i) => {
+    const barH = (p.reportCount / maxVal) * chartH;
+    const x = 40 + i * (barW + 6);
+    const y = H * 0.1 + chartH - barH;
+
+    const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+    grad.addColorStop(0, '#00ff88');
+    grad.addColorStop(1, 'rgba(0,255,136,.2)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [4,4,0,0]) : ctx.rect(x, y, barW, barH);
+    ctx.fill();
+
+    // value label
+    ctx.fillStyle = '#00ff88';
+    ctx.font = 'bold 10px Vazirmatn,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(toPersianNum(p.reportCount), x + barW / 2, y - 4);
+
+    // name label
+    ctx.fillStyle = 'rgba(200,200,200,.7)';
+    ctx.font = '9px Vazirmatn,sans-serif';
+    const shortName = p.name.length > 5 ? p.name.substring(0, 5) + '…' : p.name;
+    ctx.fillText(shortName, x + barW / 2, H - 4);
+    ctx.textAlign = 'start';
+  });
+}
+
+function drawModalChart(p) {
+  const canvas = document.getElementById('modalChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 680;
+  const H = 120;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const threatBase = {green: 15, yellow: 35, orange: 60, red: 85};
+  const base = threatBase[p.threat];
+  const pts = 25;
+  const data = Array.from({length: pts}, (_, i) =>
+    Math.max(5, Math.min(95, base + 12 * Math.sin(i * 0.5) + (Math.random() * 14 - 7)))
+  );
+
+  const xStep = (W - 20) / (pts - 1);
+  const yScale = (H * 0.8) / 100;
+  const colors = {green:'#00ff88', yellow:'#ffd700', orange:'#ff6600', red:'#ff003c'};
+  const col = colors[p.threat];
+
+  ctx.beginPath();
+  ctx.moveTo(10, H * 0.9);
+  data.forEach((v, i) => ctx.lineTo(10 + i * xStep, H * 0.9 - v * yScale));
+  ctx.lineTo(10 + (pts-1) * xStep, H * 0.9);
+  ctx.closePath();
+  ctx.fillStyle = `${col}22`;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  data.forEach((v, i) => {
+    const x = 10 + i * xStep;
+    const y = H * 0.9 - v * yScale;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+/* ============================================================
+   DATE / TIME
+   ============================================================ */
+function updateDateTime() {
+  const str = jalaliNow();
+  const el = document.getElementById('currentDateTime');
+  const elM = document.getElementById('currentDateTimeMobile');
+  if (el) el.textContent = str;
+  if (elM) elM.textContent = str;
+}
+
+/* ============================================================
+   AUTO REFRESH (every 30s)
+   ============================================================ */
+function autoRefresh() {
+  // bump last check times slightly for realism
+  provinces.forEach(p => {
+    p.lastCheck = new Date(new Date(p.lastCheck).getTime() + 30000);
+  });
+  applyFilters();
+  drawLineChart();
+  drawBarChart();
+}
+
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  const btn = document.getElementById('hamburgerBtn');
+  const isOpen = !nav.classList.contains('hidden');
+  nav.classList.toggle('hidden');
+  nav.classList.toggle('flex');
+  btn.setAttribute('aria-expanded', String(!isOpen));
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadProvinces();
+  enrichProvinces();
+  attachTableDelegation();
+  applyFilters();
+  updateStats();
+  updateDateTime();
+
+  // draw charts after layout
+  requestAnimationFrame(() => {
+    drawLineChart();
+    drawBarChart();
+  });
+
+  // clock tick
+  setInterval(updateDateTime, 1000);
+
+  // auto refresh every 30s
+  setInterval(autoRefresh, 30000);
+
+  // redraw charts on resize
+  window.addEventListener('resize', () => {
+    drawLineChart();
+    drawBarChart();
+  });
+});
+</script>
+</body>
+</html>
