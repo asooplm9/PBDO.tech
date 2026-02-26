@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+  <title>PBDO | پنل مدیریت</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0f1e;color:#e0e8ff;margin:0;}
+    .neon-blue{color:#00f0ff;text-shadow:0 0 8px #00f0ff;}
+    .card{background:#0d1528;border:1px solid #00f0ff33;border-radius:12px;padding:20px;}
+    .btn-primary{background:linear-gradient(135deg,#00f0ff,#0066ff);color:#000;font-weight:700;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .3s;width:100%;}
+    .btn-sm{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-family:inherit;}
+    .btn-green{background:#39ff1422;color:#39ff14;border:1px solid #39ff14;}
+    .btn-red{background:#ff003c22;color:#ff003c;border:1px solid #ff003c;}
+    .btn-yellow{background:#ffd70022;color:#ffd700;border:1px solid #ffd700;}
+    input,select,textarea{background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:100%;box-sizing:border-box;font-family:inherit;}
+    input:focus,select:focus{outline:none;border-color:#00f0ff;}
+    table{width:100%;border-collapse:collapse;}
+    th{background:#0a0f1e;color:#00f0ff;padding:12px;text-align:right;border-bottom:1px solid #00f0ff33;font-size:13px;}
+    td{padding:10px 12px;border-bottom:1px solid #ffffff11;font-size:13px;}
+    .status-green{background:#39ff1422;color:#39ff14;border:1px solid #39ff14;padding:2px 10px;border-radius:20px;font-size:11px;}
+    .status-yellow{background:#ffd70022;color:#ffd700;border:1px solid #ffd700;padding:2px 10px;border-radius:20px;font-size:11px;}
+    .status-red{background:#ff003c22;color:#ff003c;border:1px solid #ff003c;padding:2px 10px;border-radius:20px;font-size:11px;}
+    .sidebar{background:#060c1a;border-left:1px solid #00f0ff22;min-height:100vh;width:220px;flex-shrink:0;}
+    .nav-item{padding:12px 16px;cursor:pointer;border-radius:8px;margin:2px 8px;font-size:14px;transition:all .2s;}
+    .nav-item:hover,.nav-item.active{background:#00f0ff22;color:#00f0ff;}
+  </style>
+</head>
+<body>
+
+<div id="loginPage" class="min-h-screen flex items-center justify-center px-4">
+  <div class="card w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="text-4xl mb-3">🛡️</div>
+      <h1 class="text-2xl font-black neon-blue">PBDO Admin</h1>
+      <p class="text-gray-400 text-sm mt-1">سامانه مدیریت پدافند زیستی</p>
+    </div>
+    <div id="loginError" class="hidden bg-red-900/30 border border-red-500 text-red-400 text-sm p-3 rounded-lg mb-4 text-center">
+      ❌ نام کاربری یا رمز عبور اشتباه است
+    </div>
+    <div class="mb-4">
+      <label class="text-sm text-gray-400 block mb-2">نام کاربری</label>
+      <input type="text" id="loginUser" placeholder="username" dir="ltr"/>
+    </div>
+    <div class="mb-6">
+      <label class="text-sm text-gray-400 block mb-2">رمز عبور</label>
+      <input type="password" id="loginPass" placeholder="password" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button onclick="doLogin()" class="btn-primary mb-4">🔐 ورود به سیستم</button>
+    <div class="text-xs text-gray-600 text-center mt-4 border-t border-gray-800 pt-4">
+      <p class="mb-1">🔵 Super Admin: superadmin / pbdo@super2025</p>
+      <p class="mb-1">🟡 Regional: admin_west / pbdo@west2025</p>
+      <p>🟢 Operator: operator1 / pbdo@op2025</p>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard" class="hidden flex min-h-screen">
+  <div class="sidebar flex flex-col py-6">
+    <div class="text-center mb-8 px-4">
+      <div class="text-2xl font-black neon-blue">🛡️ PBDO</div>
+      <div id="sideRole" class="text-xs text-gray-400 mt-1"></div>
+    </div>
+    <nav class="flex-1">
+      <div class="nav-item active" onclick="showSection('overview',this)">📊 نمای ک��ی</div>
+      <div id="navUsers" class="nav-item hidden" onclick="showSection('users',this)">👥 کاربران</div>
+      <div id="navReports" class="nav-item hidden" onclick="showSection('reports',this)">📋 گزارش‌ها</div>
+      <div id="navSubmit" class="nav-item hidden" onclick="showSection('submit',this)">➕ ثبت گزارش</div>
+      <div id="navRaw" class="nav-item hidden" onclick="showSection('raw',this)">📡 ثبت داده خام</div>
+      <div id="navLogs" class="nav-item hidden" onclick="showSection('logs',this)">🔍 لاگ سیستم</div>
+    </nav>
+    <div class="px-4 mt-4">
+      <a href="index.html" class="block text-center text-gray-500 text-xs mb-3 hover:text-cyan-400">🌐 بازگشت به سایت</a>
+      <button onclick="doLogout()" class="block w-full text-center text-red-400 text-sm p-2 rounded-lg border border-red-900 hover:bg-red-900/20">خروج</button>
+    </div>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-black neon-blue">پنل مدیریت PBDO</h1>
+        <p id="welcomeMsg" class="text-gray-400 text-sm"></p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="text-xs text-gray-500" id="currentTime"></div>
+        <div id="roleTag" class="text-xs px-3 py-1 rounded-full border"></div>
+      </div>
+    </div>
+
+    <div id="sectionOverview">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card text-center"><div class="text-3xl font-black neon-blue">۳</div><div class="text-gray-400 text-sm mt-1">کاربران فعال</div></div>
+        <div class="card text-center"><div class="text-3xl font-black" style="color:#39ff14">۱۵</div><div class="text-gray-400 text-sm mt-1">گزارش امروز</div></div>
+        <div class="card text-center"><div class="text-3xl font-black" style="color:#ffd700">۳</div><div class="text-gray-400 text-sm mt-1">هشدار فعال</div></div>
+        <div class="card text-center"><div class="text-3xl font-black" style="color:#ff003c">۲</div><div class="text-gray-400 text-sm mt-1">در انتظار تایید</div></div>
+      </div>
+      <div class="card">
+        <h3 class="font-bold mb-4 neon-blue">📋 گزارش‌های در انتظار تایید</h3>
+        <div id="pendingReports"></div>
+      </div>
+    </div>
+
+    <div id="sectionUsers" class="hidden">
+      <div class="card overflow-x-auto">
+        <h3 class="font-bold mb-4 neon-blue">👥 مدیریت کاربران</h3>
+        <table>
+          <thead><tr><th>نام</th><th>نقش</th><th>آخرین ورود</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+          <tbody>
+            <tr><td class="font-bold">مدیر ارشد</td><td><span class="status-red">Super Admin</span></td><td class="text-xs text-gray-400">همین الان</td><td><span class="status-green">فعال</span></td><td><button class="btn-sm btn-yellow">ویرایش</button></td></tr>
+            <tr><td class="font-bold">مدیر منطقه غرب</td><td><span class="status-yellow">Regional Admin</span></td><td class="text-xs text-gray-400">۲ ساعت پیش</td><td><span class="status-green">فعال</span></td><td><button class="btn-sm btn-yellow mr-2">ویرایش</button><button class="btn-sm btn-red">غیرفعال</button></td></tr>
+            <tr><td class="font-bold">اپراتور ۱</td><td><span class="status-green">Operator</span></td><td class="text-xs text-gray-400">۱ روز پیش</td><td><span class="status-green">فعال</span></td><td><button class="btn-sm btn-yellow mr-2">ویرایش</button><button class="btn-sm btn-red">غیرفعال</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="sectionReports" class="hidden">
+      <div class="card overflow-x-auto">
+        <h3 class="font-bold mb-4 neon-blue">📋 گزارش‌های پایش</h3>
+        <div id="reportsTable"></div>
+      </div>
+    </div>
+
+    <div id="sectionSubmit" class="hidden">
+      <div class="card max-w-lg">
+        <h3 class="font-bold mb-6 neon-blue">➕ ثبت گزارش پایش جدید</h3>
+        <form onsubmit="submitReport(event)">
+          <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">استان</label>
+            <select id="repProvince" required>
+              <option value="">انتخاب استان</option>
+              <option>تهران</option><option>اصفه��ن</option><option>خراسان رضوی</option><option>فارس</option>
+              <option>آذربایجان شرقی</option><option>خوزستان</option><option>گیلان</option><option>کرمانشاه</option>
+              <option>قم</option><option>همدان</option><option>هرمزگان</option><option>البرز</option>
+            </select>
+          </div>
+          <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">شهر</label><input type="text" id="repCity" required placeholder="نام شهر"/></div>
+          <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">وضعیت</label>
+            <select id="repStatus" required>
+              <option value="">انتخاب وضعیت</option>
+              <option value="green">🟢 عادی</option>
+              <option value="yellow">🟡 احتیاط</option>
+              <option value="red">🔴 هشدار</option>
+            </select>
+          </div>
+          <div class="mb-6"><label class="text-sm text-gray-400 block mb-2">توضیحات</label><textarea id="repDesc" rows="3" required placeholder="شرح وضعیت..."></textarea></div>
+          <button type="submit" class="btn-primary">📤 ثبت گزارش</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="sectionRaw" class="hidden">
+      <div class="card max-w-lg">
+        <h3 class="font-bold mb-6 neon-blue">📡 ثبت داده خام</h3>
+        <form onsubmit="submitRaw(event)">
+          <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">نوع داده</label>
+            <select required>
+              <option>نمونه هوا</option><option>نمونه آب</option><option>نمونه خاک</option><option>نمونه بیولوژیک</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div><label class="text-sm text-gray-400 block mb-2">مقدار</label><input type="number" step="0.01" required placeholder="0.00"/></div>
+            <div><label class="text-sm text-gray-400 block mb-2">واحد</label>
+              <select><option>ppm</option><option>μg/m³</option><option>CFU/mL</option><option>mg/L</option></select>
+            </div>
+          </div>
+          <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">موقعیت</label><input type="text" required placeholder="شهر / مختصات"/></div>
+          <div class="mb-6"><label class="text-sm text-gray-400 block mb-2">یادداشت</label><textarea rows="2" placeholder="توضیحات اضافی..."></textarea></div>
+          <button type="submit" class="btn-primary">💾 ذخیره داده</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="sectionLogs" class="hidden">
+      <div class="card overflow-x-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold neon-blue">🔍 لاگ سیستم</h3>
+          <button onclick="clearLogs()" class="btn-sm btn-red">پاک‌سازی</button>
+        </div>
+        <div id="logsTable"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const USERS=[
+  {username:'superadmin',password:'pbdo@super2025',role:'super_admin',name:'مدیر ارشد'},
+  {username:'admin_west',password:'pbdo@west2025',role:'regional_admin',name:'مدیر منطقه غرب',region:'غرب'},
+  {username:'operator1',password:'pbdo@op2025',role:'operator',name:'اپراتور ۱'}
+];
+let currentUser=null;
+const reports=JSON.parse(localStorage.getItem('pbdo_reports')||'[]');
+
+function logAction(user,action,details){
+  const logs=JSON.parse(localStorage.getItem('pbdo_logs')||'[]');
+  logs.unshift({id:Date.now(),user:user.username,role:user.role,action,details,timestamp:new Date().toLocaleString('fa-IR')});
+  localStorage.setItem('pbdo_logs',JSON.stringify(logs.slice(0,100)));
+}
+
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const found=USERS.find(x=>x.username===u&&x.password===p);
+  if(!found){document.getElementById('loginError').classList.remove('hidden');return;}
+  currentUser=found;
+  document.getElementById('loginError').classList.add('hidden');
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  setupDashboard();
+  logAction(found,'ورود','ورود موفق به سیستم');
+}
+
+function setupDashboard(){
+  document.getElementById('welcomeMsg').textContent='خوش آمدید، '+currentUser.name;
+  document.getElementById('sideRole').textContent=getRoleLabel(currentUser.role);
+  const rt=document.getElementById('roleTag');
+  if(currentUser.role==='super_admin'){rt.textContent='Super Admin';rt.className='text-xs px-3 py-1 rounded-full border status-red';}
+  else if(currentUser.role==='regional_admin'){rt.textContent='Regional Admin';rt.className='text-xs px-3 py-1 rounded-full border status-yellow';}
+  else{rt.textContent='Operator';rt.className='text-xs px-3 py-1 rounded-full border status-green';}
+  if(currentUser.role==='super_admin'){
+    document.getElementById('navUsers').classList.remove('hidden');
+    document.getElementById('navReports').classList.remove('hidden');
+    document.getElementById('navLogs').classList.remove('hidden');
+  } else if(currentUser.role==='regional_admin'){
+    document.getElementById('navReports').classList.remove('hidden');
+    document.getElementById('navSubmit').classList.remove('hidden');
+  } else {
+    document.getElementById('navRaw').classList.remove('hidden');
+    document.getElementById('navReports').classList.remove('hidden');
+  }
+  renderPending();renderReports();renderLogs();updateTime();setInterval(updateTime,1000);
+}
+
+function getRoleLabel(r){return r==='super_admin'?'مدیر ارشد سیستم':r==='regional_admin'?'مدیر منطقه‌ای':'اپراتور';}
+function updateTime(){document.getElementById('currentTime').textContent=new Date().toLocaleString('fa-IR');}
+
+function showSection(s,el){
+  ['overview','users','reports','submit','raw','logs'].forEach(x=>{
+    const sec=document.getElementById('section'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(sec)sec.classList.add('hidden');
+  });
+  const target=document.getElementById('section'+s.charAt(0).toUpperCase()+s.slice(1));
+  if(target)target.classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+function renderPending(){
+  const pending=reports.filter(r=>!r.approved);
+  const el=document.getElementById('pendingReports');
+  if(!el)return;
+  if(!pending.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">گزارش در انتظار تایید وجود ندارد</p>';return;}
+  el.innerHTML=pending.map((r,i)=>`
+    <div class="border border-yellow-900/50 rounded-lg p-4 mb-3">
+      <div class="flex justify-between items-start flex-wrap gap-2">
+        <div><b>${r.city}</b> - ${r.province} <span class="status-${r.status} mr-2">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></div>
+        <div class="flex gap-2">
+          ${currentUser.role==='super_admin'?`<button class="btn-sm btn-green" onclick="approveReport(${i})">✅ تایید</button><button class="btn-sm btn-red" onclick="rejectReport(${i})">❌ رد</button>`:''}
+        </div>
+      </div>
+      <p class="text-sm text-gray-400 mt-2">${r.desc}</p>
+      <p class="text-xs text-gray-600 mt-1">ثبت توسط: ${r.by} — ${r.time}</p>
+    </div>`).join('');
+}
+
+function renderReports(){
+  const el=document.getElementById('reportsTable');
+  if(!el)return;
+  const myReports=currentUser.role==='regional_admin'?reports.filter(r=>r.by===currentUser.username):reports;
+  if(!myReports.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">گزارشی ثبت نشده</p>';return;}
+  el.innerHTML='<table><thead><tr><th>شهر</th><th>استان</th><th>وضعیت</th><th>توضیحات</th><th>ثبت‌کننده</th><th>تایید</th></tr></thead><tbody>'+
+    myReports.map(r=>`<tr><td>${r.city}</td><td>${r.province}</td><td><span class="status-${r.status}">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></td><td class="text-sm">${r.desc}</td><td class="text-xs text-gray-400">${r.by}</td><td>${r.approved?'<span class="status-green">✅</span>':'<span class="status-yellow">⏳</span>'}</td></tr>`).join('')+'</tbody></table>';
+}
+
+function renderLogs(){
+  const logs=JSON.parse(localStorage.getItem('pbdo_logs')||'[]');
+  const el=document.getElementById('logsTable');
+  if(!el)return;
+  if(!logs.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">لاگی ثبت نشده</p>';return;}
+  el.innerHTML='<table><thead><tr><th>کاربر</th><th>نقش</th><th>عملیات</th><th>جزئیات</th><th>زمان</th></tr></thead><tbody>'+
+    logs.map(l=>`<tr><td class="font-bold">${l.user}</td><td>${l.role}</td><td>${l.action}</td><td class="text-sm text-gray-400">${l.details}</td><td class="text-xs text-gray-500">${l.timestamp}</td></tr>`).join('')+'</tbody></table>';
+}
+
+function clearLogs(){if(confirm('آیا مطمئنید؟')){localStorage.removeItem('pbdo_logs');renderLogs();}}
+
+function approveReport(i){
+  const pending=reports.filter(r=>!r.approved);
+  const idx=reports.indexOf(pending[i]);
+  reports[idx].approved=true;
+  localStorage.setItem('pbdo_reports',JSON.stringify(reports));
+  logAction(currentUser,'تایید گزارش',reports[idx].city+' - '+reports[idx].province);
+  renderPending();renderReports();
+}
+
+function rejectReport(i){
+  const pending=reports.filter(r=>!r.approved);
+  const idx=reports.indexOf(pending[i]);
+  reports.splice(idx,1);
+  localStorage.setItem('pbdo_reports',JSON.stringify(reports));
+  logAction(currentUser,'رد گزارش','گزارش حذف شد');
+  renderPending();renderReports();
+}
+
+function submitReport(e){
+  e.preventDefault();
+  const r={province:document.getElementById('repProvince').value,city:document.getElementById('repCity').value,status:document.getElementById('repStatus').value,desc:document.getElementById('repDesc').value,by:currentUser.username,time:new Date().toLocaleString('fa-IR'),approved:false};
+  reports.push(r);
+  localStorage.setItem('pbdo_reports',JSON.stringify(reports));
+  logAction(currentUser,'ثبت گزارش',r.city+' - '+r.province);
+  alert('✅ گزارش با موفقیت ثبت شد');
+  e.target.reset();renderReports();renderPending();
+}
+
+function submitRaw(e){
+  e.preventDefault();
+  logAction(currentUser,'ثبت داده خام','داده جدید ثبت شد');
+  alert('✅ داده خام با موفقیت ذخیره شد');
+  e.target.reset();
+}
+
+function doLogout(){
+  logAction(currentUser,'خروج','خروج از سیستم');
+  currentUser=null;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+</script>
+</body>
+</html>
