@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>تماس با ما | PBDO</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0a0a;color:#e0e0e0;margin:0;}
+    .neon{color:#00ff88;text-shadow:0 0 8px #00ff88;}
+    nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,10,.9);border-bottom:1px solid #00ff8822;}
+    .card{background:#111;border:1px solid #00ff8822;border-radius:12px;padding:24px;}
+    input,select,textarea{background:#0d1528;border:1px solid #00ff8833;color:#e0e0e0;padding:10px 14px;border-radius:8px;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#00ff88;box-shadow:0 0 8px #00ff8833;}
+    .btn{background:linear-gradient(135deg,#00ff88,#00aa55);color:#000;font-weight:700;padding:12px 28px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:15px;transition:all .3s;}
+    .btn:hover{box-shadow:0 0 20px #00ff8866;transform:scale(1.03);}
+    footer{background:#060606;border-top:1px solid #00ff8822;padding:32px 16px;text-align:center;color:#555;font-size:13px;}
+    a{color:#00ff88;text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    label{display:block;font-size:13px;color:#aaa;margin-bottom:6px;}
+    .form-group{margin-bottom:16px;}
+    #formMsg{display:none;padding:12px;border-radius:8px;text-align:center;font-size:14px;}
+  </style>
+</head>
+<body>
+<nav>
+  <div style="max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;">🛡️ PBDO</a>
+    <a href="index.html" style="font-size:14px;color:#aaa;">→ بازگشت به صفحه اصلی</a>
+  </div>
+</nav>
+
+<main style="max-width:900px;margin:0 auto;padding:40px 16px;">
+  <h1 class="neon" style="font-size:2rem;font-weight:900;margin-bottom:8px;">📞 تماس با ما</h1>
+  <p style="color:#888;margin-bottom:32px;font-size:14px;">با تیم سازمان پدافند زیستی عمومی در ارتباط باشید</p>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:24px;">
+    <div class="card">
+      <h2 style="color:#00ff88;font-size:1.2rem;font-weight:700;margin-bottom:16px;">📬 فرم تماس</h2>
+      <form id="contactForm" onsubmit="submitContact(event)" novalidate>
+        <div class="form-group">
+          <label for="cName">نام و نام‌خانوادگی *</label>
+          <input type="text" id="cName" placeholder="نام خود را وارد کنید" required/>
+        </div>
+        <div class="form-group">
+          <label for="cEmail">آدرس ایمیل *</label>
+          <input type="email" id="cEmail" placeholder="email@example.com" dir="ltr" required/>
+        </div>
+        <div class="form-group">
+          <label for="cSubject">موضوع *</label>
+          <select id="cSubject" required>
+            <option value="">انتخاب موضوع...</option>
+            <option value="cooperation">درخواست همکاری</option>
+            <option value="report">گزارش مشکل فنی</option>
+            <option value="info">درخواست اطلاعات</option>
+            <option value="other">سایر موارد</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cMessage">پیام *</label>
+          <textarea id="cMessage" rows="5" placeholder="پیام خود را بنویسید..." required></textarea>
+        </div>
+        <div id="formMsg"></div>
+        <button type="submit" class="btn" style="width:100%;margin-top:8px;">📤 ارسال پیام</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 style="color:#00ff88;font-size:1.2rem;font-weight:700;margin-bottom:16px;">📍 اطلاعات تماس</h2>
+      <ul style="list-style:none;padding:0;margin:0;color:#aaa;line-height:2.4;font-size:14px;">
+        <li>📧 <strong style="color:#e0e0e0;">ایمیل:</strong> <a href="mailto:admin@pbdo.tech">admin@pbdo.tech</a></li>
+        <li>🌐 <strong style="color:#e0e0e0;">وب‌سایت:</strong> <a href="https://pbdo.tech">pbdo.tech</a></li>
+        <li>📩 <strong style="color:#e0e0e0;">تماس محرمانه:</strong> <a href="mailto:admin@pbdo.tech">admin@pbdo.tech</a></li>
+        <li>🕐 <strong style="color:#e0e0e0;">ساعت پاسخگویی:</strong> شنبه تا چهارشنبه، ۹ تا ۱۷</li>
+      </ul>
+      <hr style="border-color:#00ff8822;margin:16px 0;"/>
+      <h3 style="color:#00ff88;font-size:1rem;font-weight:700;margin-bottom:12px;">🌍 شبکه‌های اجتماعی</h3>
+      <ul style="list-style:none;padding:0;margin:0;color:#aaa;line-height:2.4;font-size:14px;">
+        <li>🐙 GitHub: <a href="https://github.com/asooplm9/PBDO.tech" target="_blank" rel="noopener noreferrer">PBDO.tech</a></li>
+      </ul>
+      <hr style="border-color:#00ff8822;margin:16px 0;"/>
+      <h3 style="color:#00ff88;font-size:1rem;font-weight:700;margin-bottom:12px;">📍 موقعیت</h3>
+      <p style="color:#aaa;font-size:14px;line-height:1.8;">
+        سازمان پدافند زیستی عمومی<br/>
+        جمهوری اسلامی ایران<br/>
+        <span style="color:#666;">آدرس دقیق محرمانه است</span>
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است</p>
+  <p style="margin-top:8px;">
+    <a href="index.html">خانه</a> &nbsp;|&nbsp;
+    <a href="privacy.html">حریم خصوصی</a> &nbsp;|&nbsp;
+    <a href="terms.html">قوانین و مقررات</a> &nbsp;|&nbsp;
+    <a href="contact.html">تماس با ما</a>
+  </p>
+</footer>
+
+<script>
+function sanitizeHTML(str){const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
+function submitContact(e){
+  e.preventDefault();
+  const name=document.getElementById('cName').value.trim();
+  const email=document.getElementById('cEmail').value.trim();
+  const subject=document.getElementById('cSubject').value;
+  const message=document.getElementById('cMessage').value.trim();
+  const msg=document.getElementById('formMsg');
+  if(!name||!email||!subject||!message){
+    msg.style.display='block';
+    msg.style.background='#ff003c22';
+    msg.style.border='1px solid #ff003c';
+    msg.style.color='#ff003c';
+    msg.textContent='❌ لطفاً تمام فیلدهای اجباری را پر کنید';
+    return;
+  }
+  const emailReg=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailReg.test(email)){
+    msg.style.display='block';
+    msg.style.background='#ff003c22';
+    msg.style.border='1px solid #ff003c';
+    msg.style.color='#ff003c';
+    msg.textContent='❌ لطفاً یک آدرس ایمیل معتبر وارد کنید';
+    return;
+  }
+  // Store in localStorage
+  const contacts=JSON.parse(localStorage.getItem('pbdo_contacts')||'[]');
+  contacts.push({id:Date.now(),name:sanitizeHTML(name),email:sanitizeHTML(email),subject,message:sanitizeHTML(message),time:new Date().toLocaleString('fa-IR')});
+  localStorage.setItem('pbdo_contacts',JSON.stringify(contacts));
+  msg.style.display='block';
+  msg.style.background='#00ff8822';
+  msg.style.border='1px solid #00ff88';
+  msg.style.color='#00ff88';
+  msg.textContent='✅ پیام شما با موفقیت دریافت شد. به زودی پاسخ خواهیم داد.';
+  e.target.reset();
+  setTimeout(()=>{msg.style.display='none';},5000);
+}
+</script>
+</body>
+</html>

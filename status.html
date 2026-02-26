@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>وضعیت سیستم | PBDO</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;box-sizing:border-box;}
+    body{background:#0a0a0a;color:#e0e0e0;margin:0;}
+    .neon{color:#00ff88;text-shadow:0 0 8px #00ff88;}
+    nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,10,.9);border-bottom:1px solid #00ff8822;}
+    main{max-width:900px;margin:0 auto;padding:40px 16px;}
+    .card{background:#111;border:1px solid #00ff8822;border-radius:12px;padding:24px;margin-bottom:16px;}
+    .status-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #ffffff0a;}
+    .status-row:last-child{border-bottom:none;}
+    .status-name{font-size:15px;font-weight:600;}
+    .status-meta{font-size:12px;color:#666;margin-top:2px;}
+    .badge{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid;}
+    .badge-green{background:#00ff8822;color:#00ff88;border-color:#00ff88;}
+    .badge-yellow{background:#ffd70022;color:#ffd700;border-color:#ffd700;}
+    .badge-red{background:#ff003c22;color:#ff003c;border-color:#ff003c;}
+    .uptime-bar{height:6px;border-radius:3px;background:#222;overflow:hidden;margin-top:6px;}
+    .uptime-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+    footer{background:#060606;border-top:1px solid #00ff8822;padding:32px 16px;text-align:center;color:#555;font-size:13px;}
+    a{color:#00ff88;text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    .overall-ok{background:linear-gradient(135deg,#00ff8811,#00ff8822);border-color:#00ff8844;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+    .pulse-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:8px;animation:pulse 2s infinite;}
+  </style>
+</head>
+<body>
+<nav>
+  <div style="max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;">🛡️ PBDO</a>
+    <a href="index.html" style="font-size:14px;color:#aaa;">→ بازگشت به صفحه اصلی</a>
+  </div>
+</nav>
+
+<main>
+  <h1 class="neon" style="font-size:2rem;font-weight:900;margin-bottom:8px;">📊 وضعیت سیستم‌ها</h1>
+  <p style="color:#888;margin-bottom:24px;font-size:14px;" id="lastUpdated">آخرین به‌روزرسانی: در حال بارگذاری...</p>
+
+  <div class="card overall-ok" style="text-align:center;margin-bottom:24px;">
+    <div style="font-size:2.5rem;margin-bottom:8px;">✅</div>
+    <div style="font-size:1.3rem;font-weight:700;color:#00ff88;">تمام سیستم‌ها عملیاتی هستند</div>
+    <div style="font-size:13px;color:#888;margin-top:4px;">هیچ‌گونه اختلال فعالی گزارش نشده است</div>
+  </div>
+
+  <div class="card">
+    <h2 style="color:#00ff88;font-size:1.1rem;font-weight:700;margin-bottom:4px;">🌐 وضعیت سرویس‌ها</h2>
+
+    <div class="status-row">
+      <div>
+        <div class="status-name">
+          <span class="pulse-dot" style="background:#00ff88;"></span>
+          وب‌سایت اصلی
+        </div>
+        <div class="status-meta">pbdo.tech</div>
+        <div class="uptime-bar" style="width:200px;max-width:100%;"><div class="uptime-fill" style="width:99.9%;background:#00ff88;"></div></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">آپ‌تایم: ۹۹.۹٪</div>
+      </div>
+      <span class="badge badge-green">✅ عملیاتی</span>
+    </div>
+
+    <div class="status-row">
+      <div>
+        <div class="status-name">
+          <span class="pulse-dot" style="background:#00ff88;"></span>
+          سیستم‌های پایش
+        </div>
+        <div class="status-meta">شبکه حسگرهای ۳۱ استان</div>
+        <div class="uptime-bar" style="width:200px;max-width:100%;"><div class="uptime-fill" style="width:98.5%;background:#00ff88;"></div></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">آپ‌تایم: ۹۸.۵٪</div>
+      </div>
+      <span class="badge badge-green">✅ عملیاتی</span>
+    </div>
+
+    <div class="status-row">
+      <div>
+        <div class="status-name">
+          <span class="pulse-dot" style="background:#ffd700;"></span>
+          شبکه دفاع لیزری
+        </div>
+        <div class="status-meta">Thermal Laser Project</div>
+        <div class="uptime-bar" style="width:200px;max-width:100%;"><div class="uptime-fill" style="width:85%;background:#ffd700;"></div></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">آپ‌تایم: ۸۵٪ — در حال آزمایش</div>
+      </div>
+      <span class="badge badge-yellow">⚠️ در حال آزمایش</span>
+    </div>
+
+    <div class="status-row">
+      <div>
+        <div class="status-name">
+          <span class="pulse-dot" style="background:#00ff88;"></span>
+          سرویس‌های API
+        </div>
+        <div class="status-meta">درگاه‌های داده و ارتباطی</div>
+        <div class="uptime-bar" style="width:200px;max-width:100%;"><div class="uptime-fill" style="width:99.5%;background:#00ff88;"></div></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">آپ‌تایم: ۹۹.۵٪</div>
+      </div>
+      <span class="badge badge-green">✅ عملیاتی</span>
+    </div>
+
+    <div class="status-row">
+      <div>
+        <div class="status-name">
+          <span class="pulse-dot" style="background:#00ff88;"></span>
+          پایگاه داده
+        </div>
+        <div class="status-meta">سیستم ذخیره‌سازی مرکزی</div>
+        <div class="uptime-bar" style="width:200px;max-width:100%;"><div class="uptime-fill" style="width:99.8%;background:#00ff88;"></div></div>
+        <div style="font-size:11px;color:#666;margin-top:2px;">آپ‌تایم: ۹۹.۸٪</div>
+      </div>
+      <span class="badge badge-green">✅ عملیاتی</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="color:#00ff88;font-size:1.1rem;font-weight:700;margin-bottom:16px;">📈 راهنمای وضعیت‌ها</h2>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">
+      <span class="badge badge-green">✅ عملیاتی</span>
+      <span style="color:#aaa;align-self:center;">— سرویس به‌طور کامل فعال است</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;margin-top:12px;">
+      <span class="badge badge-yellow">⚠️ تخریب جزئی</span>
+      <span style="color:#aaa;align-self:center;">— سرویس با کاهش عملکرد فعال است</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;margin-top:12px;">
+      <span class="badge badge-red">❌ از دسترس خارج</span>
+      <span style="color:#aaa;align-self:center;">— سرویس در دسترس نیست</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است</p>
+  <p style="margin-top:8px;">
+    <a href="index.html">خانه</a> &nbsp;|&nbsp;
+    <a href="privacy.html">حریم خصوصی</a> &nbsp;|&nbsp;
+    <a href="terms.html">قوانین و مقررات</a> &nbsp;|&nbsp;
+    <a href="contact.html">تماس با ما</a>
+  </p>
+</footer>
+
+<script>
+document.getElementById('lastUpdated').textContent='آخرین به‌روزرسانی: '+new Date().toLocaleString('fa-IR');
+</script>
+</body>
+</html>

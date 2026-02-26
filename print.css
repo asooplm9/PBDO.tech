@@ -1,0 +1,87 @@
+@media print {
+  /* Hide non-content elements */
+  nav,
+  header nav,
+  .ticker-wrap,
+  footer,
+  #preloader,
+  #mobileMenu,
+  #mobileOverlay,
+  #sidebarOverlay,
+  #cookieConsent,
+  #backToTop,
+  .skip-link,
+  button:not(.print-show),
+  .modal,
+  canvas,
+  #particleCanvas,
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Reset colors for print */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  * {
+    background: transparent !important;
+    color: #000000 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    border-color: #cccccc !important;
+  }
+
+  /* Show URLs next to links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    color: #555555 !important;
+  }
+
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+
+  /* Page breaks */
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  section, .card {
+    page-break-inside: avoid;
+  }
+
+  /* Proper font sizes */
+  h1 { font-size: 24pt; }
+  h2 { font-size: 18pt; }
+  h3 { font-size: 14pt; }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #cccccc !important;
+    padding: 8px !important;
+    color: #000000 !important;
+  }
+
+  th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 2cm;
+  }
+}

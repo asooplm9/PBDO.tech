@@ -45,6 +45,26 @@
     @media(min-width:768px){
       #sidebarToggle{display:none;}
     }
+    /* Toast Notifications */
+    #toastContainer{position:fixed;top:16px;left:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+    .toast{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:8px;font-size:13px;min-width:240px;max-width:360px;pointer-events:auto;animation:toastIn .3s ease;border:1px solid;}
+    .toast.hide{animation:toastOut .4s ease forwards;}
+    @keyframes toastIn{from{opacity:0;transform:translateX(-30px);}to{opacity:1;transform:translateX(0);}}
+    @keyframes toastOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-30px);}}
+    .toast-success{background:#00ff8822;color:#00ff88;border-color:#00ff8866;}
+    .toast-error{background:#ff003c22;color:#ff003c;border-color:#ff003c66;}
+    .toast-warning{background:#ffd70022;color:#ffd700;border-color:#ffd70066;}
+    .toast-info{background:#00f0ff22;color:#00f0ff;border-color:#00f0ff66;}
+    .toast-close{margin-right:auto;background:none;border:none;cursor:pointer;color:inherit;font-size:16px;padding:0 0 0 4px;line-height:1;}
+    /* Global Search */
+    #globalSearch{background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;width:200px;transition:width .3s,border-color .3s;}
+    #globalSearch:focus{outline:none;border-color:#00f0ff;width:260px;}
+    .search-highlight{background:#ffd70033;color:#ffd700;border-radius:2px;}
+    /* Export & Backup buttons */
+    .btn-export{background:#00f0ff22;color:#00f0ff;border:1px solid #00f0ff44;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s;}
+    .btn-export:hover{background:#00f0ff33;}
+    .btn-backup{background:#ffd70022;color:#ffd700;border:1px solid #ffd70044;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s;}
+    .btn-backup:hover{background:#ffd70033;}
   </style>
 </head>
 <body>
@@ -93,6 +113,13 @@
     </nav>
     <div class="px-4 mt-4">
       <a href="index.html" class="block text-center text-gray-500 text-xs mb-3 hover:text-cyan-400">🌐 بازگشت به سایت</a>
+      <div class="flex flex-col gap-2 mb-3">
+        <button onclick="backupData()" class="btn-backup text-xs">💾 بکاپ داده‌ها</button>
+        <label class="btn-backup text-xs text-center cursor-pointer" title="بازیابی از فایل JSON">
+          📂 بازیابی داده‌ها
+          <input type="file" id="restoreFileInput" accept=".json" style="display:none" onchange="restoreData(this)"/>
+        </label>
+      </div>
       <button onclick="doLogout()" class="block w-full text-center text-red-400 text-sm p-2 rounded-lg border border-red-900 hover:bg-red-900/20">خروج</button>
     </div>
   </div>
@@ -110,6 +137,7 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
+        <input type="search" id="globalSearch" placeholder="جستجو... (Ctrl+K)" oninput="globalSearchFn(this.value)" aria-label="جستجوی سراسری"/>
         <div class="text-xs text-gray-500" id="currentTime"></div>
         <div id="roleTag" class="text-xs px-3 py-1 rounded-full border"></div>
       </div>
@@ -160,7 +188,13 @@
 
     <div id="sectionReports" class="hidden">
       <div class="card overflow-x-auto">
-        <h3 class="font-bold mb-4 neon-blue">📋 گزارش‌های پایش</h3>
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h3 class="font-bold neon-blue">📋 گزارش‌های پایش</h3>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="exportCSV()" class="btn-export">📥 دانلود CSV</button>
+            <button onclick="printReport()" class="btn-export">🖨️ پرینت PDF</button>
+          </div>
+        </div>
         <div id="reportsTable"></div>
       </div>
     </div>
@@ -550,14 +584,14 @@ function submitReport(e){
   reports.push(r);
   localStorage.setItem('pbdo_reports',JSON.stringify(reports));
   logAction(currentUser,'ثبت گزارش',r.city+' - '+r.province);
-  alert('✅ گزارش با موفقیت ثبت شد');
+  showToast('✅ گزارش با موفقیت ثبت شد','success');
   e.target.reset();renderReports();renderPending();
 }
 
 function submitRaw(e){
   e.preventDefault();
   logAction(currentUser,'ثبت داده خام','داده جدید ثبت شد');
-  alert('✅ داده خام با موفقیت ذخیره شد');
+  showToast('✅ داده خام با موفقیت ذخیره شد','success');
   e.target.reset();
 }
 
@@ -614,7 +648,124 @@ function initCharts(){
   }
 }
 
-// ======= محافظت در برابر دستکاری کنسول =======
+// ======= TOAST NOTIFICATIONS =======
+function showToast(message,type='info'){
+  const container=document.getElementById('toastContainer');
+  if(!container)return;
+  const t=document.createElement('div');
+  t.className='toast toast-'+type;
+  t.innerHTML=sanitizeHTML(message)+'<button class="toast-close" onclick="this.parentElement.remove()" aria-label="بستن">✕</button>';
+  container.appendChild(t);
+  setTimeout(()=>{
+    t.classList.add('hide');
+    setTimeout(()=>t.remove(),400);
+  },5000);
+}
+
+// ======= EXPORT CSV =======
+function exportCSV(){
+  const myReports=currentUser&&currentUser.role==='regional_admin'?reports.filter(r=>r.by===currentUser.username):reports;
+  if(!myReports.length){showToast('گزارشی برای دانلود وجود ندارد','warning');return;}
+  const headers=['شهر','استان','وضعیت','توضیحات','ثبت‌کننده','زمان','تایید'];
+  const rows=myReports.map(r=>[r.city,r.province,r.status,r.desc,r.by,r.time,r.approved?'تایید شده':'در انتظار']);
+  const csv='\uFEFF'+[headers,...rows].map(r=>r.map(v=>'"'+(String(v||'').replace(/"/g,'""'))+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='pbdo-reports-'+Date.now()+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✅ فایل CSV دانلود شد','success');
+}
+
+// ======= PRINT PDF =======
+function printReport(){
+  window.print();
+}
+
+// ======= BACKUP DATA =======
+function backupData(){
+  const keys=['pbdo_reports','pbdo_logs','pbdo_collaborations','pbdo_contacts'];
+  const backup={};
+  keys.forEach(k=>{const v=localStorage.getItem(k);if(v)backup[k]=JSON.parse(v);});
+  backup._backupDate=new Date().toISOString();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
+  a.download='pbdo-backup-'+Date.now()+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✅ بکاپ داده‌ها با موفقیت دانلود شد','success');
+}
+
+// ======= RESTORE DATA =======
+function restoreData(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(!confirm('⚠️ آیا مطمئنید؟ داده‌های فعلی با فایل بکاپ جایگزین خواهند شد.')){input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      const keys=['pbdo_reports','pbdo_logs','pbdo_collaborations','pbdo_contacts'];
+      let restored=0;
+      keys.forEach(k=>{if(data[k]!==undefined){localStorage.setItem(k,JSON.stringify(data[k]));restored++;}});
+      showToast('✅ '+restored+' مجموعه داده با موفقیت بازیابی شد','success');
+      renderPending();renderReports();renderLogs();renderCollaborations();updateCollabCount();
+    }catch{showToast('❌ خطا: فایل بکاپ معتبر نیست','error');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ======= GLOBAL SEARCH =======
+function globalSearchFn(q){
+  const query=q.trim().toLowerCase();
+  // Remove existing highlights
+  document.querySelectorAll('.search-highlight').forEach(el=>{
+    const parent=el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent),el);
+    parent.normalize();
+  });
+  if(!query)return;
+  // Walk text nodes safely to avoid breaking DOM structure
+  function highlightTextNodes(root){
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    const matches=[];
+    let node;
+    while((node=walker.nextNode())){
+      if(node.parentElement&&node.parentElement.classList.contains('search-highlight'))continue;
+      const idx=node.nodeValue.toLowerCase().indexOf(query);
+      if(idx!==-1)matches.push(node);
+    }
+    matches.forEach(function(tn){
+      const val=tn.nodeValue;
+      const idx=val.toLowerCase().indexOf(query);
+      const before=document.createTextNode(val.slice(0,idx));
+      const mark=document.createElement('mark');
+      mark.className='search-highlight';
+      mark.textContent=val.slice(idx,idx+query.length);
+      const after=document.createTextNode(val.slice(idx+query.length));
+      const frag=document.createDocumentFragment();
+      frag.appendChild(before);frag.appendChild(mark);frag.appendChild(after);
+      tn.parentNode.replaceChild(frag,tn);
+    });
+    return matches.length;
+  }
+  let found=0;
+  document.querySelectorAll('#sectionReports,#sectionLogs,#sectionCollabs,#sectionUsers,#sectionOverview').forEach(function(sec){
+    if(!sec.classList.contains('hidden'))found+=highlightTextNodes(sec);
+  });
+  if(found===0){showToast('نتیجه‌ای یافت نشد','info');}
+}
+
+// Keyboard shortcut Ctrl+K or / to focus search
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey&&e.key==='k')||(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')){
+    e.preventDefault();
+    const s=document.getElementById('globalSearch');
+    if(s){s.focus();s.select();}
+  }
+});
+
 // غیرفعال کردن منوی راست‌کلیک
 document.addEventListener('contextmenu',e=>e.preventDefault());
 
@@ -631,5 +782,9 @@ document.addEventListener('contextmenu',e=>e.preventDefault());
   },1000);
 })();
 </script>
+
+<!-- Toast Container -->
+<div id="toastContainer" aria-live="polite" aria-label="اعلان‌ها"></div>
+
 </body>
 </html>
