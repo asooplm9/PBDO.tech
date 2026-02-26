@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- هدرهای امنیتی -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>PBDO | سازمان پدافند زیستی عمومی</title>
   <meta name="description" content="سازمان پدافند زیستی عمومی (PBDO) — پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات زیستی و طراحی معماری‌های دفاع لیزری با بهره‌گیری از هوش مصنوعی، اپتیک و فوتونیک"/>
   <link rel="canonical" href="https://pbdo.tech/"/>
@@ -19,7 +24,7 @@
   <meta name="twitter:description" content="سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات زیستی و دفاع لیزری"/>
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"سازمان پدافند زیستی عمومی PBDO","url":"https://pbdo.tech","logo":"https://pbdo.tech/logo.svg","description":"سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری","contactPoint":{"@type":"ContactPoint","email":"info@pbdo.tech","contactType":"customer service"}}
+  {"@context":"https://schema.org","@type":"Organization","name":"سازمان پدافند زیستی عمومی PBDO","url":"https://pbdo.tech","logo":"https://pbdo.tech/logo.svg","description":"سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری","contactPoint":{"@type":"ContactPoint","email":"admin@pbdo.tech","contactType":"customer service"}}
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -292,9 +297,13 @@
     <p class="text-gray-400 mb-8 reveal" style="transition-delay:.1s">به تیم پیشرو PBDO بپیوندید</p>
     <div class="card reveal" style="transition-delay:.2s">
       <form onsubmit="submitForm(event)">
+        <!-- فیلد honeypot برای شناسایی ربات‌ها -->
+        <div style="display:none;" aria-hidden="true">
+          <input type="text" name="website" id="honeypot" tabindex="-1" autocomplete="off">
+        </div>
         <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی"/></div>
-          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" required placeholder="email@example.com" dir="ltr"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی" maxlength="100"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" id="colabEmail" required placeholder="email@example.com" dir="ltr" maxlength="254"/></div>
         </div>
         <div class="grid md:grid-cols-2 gap-4 mb-4">
           <div>
@@ -306,12 +315,12 @@
               <option>داده‌کاوی</option><option>سایر</option>
             </select>
           </div>
-          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" min="0" placeholder="۰"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" min="0" max="50" placeholder="۰"/></div>
         </div>
-        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..."></textarea></div>
+        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..." maxlength="2000"></textarea></div>
         <div class="mb-6">
           <label class="text-sm text-gray-400 block mb-2">آپلود رزومه (CV)</label>
-          <input type="file" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
+          <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
           <p class="text-xs text-gray-500 mt-1">فرمت‌های مجاز: PDF، DOC، DOCX - حداکثر ۵ مگابایت</p>
         </div>
         <button type="submit" class="btn-primary w-full" id="submitBtn">📤 ارسال درخواست همکاری</button>
@@ -340,9 +349,9 @@
     <div>
       <h4 class="font-bold text-cyan-400 mb-4">تماس</h4>
       <ul class="space-y-2 text-sm text-gray-400">
-        <li>📧 info@pbdo.tech</li>
+        <li>📧 admin@pbdo.tech</li>
         <li>🌐 pbdo.tech</li>
-        <li>🔒 اطلاعات محرمانه: vault@pbdo.tech</li>
+        <li>📩 تماس محرمانه: admin@pbdo.tech</li>
       </ul>
     </div>
   </div>
@@ -377,6 +386,15 @@
 </div>
 
 <script>
+// محافظت در برابر Clickjacking - پوشش روی محتوای صفحه
+if(window.self!==window.top){
+  document.body.style.cssText='margin:0;background:#0a0f1e;display:flex;align-items:center;justify-content:center;min-height:100vh;';
+  document.body.innerHTML='<div style="text-align:center;color:#ff003c;font-family:Vazirmatn,sans-serif;direction:rtl;padding:40px;"><div style="font-size:48px;margin-bottom:16px;">🚫</div><h1 style="font-size:24px;margin-bottom:8px;">دسترسی مسدود شد</h1><p style="color:#aaa;font-size:14px;">این صفحه در قاب (iframe) نمایش داده نمی‌شود</p></div>';
+}
+
+// تابع ضدXSS برای sanitize کردن داده‌های ورودی
+function sanitizeHTML(str){const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
+
 // ======= SUPABASE CONFIGURATION =======
 // برای فعال‌سازی دیتابیس، کامنت‌های زیر را بردارید:
 // const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'
@@ -416,11 +434,11 @@ cities.forEach(c=>{
 });
 
 function renderTable(data){
-  document.getElementById('tableBody').innerHTML=data.map(c=>`<tr data-status="${c.status}" data-province="${c.province}">
-    <td class="font-bold">${c.name}</td><td>${c.province}</td>
+  document.getElementById('tableBody').innerHTML=data.map(c=>`<tr data-status="${sanitizeHTML(c.status)}" data-province="${sanitizeHTML(c.province)}">
+    <td class="font-bold">${sanitizeHTML(c.name)}</td><td>${sanitizeHTML(c.province)}</td>
     <td><span class="${getBadge(c.status)}">${getLabel(c.status)}</span></td>
-    <td class="text-sm">${c.report}</td>
-    <td class="text-xs text-gray-400">${c.time}</td>
+    <td class="text-sm">${sanitizeHTML(c.report)}</td>
+    <td class="text-xs text-gray-400">${sanitizeHTML(c.time)}</td>
   </tr>`).join('');
 }
 renderTable(cities);
@@ -458,6 +476,20 @@ async function checkVault(){
 }
 function submitForm(e){
   e.preventDefault();
+  // بررسی honeypot - اگر پر شده باشد، ربات است
+  if(document.getElementById('honeypot').value){return;}
+  // اعتبارسنجی ایمیل (از اعتبارسنجی داخلی مرورگر + بررسی اضافه)
+  const emailVal=document.getElementById('colabEmail').value;
+  const emailRegex=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  if(!emailRegex.test(emailVal)){alert('❌ لطفاً یک آدرس ایمیل معتبر وارد کنید');return;}
+  // اعتبارسنجی فایل رزومه
+  const fileInput=document.getElementById('cvFile');
+  if(fileInput.files&&fileInput.files[0]){
+    const file=fileInput.files[0];
+    const allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if(!allowed.includes(file.type)){alert('❌ فرمت فایل مجاز نیست. لطفاً فقط PDF، DOC یا DOCX آپلود کنید');return;}
+    if(file.size>5*1024*1024){alert('❌ حجم فایل نباید بیش از ۵ مگابایت باشد');return;}
+  }
   const btn=document.getElementById('submitBtn');
   btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
   setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);

@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+  <!-- هدرهای امنیتی -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>PBDO | پنل مدیریت</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -217,30 +222,100 @@
 </div>
 
 <script>
+// محافظت در برابر Clickjacking - پوشش روی محتوای صفحه
+if(window.self!==window.top){
+  document.body.style.cssText='margin:0;background:#0a0f1e;display:flex;align-items:center;justify-content:center;min-height:100vh;';
+  document.body.innerHTML='<div style="text-align:center;color:#ff003c;font-family:Vazirmatn,sans-serif;direction:rtl;padding:40px;"><div style="font-size:48px;margin-bottom:16px;">🚫</div><h1 style="font-size:24px;margin-bottom:8px;">دسترسی مسدود شد</h1><p style="color:#aaa;font-size:14px;">این صفحه در قاب (iframe) نمایش داده نمی‌شود</p></div>';
+}
+
+// تابع ضدXSS
+function sanitizeHTML(str){const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
+
+// تابع SHA-256
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// کاربران با رمزهای hash‌شده (SHA-256)
 const USERS=[
-  {username:'superadmin',password:'pbdo@super2025',role:'super_admin',name:'مدیر ارشد'},
-  {username:'admin_west',password:'pbdo@west2025',role:'regional_admin',name:'مدیر منطقه غرب',region:'غرب'},
-  {username:'operator1',password:'pbdo@op2025',role:'operator',name:'اپراتور ۱'}
+  {username:'superadmin',passwordHash:'289289a10d882fc09c95ef25756ba300df1e7951528ad7c375b0e68c49b8bd64',role:'super_admin',name:'مدیر ارشد'},
+  {username:'admin_west',passwordHash:'5bd1dd7feab5317bac42e90982a8cb97f24597ae4380936465cd5a74b790b6ae',role:'regional_admin',name:'مدیر منطقه غرب',region:'غرب'},
+  {username:'operator1',passwordHash:'35ff4b4e4018e911ef1f02883dc3ea6378197025e81fe0bdad3599b40b11d4d7',role:'operator',name:'اپراتور ۱'}
 ];
 let currentUser=null;
 const reports=JSON.parse(localStorage.getItem('pbdo_reports')||'[]');
 
+// ======= مدیریت نرخ تلاش ورود =======
+let loginAttempts=0;
+const MAX_ATTEMPTS=3;
+const LOCKOUT_TIME=30;
+let lockoutTimer=null;
+
+// ======= ثوابت جلسه =======
+const SESSION_TIMEOUT_MS=30*60*1000; // ۳۰ دقیقه
+const DEVTOOLS_THRESHOLD_MS=100; // آستانه تشخیص DevTools (میلی‌ثانیه)
+
+function startLockoutTimer(){
+  const btn=document.querySelector('#loginPage .btn-primary');
+  if(btn)btn.disabled=true;
+  let remaining=LOCKOUT_TIME;
+  lockoutTimer=setInterval(()=>{
+    remaining--;
+    const err=document.getElementById('loginError');
+    if(err)err.textContent=`⏳ تعداد تلاش‌های مجاز به پایان رسید. ${remaining} ثانیه دیگر دوباره امتحان کنید`;
+    if(remaining<=0){
+      clearInterval(lockoutTimer);
+      loginAttempts=0;
+      if(btn)btn.disabled=false;
+      if(err){err.textContent='❌ نام کاربری یا رمز عبور اشتباه است';err.classList.remove('hidden');}
+    }
+  },1000);
+}
+
+// ======= مدیریت جلسه =======
+let sessionTimeout;
+function resetSessionTimer(){
+  clearTimeout(sessionTimeout);
+  if(!currentUser)return;
+  sessionTimeout=setTimeout(()=>{
+    alert('⏰ جلسه شما به دلیل عدم فعالیت منقضی شد');
+    doLogout();
+  },SESSION_TIMEOUT_MS);
+}
+document.addEventListener('mousemove',resetSessionTimer);
+document.addEventListener('keypress',resetSessionTimer);
+
 function logAction(user,action,details){
   const logs=JSON.parse(localStorage.getItem('pbdo_logs')||'[]');
-  logs.unshift({id:Date.now(),user:user.username,role:user.role,action,details,timestamp:new Date().toLocaleString('fa-IR')});
+  logs.unshift({id:Date.now(),user:sanitizeHTML(user.username),role:sanitizeHTML(user.role),action:sanitizeHTML(action),details:sanitizeHTML(details),timestamp:new Date().toLocaleString('fa-IR')});
   localStorage.setItem('pbdo_logs',JSON.stringify(logs.slice(0,100)));
 }
 
-function doLogin(){
+async function doLogin(){
+  if(loginAttempts>=MAX_ATTEMPTS)return;
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
-  const found=USERS.find(x=>x.username===u&&x.password===p);
-  if(!found){document.getElementById('loginError').classList.remove('hidden');return;}
+  const inputHash=await sha256(p);
+  const found=USERS.find(x=>x.username===u&&x.passwordHash===inputHash);
+  if(!found){
+    document.getElementById('loginError').classList.remove('hidden');
+    loginAttempts++;
+    if(loginAttempts>=MAX_ATTEMPTS){
+      document.getElementById('loginError').textContent=`⏳ تعداد تلاش‌های مجاز به پایان رسید. ${LOCKOUT_TIME} ثانیه دیگر دوباره امتحان کنید`;
+      startLockoutTimer();
+    }
+    return;
+  }
   currentUser=found;
+  loginAttempts=0;
+  // ذخیره وضعیت در sessionStorage
+  sessionStorage.setItem('pbdo_session',JSON.stringify({username:found.username,role:found.role,name:found.name}));
   document.getElementById('loginError').classList.add('hidden');
   document.getElementById('loginPage').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
   setupDashboard();
+  resetSessionTimer();
   logAction(found,'ورود','ورود موفق به سیستم');
 }
 
@@ -288,13 +363,13 @@ function renderPending(){
   el.innerHTML=pending.map((r,i)=>`
     <div class="border border-yellow-900/50 rounded-lg p-4 mb-3">
       <div class="flex justify-between items-start flex-wrap gap-2">
-        <div><b>${r.city}</b> - ${r.province} <span class="status-${r.status} mr-2">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></div>
+        <div><b>${sanitizeHTML(r.city)}</b> - ${sanitizeHTML(r.province)} <span class="status-${sanitizeHTML(r.status)} mr-2">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></div>
         <div class="flex gap-2">
           ${currentUser.role==='super_admin'?`<button class="btn-sm btn-green" onclick="approveReport(${i})">✅ تایید</button><button class="btn-sm btn-red" onclick="rejectReport(${i})">❌ رد</button>`:''}
         </div>
       </div>
-      <p class="text-sm text-gray-400 mt-2">${r.desc}</p>
-      <p class="text-xs text-gray-600 mt-1">ثبت توسط: ${r.by} — ${r.time}</p>
+      <p class="text-sm text-gray-400 mt-2">${sanitizeHTML(r.desc)}</p>
+      <p class="text-xs text-gray-600 mt-1">ثبت توسط: ${sanitizeHTML(r.by)} — ${sanitizeHTML(r.time)}</p>
     </div>`).join('');
 }
 
@@ -304,7 +379,7 @@ function renderReports(){
   const myReports=currentUser.role==='regional_admin'?reports.filter(r=>r.by===currentUser.username):reports;
   if(!myReports.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">گزارشی ثبت نشده</p>';return;}
   el.innerHTML='<table><thead><tr><th>شهر</th><th>استان</th><th>وضعیت</th><th>توضیحات</th><th>ثبت‌کننده</th><th>تایید</th></tr></thead><tbody>'+
-    myReports.map(r=>`<tr><td>${r.city}</td><td>${r.province}</td><td><span class="status-${r.status}">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></td><td class="text-sm">${r.desc}</td><td class="text-xs text-gray-400">${r.by}</td><td>${r.approved?'<span class="status-green">✅</span>':'<span class="status-yellow">⏳</span>'}</td></tr>`).join('')+'</tbody></table>';
+    myReports.map(r=>`<tr><td>${sanitizeHTML(r.city)}</td><td>${sanitizeHTML(r.province)}</td><td><span class="status-${sanitizeHTML(r.status)}">${r.status==='green'?'🟢 عادی':r.status==='yellow'?'🟡 احتیاط':'🔴 هشدار'}</span></td><td class="text-sm">${sanitizeHTML(r.desc)}</td><td class="text-xs text-gray-400">${sanitizeHTML(r.by)}</td><td>${r.approved?'<span class="status-green">✅</span>':'<span class="status-yellow">⏳</span>'}</td></tr>`).join('')+'</tbody></table>';
 }
 
 function renderLogs(){
@@ -313,7 +388,7 @@ function renderLogs(){
   if(!el)return;
   if(!logs.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">لاگی ثبت نشده</p>';return;}
   el.innerHTML='<table><thead><tr><th>کاربر</th><th>نقش</th><th>عملیات</th><th>جزئیات</th><th>زمان</th></tr></thead><tbody>'+
-    logs.map(l=>`<tr><td class="font-bold">${l.user}</td><td>${l.role}</td><td>${l.action}</td><td class="text-sm text-gray-400">${l.details}</td><td class="text-xs text-gray-500">${l.timestamp}</td></tr>`).join('')+'</tbody></table>';
+    logs.map(l=>`<tr><td class="font-bold">${sanitizeHTML(l.user)}</td><td>${sanitizeHTML(l.role)}</td><td>${sanitizeHTML(l.action)}</td><td class="text-sm text-gray-400">${sanitizeHTML(l.details)}</td><td class="text-xs text-gray-500">${sanitizeHTML(l.timestamp)}</td></tr>`).join('')+'</tbody></table>';
 }
 
 function clearLogs(){if(confirm('آیا مطمئنید؟')){localStorage.removeItem('pbdo_logs');renderLogs();}}
@@ -356,6 +431,8 @@ function submitRaw(e){
 function doLogout(){
   logAction(currentUser,'خروج','خروج از سیستم');
   currentUser=null;
+  clearTimeout(sessionTimeout);
+  sessionStorage.removeItem('pbdo_session');
   document.getElementById('dashboard').classList.add('hidden');
   document.getElementById('loginPage').classList.remove('hidden');
   document.getElementById('loginUser').value='';
@@ -403,6 +480,23 @@ function initCharts(){
     });
   }
 }
+
+// ======= محافظت در برابر دستکاری کنسول =======
+// غیرفعال کردن منوی راست‌کلیک
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
+// شناسایی DevTools
+(function(){
+  setInterval(()=>{
+    const before=new Date();
+    // eslint-disable-next-line no-debugger
+    debugger;
+    const after=new Date();
+    if(after-before>DEVTOOLS_THRESHOLD_MS&&currentUser){
+      document.body.innerHTML='<div style="text-align:center;padding:50px;color:#ff003c;font-size:24px;">⚠️ دسترسی غیرمجاز شناسایی شد</div>';
+    }
+  },1000);
+})();
 </script>
 </body>
 </html>
