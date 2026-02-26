@@ -302,25 +302,25 @@
           <input type="text" name="website" id="honeypot" tabindex="-1" autocomplete="off">
         </div>
         <div class="grid md:grid-cols-2 gap-4 mb-4">
-          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی" maxlength="100"/></div>
-          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" id="colabEmail" required placeholder="email@example.com" dir="ltr" maxlength="254"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" id="collabName" required placeholder="نام و نام خانوادگی" maxlength="100"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">ایمیل *</label><input type="email" id="collabEmail" required placeholder="email@example.com" dir="ltr" maxlength="254"/></div>
         </div>
         <div class="grid md:grid-cols-2 gap-4 mb-4">
           <div>
             <label class="text-sm text-gray-400 block mb-2">تخصص *</label>
-            <select required>
+            <select id="collabSpecialty" required>
               <option value="">انتخاب کنید</option>
               <option>بیوتکنولوژی</option><option>هوش مصنوعی</option><option>فوتونیک و لیزر</option>
               <option>امنیت سایبری</option><option>علوم دامپزشکی</option><option>مهندسی ژنتیک</option>
               <option>داده‌کاوی</option><option>سایر</option>
             </select>
           </div>
-          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" min="0" max="50" placeholder="۰"/></div>
+          <div><label class="text-sm text-gray-400 block mb-2">سابقه کار (سال)</label><input type="number" id="collabExperience" min="0" max="50" placeholder="۰"/></div>
         </div>
-        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..." maxlength="2000"></textarea></div>
+        <div class="mb-4"><label class="text-sm text-gray-400 block mb-2">پیام و انگیزه</label><textarea id="collabMessage" rows="4" placeholder="توضیح دهید چرا می‌خواهید با PBDO همکاری کنید..." maxlength="2000"></textarea></div>
         <div class="mb-6">
           <label class="text-sm text-gray-400 block mb-2">آپلود رزومه (CV)</label>
-          <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
+          <input type="file" id="collabCV" accept=".pdf,.doc,.docx" class="cursor-pointer"/>
           <p class="text-xs text-gray-500 mt-1">فرمت‌های مجاز: PDF، DOC، DOCX - حداکثر ۵ مگابایت</p>
         </div>
         <button type="submit" class="btn-primary w-full" id="submitBtn">📤 ارسال درخواست همکاری</button>
@@ -479,11 +479,11 @@ function submitForm(e){
   // بررسی honeypot - اگر پر شده باشد، ربات است
   if(document.getElementById('honeypot').value){return;}
   // اعتبارسنجی ایمیل (از اعتبارسنجی داخلی مرورگر + بررسی اضافه)
-  const emailVal=document.getElementById('colabEmail').value;
+  const emailVal=document.getElementById('collabEmail').value;
   const emailRegex=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
   if(!emailRegex.test(emailVal)){alert('❌ لطفاً یک آدرس ایمیل معتبر وارد کنید');return;}
   // اعتبارسنجی فایل رزومه
-  const fileInput=document.getElementById('cvFile');
+  const fileInput=document.getElementById('collabCV');
   if(fileInput.files&&fileInput.files[0]){
     const file=fileInput.files[0];
     const allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -491,8 +491,35 @@ function submitForm(e){
     if(file.size>5*1024*1024){alert('❌ حجم فایل نباید بیش از ۵ مگابایت باشد');return;}
   }
   const btn=document.getElementById('submitBtn');
+  // جمع‌آوری اطلاعات فرم
+  const collaboration={
+    id:Date.now(),
+    name:document.getElementById('collabName').value,
+    email:document.getElementById('collabEmail').value,
+    specialty:document.getElementById('collabSpecialty').value,
+    experience:document.getElementById('collabExperience').value||'0',
+    message:document.getElementById('collabMessage').value,
+    cvFileName:document.getElementById('collabCV').files[0]?fileInput.files[0].name:'بدون رزومه',
+    time:new Date().toLocaleString('fa-IR'),
+    status:'pending'
+  };
+  // ذخیره در localStorage
+  const collaborations=JSON.parse(localStorage.getItem('pbdo_collaborations')||'[]');
+  collaborations.push(collaboration);
+  localStorage.setItem('pbdo_collaborations',JSON.stringify(collaborations));
+  // انیمیشن ارسال
   btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
-  setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);
+  setTimeout(()=>{
+    btn.textContent='✅ درخواست با موفقیت ارسال شد!';
+    btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';
+    // ریست فرم بعد از ۳ ثانیه
+    setTimeout(()=>{
+      e.target.reset();
+      btn.textContent='📤 ارسال درخواست همکاری';
+      btn.style.background='linear-gradient(135deg,#00f0ff,#0066ff)';
+      btn.disabled=false;
+    },3000);
+  },2000);
 }
 document.getElementById('vaultModal').addEventListener('click',function(e){if(e.target===this)closeVault();});
 

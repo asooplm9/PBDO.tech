@@ -88,6 +88,7 @@
       <div id="navSubmit" class="nav-item hidden" onclick="showSection('submit',this)">➕ ثبت گزارش</div>
       <div id="navRaw" class="nav-item hidden" onclick="showSection('raw',this)">📡 ثبت داده خام</div>
       <div id="navLogs" class="nav-item hidden" onclick="showSection('logs',this)">🔍 لاگ سیستم</div>
+      <div id="navCollabs" class="nav-item hidden" onclick="showSection('collabs',this)">🤝 درخواستهای همکاری</div>
     </nav>
     <div class="px-4 mt-4">
       <a href="index.html" class="block text-center text-gray-500 text-xs mb-3 hover:text-cyan-400">🌐 بازگشت به سایت</a>
@@ -119,6 +120,9 @@
         <div class="card text-center"><div class="text-3xl font-black" style="color:#39ff14">۱۵</div><div class="text-gray-400 text-sm mt-1">گزارش امروز</div></div>
         <div class="card text-center"><div class="text-3xl font-black" style="color:#ffd700">۳</div><div class="text-gray-400 text-sm mt-1">هشدار فعال</div></div>
         <div class="card text-center"><div class="text-3xl font-black" style="color:#ff003c">۲</div><div class="text-gray-400 text-sm mt-1">در انتظار تایید</div></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="card text-center"><div class="text-3xl font-black neon-blue" id="collabPendingCount">۰</div><div class="text-gray-400 text-sm mt-1">درخواست همکاری جدید</div></div>
       </div>
       <div class="card">
         <h3 class="font-bold mb-4 neon-blue">📋 گزارش‌های در انتظار تایید</h3>
@@ -216,6 +220,23 @@
           <button onclick="clearLogs()" class="btn-sm btn-red">پاک‌سازی</button>
         </div>
         <div id="logsTable"></div>
+      </div>
+    </div>
+
+    <div id="sectionCollabs" class="hidden">
+      <div class="card overflow-x-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold neon-blue">🤝 درخواستهای همکاری</h3>
+          <div class="flex gap-2">
+            <select id="filterCollabStatus" onchange="renderCollaborations()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:6px 12px;border-radius:6px;font-size:12px;">
+              <option value="">همه</option>
+              <option value="pending">⏳ در انتظار</option>
+              <option value="approved">✅ تایید شده</option>
+              <option value="rejected">❌ رد شده</option>
+            </select>
+          </div>
+        </div>
+        <div id="collabsTable"></div>
       </div>
     </div>
   </div>
@@ -330,6 +351,7 @@ function setupDashboard(){
     document.getElementById('navUsers').classList.remove('hidden');
     document.getElementById('navReports').classList.remove('hidden');
     document.getElementById('navLogs').classList.remove('hidden');
+    document.getElementById('navCollabs').classList.remove('hidden');
   } else if(currentUser.role==='regional_admin'){
     document.getElementById('navReports').classList.remove('hidden');
     document.getElementById('navSubmit').classList.remove('hidden');
@@ -337,7 +359,7 @@ function setupDashboard(){
     document.getElementById('navRaw').classList.remove('hidden');
     document.getElementById('navReports').classList.remove('hidden');
   }
-  renderPending();renderReports();renderLogs();updateTime();setInterval(updateTime,1000);
+  renderPending();renderReports();renderLogs();renderCollaborations();updateCollabCount();updateTime();setInterval(updateTime,1000);
   setTimeout(initCharts,100);
 }
 
@@ -345,7 +367,7 @@ function getRoleLabel(r){return r==='super_admin'?'مدیر ارشد سیستم'
 function updateTime(){document.getElementById('currentTime').textContent=new Date().toLocaleString('fa-IR');}
 
 function showSection(s,el){
-  ['overview','users','reports','submit','raw','logs'].forEach(x=>{
+  ['overview','users','reports','submit','raw','logs','collabs'].forEach(x=>{
     const sec=document.getElementById('section'+x.charAt(0).toUpperCase()+x.slice(1));
     if(sec)sec.classList.add('hidden');
   });
@@ -392,6 +414,75 @@ function renderLogs(){
 }
 
 function clearLogs(){if(confirm('آیا مطمئنید؟')){localStorage.removeItem('pbdo_logs');renderLogs();}}
+
+// ======= توابع همکاری =======
+function sanitize(str){if(!str)return '';const div=document.createElement('div');div.textContent=str;return div.innerHTML;}
+
+function getCollaborations(){return JSON.parse(localStorage.getItem('pbdo_collaborations')||'[]');}
+
+function renderCollaborations(){
+  const el=document.getElementById('collabsTable');
+  if(!el)return;
+  let collabs=getCollaborations();
+  const filterStatus=document.getElementById('filterCollabStatus');
+  if(filterStatus&&filterStatus.value){collabs=collabs.filter(c=>c.status===filterStatus.value);}
+  if(!collabs.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">درخواست همکاری جدیدی وجود ندارد</p>';return;}
+  el.innerHTML=collabs.map(c=>`
+    <div class="border border-cyan-900/30 rounded-lg p-4 mb-3">
+      <div class="flex justify-between items-start flex-wrap gap-2">
+        <div>
+          <b class="text-white">${sanitize(c.name)}</b>
+          <span class="text-xs text-gray-400 mr-2">${sanitize(c.email)}</span>
+          <span class="${c.status==='pending'?'status-yellow':c.status==='approved'?'status-green':'status-red'} mr-2">
+            ${c.status==='pending'?'⏳ در انتظار':c.status==='approved'?'✅ تایید شده':'❌ رد شده'}
+          </span>
+        </div>
+        <div class="flex gap-2">
+          ${c.status==='pending'&&currentUser.role==='super_admin'?`
+            <button class="btn-sm btn-green" onclick="approveCollab(${Number(c.id)})">✅ تایید</button>
+            <button class="btn-sm btn-red" onclick="rejectCollab(${Number(c.id)})">❌ رد</button>
+          `:''}
+        </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 text-sm">
+        <div><span class="text-gray-500">تخصص:</span> <span class="text-cyan-400">${sanitize(c.specialty)}</span></div>
+        <div><span class="text-gray-500">سابقه:</span> ${sanitize(c.experience)} سال</div>
+        <div><span class="text-gray-500">رزومه:</span> ${sanitize(c.cvFileName)}</div>
+        <div><span class="text-gray-500">زمان:</span> ${sanitize(c.time)}</div>
+      </div>
+      ${c.message?`<p class="text-sm text-gray-400 mt-2 border-t border-gray-800 pt-2">💬 ${sanitize(c.message)}</p>`:''}
+    </div>
+  `).join('');
+}
+
+function approveCollab(id){
+  const collabs=getCollaborations();
+  const idx=collabs.findIndex(c=>c.id===id);
+  if(idx!==-1){
+    collabs[idx].status='approved';
+    localStorage.setItem('pbdo_collaborations',JSON.stringify(collabs));
+    logAction(currentUser,'تایید همکاری',collabs[idx].name+' - '+collabs[idx].specialty);
+    renderCollaborations();updateCollabCount();
+  }
+}
+
+function rejectCollab(id){
+  const collabs=getCollaborations();
+  const idx=collabs.findIndex(c=>c.id===id);
+  if(idx!==-1){
+    collabs[idx].status='rejected';
+    localStorage.setItem('pbdo_collaborations',JSON.stringify(collabs));
+    logAction(currentUser,'رد همکاری',collabs[idx].name+' - '+collabs[idx].specialty);
+    renderCollaborations();updateCollabCount();
+  }
+}
+
+function updateCollabCount(){
+  const collabs=getCollaborations();
+  const pendingCount=collabs.filter(c=>c.status==='pending').length;
+  const el=document.getElementById('collabPendingCount');
+  if(el)el.textContent=pendingCount;
+}
 
 function approveReport(i){
   const pending=reports.filter(r=>!r.approved);
