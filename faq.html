@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>سوالات متداول | PBDO</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;box-sizing:border-box;}
+    body{background:#0a0a0a;color:#e0e0e0;margin:0;}
+    .neon{color:#00ff88;text-shadow:0 0 8px #00ff88;}
+    nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,10,.9);border-bottom:1px solid #00ff8822;}
+    main{max-width:900px;margin:0 auto;padding:40px 16px;}
+    .faq-item{background:#111;border:1px solid #00ff8822;border-radius:12px;margin-bottom:12px;overflow:hidden;}
+    .faq-question{padding:18px 20px;cursor:pointer;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s;}
+    .faq-question:hover{background:#00ff8808;}
+    .faq-question.open{color:#00ff88;background:#00ff8808;}
+    .faq-icon{transition:transform .3s;font-style:normal;font-size:18px;flex-shrink:0;margin-right:12px;}
+    .faq-question.open .faq-icon{transform:rotate(45deg);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;padding:0 20px;color:#aaa;font-size:14px;line-height:1.8;}
+    .faq-answer.open{max-height:400px;padding:0 20px 18px;}
+    footer{background:#060606;border-top:1px solid #00ff8822;padding:32px 16px;text-align:center;color:#555;font-size:13px;}
+    a{color:#00ff88;text-decoration:none;}
+    a:hover{text-decoration:underline;}
+  </style>
+</head>
+<body>
+<nav>
+  <div style="max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;">🛡️ PBDO</a>
+    <a href="index.html" style="font-size:14px;color:#aaa;">→ بازگشت به صفحه اصلی</a>
+  </div>
+</nav>
+
+<main>
+  <h1 class="neon" style="font-size:2rem;font-weight:900;margin-bottom:8px;">❓ سوالات متداول</h1>
+  <p style="color:#888;margin-bottom:32px;font-size:14px;">پاسخ به رایج‌ترین سوالات درباره سازمان PBDO</p>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>سازمان PBDO چیست و چه وظایفی دارد؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      سازمان پدافند زیستی عمومی (Public Bio Defense Organization) یک نهاد تخصصی است که با هدف پایش هوشمند تهدیدات زیستی، حفاظت از سلامت عمومی و امنیت ملی فعالیت می‌کند. این سازمان از فناوری‌های پیشرفته هوش مصنوعی، اپتیک و فوتونیک برای شناسایی و مقابله با تهدیدات بیولوژیک بهره می‌برد.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>سیستم پایش زیستی PBDO چگونه کار می‌کند؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      سیستم پایش PBDO از شبکه‌ای از حسگرهای محیطی، داده‌های آزمایشگاهی و الگوریتم‌های هوش مصنوعی استفاده می‌کند تا به صورت ۲۴ ساعته و ۷ روز هفته وضعیت زیستی را در سراسر کشور رصد کند. داده‌ها در لحظه پردازش شده و در صورت شناسایی ناهنجاری، هشدارهای لازم صادر می‌شود.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>سیستم دفاع لیزری PBDO چه قابلیت‌هایی دارد؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      پروژه دفاع لیزری PBDO (Project Thermal Laser) یک معماری پیشرفته دفاعی است که از سیستم‌های اپتیکی و فوتونیکی برای مقابله با تهدیدات استفاده می‌کند. این سیستم در حال حاضر در مرحله آزمایش قرار دارد و جزئیات فنی آن محرمانه است.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>چگونه می‌توانم با PBDO همکاری کنم؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      برای همکاری با سازمان PBDO می‌توانید فرم درخواست همکاری را در صفحه اصلی سایت تکمیل نمایید. پس از بررسی اطلاعات و رزومه شما توسط تیم سازمان، از طریق ایمیل با شما تماس خواهیم گرفت. تخصص‌های مورد نیاز شامل زیست‌شناسی، شیمی، فیزیک، مهندسی کامپیوتر و هوش مصنوعی است.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>Project Aegis چیست؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      Project Aegis یکی از پروژه‌های اصلی PBDO است که با هدف ایجاد سپر دفاعی یکپارچه در برابر تهدیدات زیستی طراحی شده است. این پروژه شامل شبکه‌ای از ایستگاه‌های پایش، سیستم‌های هشدار سریع و پروتکل‌های واکنش اضطراری است و در حال حاضر در وضعیت عملیاتی قرار دارد.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>آیا اطلاعات کاربران در PBDO محرمانه است؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      بله، PBDO به حفاظت از حریم خصوصی کاربران اهمیت ویژه‌ای می‌دهد. تمام اطلاعات ارسال‌شده توسط کاربران کاملاً محرمانه نگهداری می‌شود و بدون رضایت کاربر با اشخاص ثالث به اشتراک گذاشته نمی‌شود. برای اطلاعات بیشتر به صفحه <a href="privacy.html">سیاست حریم خصوصی</a> مراجعه کنید.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>PBDO در چه استان‌هایی فعالیت دارد؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      سازمان PBDO در حال حاضر در ۳۱ استان کشور دارای شبکه پایش فعال است. بیشترین تمرکز فعالیت در استان‌های تهران، خوزستان، خراسان رضوی، اصفهان و فارس قرار دارد. هدف سازمان پوشش کامل تمام نقاط کشور تا سال ۱۴۰۶ است.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>چگونه یک تهدید زیستی را گزارش دهم؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      در صورت مشاهده هرگونه وضعیت مشکوک زیستی، می‌توانید از طریق صفحه <a href="contact.html">تماس با ما</a> گزارش دهید یا با آدرس admin@pbdo.tech تماس بگیرید. در موارد اضطراری، با اورژانس اجتماعی یا نیروهای امنیتی محل تماس بگیرید. تیم PBDO در اسرع وقت به گزارش شما رسیدگی خواهد کرد.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>آیا PBDO با سازمان‌های بین‌المللی همکاری دارد؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      بله، PBDO در چارچوب قوانین بین‌المللی و با رعایت مقررات امنیت ملی با برخی سازمان‌های بین‌المللی بهداشتی و دفاع زیستی همکاری دارد. این همکاری‌ها شامل تبادل اطلاعات علمی، هماهنگی پروتکل‌های واکنش به بیماری‌های همه‌گیر و آموزش متخصصان است.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question" onclick="toggleFaq(this)" role="button" aria-expanded="false">
+      <span>چگونه می‌توانم وضعیت سیستم‌های PBDO را پایش کنم؟</span>
+      <i class="faq-icon">+</i>
+    </div>
+    <div class="faq-answer">
+      وضعیت لحظه‌ای سیستم‌های PBDO از طریق صفحه <a href="status.html">وضعیت سیستم</a> قابل مشاهده است. این صفحه اطلاعات به‌روز درباره عملکرد سرویس‌های مختلف، درصد آپ‌تایم و آخرین وضعیت هر سرویس را نمایش می‌دهد.
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است</p>
+  <p style="margin-top:8px;">
+    <a href="index.html">خانه</a> &nbsp;|&nbsp;
+    <a href="privacy.html">حریم خصوصی</a> &nbsp;|&nbsp;
+    <a href="terms.html">قوانین و مقررات</a> &nbsp;|&nbsp;
+    <a href="contact.html">تماس با ما</a>
+  </p>
+</footer>
+
+<script>
+function toggleFaq(btn){
+  const answer=btn.nextElementSibling;
+  const isOpen=btn.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-question.open').forEach(q=>{
+    q.classList.remove('open');
+    q.setAttribute('aria-expanded','false');
+    q.nextElementSibling.classList.remove('open');
+  });
+  // Toggle clicked
+  if(!isOpen){
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded','true');
+    answer.classList.add('open');
+  }
+}
+// Keyboard support
+document.querySelectorAll('.faq-question').forEach(btn=>{
+  btn.setAttribute('tabindex','0');
+  btn.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleFaq(this);}
+  });
+});
+</script>
+</body>
+</html>
