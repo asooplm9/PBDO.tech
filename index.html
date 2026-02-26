@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <!-- هدرهای امنیتی -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://api.emailjs.com;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -26,6 +26,7 @@
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Organization","name":"سازمان پدافند زیستی عمومی PBDO","url":"https://pbdo.tech","logo":"https://pbdo.tech/logo.svg","description":"سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری","contactPoint":{"@type":"ContactPoint","email":"admin@pbdo.tech","contactType":"customer service"}}
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -404,6 +405,19 @@ function sanitizeHTML(str){const div=document.createElement('div');div.textConte
 // مثال واکشی داده: const { data } = await supabase.from('city_monitoring').select('*')
 // ====================================== 
 
+// ======= EMAILJS CONFIGURATION =======
+// Service ID: service_pbdo
+// Public Key: sVwS8e4sMYnzhlraY
+//
+// Template های مورد نیاز در EmailJS Dashboard:
+// 1. template_received - ایمیل تایید دریافت درخواست
+// 2. template_approved - ایمیل تایید همکاری
+// 3. template_rejected - ایمیل رد درخواست
+//
+// پارامترهای Template: {{to_name}}, {{to_email}}, {{from_name}}, {{specialty}}, {{message}}
+// =======================================
+emailjs.init('sVwS8e4sMYnzhlraY');
+
 const cities=[
   {name:'تهران',province:'تهران',status:'green',lat:35.6892,lng:51.3890,report:'وضعیت عادی - هیچ تهدیدی شناسایی نشده',time:'۱۰ دقیقه پیش'},
   {name:'مشهد',province:'خراسان رضوی',status:'green',lat:36.2972,lng:59.6067,report:'پایش مستمر - شاخص‌ها در محدوده نرمال',time:'۱۵ دقیقه پیش'},
@@ -491,15 +505,21 @@ function submitForm(e){
     if(file.size>5*1024*1024){alert('❌ حجم فایل نباید بیش از ۵ مگابایت باشد');return;}
   }
   const btn=document.getElementById('submitBtn');
+  btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
   // جمع‌آوری اطلاعات فرم
+  const name=document.getElementById('collabName').value;
+  const email=document.getElementById('collabEmail').value;
+  const specialty=document.getElementById('collabSpecialty').value;
+  const experience=document.getElementById('collabExperience').value||'0';
+  const message=document.getElementById('collabMessage').value;
   const collaboration={
     id:Date.now(),
-    name:document.getElementById('collabName').value,
-    email:document.getElementById('collabEmail').value,
-    specialty:document.getElementById('collabSpecialty').value,
-    experience:document.getElementById('collabExperience').value||'0',
-    message:document.getElementById('collabMessage').value,
-    cvFileName:document.getElementById('collabCV').files[0]?fileInput.files[0].name:'بدون رزومه',
+    name:name,
+    email:email,
+    specialty:specialty,
+    experience:experience,
+    message:message,
+    cvFileName:fileInput.files[0]?fileInput.files[0].name:'بدون رزومه',
     time:new Date().toLocaleString('fa-IR'),
     status:'pending'
   };
@@ -507,19 +527,34 @@ function submitForm(e){
   const collaborations=JSON.parse(localStorage.getItem('pbdo_collaborations')||'[]');
   collaborations.push(collaboration);
   localStorage.setItem('pbdo_collaborations',JSON.stringify(collaborations));
-  // انیمیشن ارسال
-  btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
-  setTimeout(()=>{
+  // ارسال ایمیل تایید دریافت به درخواستدهنده
+  emailjs.send('service_pbdo','template_received',{
+    to_name:name,
+    to_email:email,
+    from_name:'سازمان پدافند زیستی PBDO',
+    specialty:specialty,
+    message:'درخواست همکاری شما با موفقیت دریافت شد و در حال بررسی توسط تیم ما می‌باشد. نتیجه بررسی از طریق ایمیل به اطلاع شما خواهد رسید.'
+  }).then(function(){
     btn.textContent='✅ درخواست با موفقیت ارسال شد!';
     btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';
-    // ریست فرم بعد از ۳ ثانیه
     setTimeout(()=>{
       e.target.reset();
       btn.textContent='📤 ارسال درخواست همکاری';
       btn.style.background='linear-gradient(135deg,#00f0ff,#0066ff)';
       btn.disabled=false;
     },3000);
-  },2000);
+  }).catch(function(error){
+    console.log('EmailJS Error:',error);
+    // حتی اگر ایمیل ارسال نشد، درخواست ذخیره شده
+    btn.textContent='✅ درخواست ثبت شد!';
+    btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';
+    setTimeout(()=>{
+      e.target.reset();
+      btn.textContent='📤 ارسال درخواست همکاری';
+      btn.style.background='linear-gradient(135deg,#00f0ff,#0066ff)';
+      btn.disabled=false;
+    },3000);
+  });
 }
 document.getElementById('vaultModal').addEventListener('click',function(e){if(e.target===this)closeVault();});
 
