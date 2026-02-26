@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -11,6 +11,9 @@
   <link rel="icon" type="image/svg+xml" href="logo.svg"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
   <link rel="stylesheet" href="print.css" media="print"/>
   <style>
     *{font-family:'Vazirmatn',sans-serif;}
@@ -31,10 +34,18 @@
   </style>
 </head>
 <body>
-<nav>
-  <div style="max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;">🛡️ PBDO</a>
-    <a href="index.html" style="font-size:14px;color:#aaa;">→ بازگشت به صفحه اصلی</a>
+<nav style="position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,10,10,.9);border-bottom:1px solid #00ff8822;">
+  <div style="max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <a href="index.html" style="color:#00ff88;text-shadow:0 0 8px #00ff88;font-size:1.25rem;font-weight:900;text-decoration:none;">🛡️ PBDO</a>
+    <div style="display:flex;align-items:center;gap:16px;font-size:14px;font-weight:600;flex-wrap:wrap;">
+      <a href="index.html" style="color:#aaa;text-decoration:none;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#aaa'">خانه</a>
+      <a href="monitoring.html" style="color:#aaa;text-decoration:none;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#aaa'">پایش زنده</a>
+      <a href="radar.html" style="color:#aaa;text-decoration:none;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#aaa'">رادار</a>
+      <a href="report.html" style="color:#aaa;text-decoration:none;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#aaa'">گزارش مردمی</a>
+      <a href="about.html" style="color:#aaa;text-decoration:none;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#aaa'">درباره ما</a>
+      <a href="contact.html" style="color:#00ff88;text-decoration:none;text-shadow:0 0 8px #00ff88;">تماس با ما</a>
+      <a href="admin.html" style="background:linear-gradient(135deg,#00ff88,#00aa55);color:#000;font-weight:700;padding:8px 18px;border-radius:8px;text-decoration:none;font-size:13px;">ورود مدیران</a>
+    </div>
   </div>
 </nav>
 
@@ -95,15 +106,37 @@
       </p>
     </div>
   </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h2 style="color:#ff3333;font-size:1.1rem;font-weight:700;margin-bottom:12px;">🚨 خط اضطراری</h2>
+      <div style="background:#ff333311;border:1px solid #ff333344;border-radius:8px;padding:16px;text-align:center;">
+        <p style="font-size:2rem;font-weight:900;color:#ff3333;margin:0;">۱۱۶</p>
+        <p style="color:#aaa;font-size:13px;margin-top:8px;">برای موارد اضطراری بیولوژیکی ۲۴ ساعت شبانه‌روز</p>
+      </div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:#aaa;">
+        <div>📞 تهران: ۰۲۱-۱۲۳۴۵۶۷۸</div>
+        <div>📞 مشهد: ۰۵۱-۱۲۳۴۵۶۷۸</div>
+        <div>📞 اصفهان: ۰۳۱-۱۲۳۴۵۶۷۸</div>
+        <div>📞 شیراز: ۰۷۱-۱۲۳۴۵۶۷۸</div>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-top:24px;">
+      <h2 style="color:#00ff88;font-size:1.1rem;font-weight:700;margin-bottom:12px;">🗺️ موقعیت دفتر مرکزی</h2>
+      <div id="contactMap" style="height:280px;border-radius:8px;overflow:hidden;"></div>
+    </div>
 </main>
 
-<footer>
+<footer style="background:#060606;border-top:1px solid #00ff8822;padding:32px 16px;text-align:center;color:#555;font-size:13px;">
   <p>© ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است</p>
   <p style="margin-top:8px;">
-    <a href="index.html">خانه</a> &nbsp;|&nbsp;
-    <a href="privacy.html">حریم خصوصی</a> &nbsp;|&nbsp;
-    <a href="terms.html">قوانین و مقررات</a> &nbsp;|&nbsp;
-    <a href="contact.html">تماس با ما</a>
+    <a href="index.html" style="color:#00ff88;">خانه</a> &nbsp;|&nbsp;
+    <a href="monitoring.html" style="color:#00ff88;">پایش زنده</a> &nbsp;|&nbsp;
+    <a href="radar.html" style="color:#00ff88;">رادار</a> &nbsp;|&nbsp;
+    <a href="report.html" style="color:#00ff88;">گزارش مردمی</a> &nbsp;|&nbsp;
+    <a href="about.html" style="color:#00ff88;">درباره ما</a> &nbsp;|&nbsp;
+    <a href="privacy.html" style="color:#00ff88;">حریم خصوصی</a> &nbsp;|&nbsp;
+    <a href="terms.html" style="color:#00ff88;">قوانین</a>
   </p>
 </footer>
 
@@ -145,6 +178,10 @@ function submitContact(e){
   e.target.reset();
   setTimeout(()=>{msg.style.display='none';},5000);
 }
+// Initialize contact map
+const cmap = L.map('contactMap', {center: [35.6892, 51.3890], zoom: 10});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap', maxZoom: 18}).addTo(cmap);
+L.marker([35.6892, 51.3890]).addTo(cmap).bindPopup('<div dir="rtl" style="font-family:Vazirmatn,sans-serif;">دفتر مرکزی PBDO<br/>تهران، ایران</div>').openPopup();
 </script>
 </body>
 </html>

@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>گزارش مردمی | PBDO</title>
+  <meta name="description" content="سامانه گزارش‌دهی مردمی سازمان دفاع زیستی عمومی PBDO — ثبت گزارش تهدیدات زیستی و پیگیری وضعیت گزارش"/>
+  <link rel="canonical" href="https://pbdo.tech/report.html"/>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="print.css" media="print"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *{font-family:'Vazirmatn',sans-serif;}
+    body{background:#0a0a0a;color:#e0e0e0;margin:0;}
+
+    /* ── Nav ── */
+    .site-nav{position:fixed;top:0;width:100%;z-index:200;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.88);border-bottom:1px solid rgba(0,255,136,.15);}
+    .nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+    .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-size:1.15rem;font-weight:900;color:#00ff88;text-shadow:0 0 10px #00ff8866;}
+    .nav-links{display:flex;align-items:center;gap:4px;}
+    .nav-links a{color:#a0a0a0;text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 12px;border-radius:6px;transition:color .2s,background .2s;}
+    .nav-links a:hover{color:#00ff88;background:rgba(0,255,136,.08);}
+    .nav-links a.active{color:#00ff88;background:rgba(0,255,136,.12);font-weight:700;}
+    .nav-links a.nav-admin{border:1px solid #00ff8844;color:#00ff88;padding:6px 14px;}
+    .nav-links a.nav-admin:hover{background:#00ff8815;}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+    .hamburger span{width:22px;height:2px;background:#00ff88;border-radius:2px;display:block;transition:all .3s;}
+    @media(max-width:860px){.nav-links{display:none;}.hamburger{display:flex;}}
+
+    /* ── Mobile Menu ── */
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:190;}
+    .mobile-overlay.open{display:block;}
+    .mobile-menu{position:fixed;top:0;right:-100%;width:72%;max-width:280px;height:100%;background:#0e0e0e;border-left:1px solid #00ff8822;z-index:195;transition:right .3s ease;padding:80px 20px 20px;display:flex;flex-direction:column;gap:8px;}
+    .mobile-menu.open{right:0;}
+    .mobile-menu a{color:#aaa;text-decoration:none;font-size:14px;font-weight:500;padding:12px 16px;border-radius:8px;border-bottom:1px solid #ffffff08;transition:color .2s,background .2s;}
+    .mobile-menu a:hover,.mobile-menu a.active{color:#00ff88;background:rgba(0,255,136,.08);}
+
+    /* ── Jalali Clock ── */
+    .jalali-clock{font-size:12px;color:#666;white-space:nowrap;}
+
+    /* ── Emergency Banner ── */
+    .emergency-banner{background:linear-gradient(135deg,#1a0000,#2a0a00);border:1px solid #ff333355;border-radius:14px;padding:20px 24px;margin-bottom:32px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;}
+    .emergency-numbers{display:flex;flex-wrap:wrap;gap:10px;}
+    .emg-num{background:#ff333322;border:1px solid #ff3333;color:#ff6666;font-size:1.1rem;font-weight:800;padding:8px 20px;border-radius:8px;letter-spacing:2px;}
+    .emg-num span{color:#fff;}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:0;border-bottom:2px solid #1e1e1e;margin-bottom:28px;}
+    .tab-btn{background:none;border:none;color:#666;font-family:inherit;font-size:14px;font-weight:600;padding:12px 24px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;}
+    .tab-btn:hover{color:#00ff88;}
+    .tab-btn.active{color:#00ff88;border-bottom-color:#00ff88;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* ── Cards ── */
+    .card{background:#111;border:1px solid #00ff8818;border-radius:14px;padding:28px;}
+    .section-title{font-size:1.5rem;font-weight:800;color:#00ff88;margin-bottom:4px;}
+    .section-sub{color:#666;font-size:13px;margin-bottom:28px;}
+
+    /* ── Form ── */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#bbb;margin-bottom:6px;}
+    .form-group label .req{color:#ff5555;margin-right:2px;}
+    .form-group input,.form-group select,.form-group textarea{background:#0d0d0d;border:1px solid #00ff8822;color:#e0e0e0;padding:10px 14px;border-radius:8px;width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;transition:border-color .2s,box-shadow .2s;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#00ff88;box-shadow:0 0 8px #00ff8822;}
+    .form-group input.error,.form-group select.error,.form-group textarea.error{border-color:#ff3333;box-shadow:0 0 8px #ff333322;}
+    .field-error{color:#ff5555;font-size:12px;margin-top:4px;display:none;}
+    .field-error.visible{display:block;}
+    .form-group select option{background:#111;color:#e0e0e0;}
+
+    /* ── Anonymous Toggle ── */
+    .anon-box{display:flex;align-items:center;gap:10px;background:#0d0d0d;border:1px solid #00ff8818;border-radius:8px;padding:12px 16px;margin-bottom:20px;cursor:pointer;}
+    .anon-box input[type=checkbox]{width:18px;height:18px;accent-color:#00ff88;cursor:pointer;}
+    .anon-box label{color:#ccc;font-size:14px;cursor:pointer;margin:0;}
+
+    /* ── Urgency Radio ── */
+    .urgency-group{display:flex;flex-wrap:wrap;gap:10px;}
+    .urgency-label{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #333;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;}
+    .urgency-label input{display:none;}
+    .urgency-label.normal{color:#44cc88;}
+    .urgency-label.normal:has(input:checked),.urgency-label.normal:hover{background:#44cc8820;border-color:#44cc88;}
+    .urgency-label.urgent{color:#ffaa00;}
+    .urgency-label.urgent:has(input:checked),.urgency-label.urgent:hover{background:#ffaa0020;border-color:#ffaa00;}
+    .urgency-label.critical{color:#ff3333;}
+    .urgency-label.critical:has(input:checked),.urgency-label.critical:hover{background:#ff333320;border-color:#ff3333;}
+
+    /* ── File Upload ── */
+    .file-upload-area{border:2px dashed #00ff8833;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;}
+    .file-upload-area:hover{border-color:#00ff8866;}
+    .file-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .file-preview{display:none;margin-top:12px;text-align:center;}
+    .file-preview img{max-height:160px;max-width:100%;border-radius:8px;border:1px solid #00ff8833;}
+
+    /* ── GPS Button ── */
+    .gps-btn{display:inline-flex;align-items:center;gap:6px;background:#0d0d0d;border:1px solid #00ff8833;color:#00ff88;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;transition:all .2s;}
+    .gps-btn:hover{background:#00ff8815;border-color:#00ff88;}
+    .gps-coords{font-size:12px;color:#00ff88;margin-top:6px;font-family:'Courier New',monospace;direction:ltr;text-align:left;}
+
+    /* ── Captcha ── */
+    .captcha-box{background:#0d0d0d;border:1px solid #00ff8822;border-radius:10px;padding:16px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;}
+    .captcha-question{color:#ccc;font-size:14px;}
+    .captcha-nums{color:#00ff88;font-weight:800;font-size:1.1rem;}
+    .captcha-box input{width:90px;flex-shrink:0;}
+
+    /* ── Submit Btn ── */
+    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;font-family:inherit;font-size:1rem;font-weight:800;border:none;border-radius:10px;cursor:pointer;transition:all .3s;margin-top:8px;}
+    .submit-btn:hover{box-shadow:0 0 24px #00ff8866;transform:translateY(-1px);}
+    .submit-btn:active{transform:translateY(0);}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+    /* ── Success Card ── */
+    .success-card{display:none;background:linear-gradient(135deg,#001a0d,#002a14);border:1px solid #00ff8844;border-radius:14px;padding:32px;text-align:center;}
+    .success-card.visible{display:block;}
+    .tracking-code{font-family:'Courier New',monospace;font-size:2rem;font-weight:900;color:#00ff88;letter-spacing:4px;direction:ltr;text-align:center;background:#00ff8815;border:2px solid #00ff8844;border-radius:10px;padding:12px 24px;display:inline-block;margin:12px 0;}
+
+    /* ── Track Form ── */
+    .track-search{display:flex;gap:10px;margin-bottom:24px;}
+    .track-search input{flex:1;}
+    .track-search button{background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;border:none;padding:10px 22px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .3s;}
+    .track-search button:hover{box-shadow:0 0 16px #00ff8855;}
+
+    /* ── Status Timeline ── */
+    .status-timeline{display:flex;flex-direction:column;gap:0;position:relative;padding-right:20px;}
+    .status-timeline::before{content:'';position:absolute;right:7px;top:8px;bottom:8px;width:2px;background:#1e1e1e;}
+    .timeline-step{display:flex;align-items:flex-start;gap:16px;padding-bottom:20px;position:relative;}
+    .timeline-step:last-child{padding-bottom:0;}
+    .step-dot{width:16px;height:16px;border-radius:50%;border:2px solid #333;background:#0a0a0a;flex-shrink:0;margin-top:2px;position:relative;z-index:1;}
+    .step-dot.done{background:#00ff88;border-color:#00ff88;box-shadow:0 0 8px #00ff8866;}
+    .step-dot.current{background:#ffaa00;border-color:#ffaa00;box-shadow:0 0 8px #ffaa0066;animation:pulse-dot 1.5s infinite;}
+    @keyframes pulse-dot{0%,100%{box-shadow:0 0 8px #ffaa0066;}50%{box-shadow:0 0 16px #ffaa00aa;}}
+    .step-info{flex:1;}
+    .step-label{font-size:13px;font-weight:700;color:#888;}
+    .step-label.done{color:#00ff88;}
+    .step-label.current{color:#ffaa00;}
+    .step-date{font-size:11px;color:#555;margin-top:2px;}
+
+    /* ── Report Detail Card ── */
+    .report-detail{background:#0d0d0d;border:1px solid #00ff8822;border-radius:12px;padding:20px;margin-bottom:16px;}
+    .detail-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
+    .detail-label{color:#666;min-width:140px;flex-shrink:0;}
+    .detail-value{color:#ccc;font-weight:500;}
+
+    /* ── Status Badge ── */
+    .badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+    .badge-green{background:#00ff8820;color:#00ff88;border:1px solid #00ff8840;}
+    .badge-yellow{background:#ffaa0020;color:#ffaa00;border:1px solid #ffaa0040;}
+    .badge-red{background:#ff333320;color:#ff3333;border:1px solid #ff333340;}
+    .badge-blue{background:#3399ff20;color:#3399ff;border:1px solid #3399ff40;}
+
+    /* ── Admin Notes ── */
+    .admin-notes{background:#0d0d0d;border-right:3px solid #00ff88;border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:#aaa;margin-top:16px;}
+
+    /* ── Not Found ── */
+    .not-found{text-align:center;padding:40px 20px;color:#555;}
+    .not-found .icon{font-size:3rem;margin-bottom:12px;}
+
+    /* ── Footer ── */
+    footer{background:#060606;border-top:1px solid #00ff8815;padding:40px 20px 24px;margin-top:60px;}
+    .footer-inner{max-width:1200px;margin:0 auto;}
+    .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;margin-bottom:32px;}
+    .footer-col h4{color:#00ff88;font-size:13px;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;}
+    .footer-col a{display:block;color:#555;text-decoration:none;font-size:13px;margin-bottom:6px;transition:color .2s;}
+    .footer-col a:hover{color:#00ff88;}
+    .footer-bottom{border-top:1px solid #00ff8812;padding-top:20px;text-align:center;color:#444;font-size:12px;}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:#0a0a0a;}
+    ::-webkit-scrollbar-thumb{background:#00ff8840;border-radius:4px;}
+
+    /* ── Skip link ── */
+    .skip-link{position:absolute;top:-40px;right:0;background:#00ff88;color:#000;padding:8px 16px;font-weight:700;border-radius:0 0 0 8px;transition:top .2s;z-index:9999;}
+    .skip-link:focus{top:0;}
+  </style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">رفتن به محتوای اصلی</a>
+
+<!-- Mobile overlay -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()" aria-hidden="true"></div>
+
+<!-- Mobile menu -->
+<nav class="mobile-menu" id="mobileMenu" role="navigation" aria-label="منوی موبایل">
+  <a href="index.html">خانه</a>
+  <a href="monitoring.html">پایش زنده</a>
+  <a href="radar.html">رادار</a>
+  <a href="report.html" class="active">گزارش مردمی</a>
+  <a href="about.html">درباره ما</a>
+  <a href="contact.html">تماس با ما</a>
+  <a href="admin.html" style="color:#00ff88;border:1px solid #00ff8433;margin-top:8px;border-radius:8px;">ورود مدیران</a>
+</nav>
+
+<!-- Main nav -->
+<nav class="site-nav" role="navigation" aria-label="منوی اصلی">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="صفحه اصلی PBDO">
+      🛡️ <span>PBDO</span>
+      <span style="font-size:11px;font-weight:400;color:#555;padding-right:4px;">سازمان دفاع زیستی عمومی</span>
+    </a>
+    <div class="nav-links" role="menubar">
+      <a href="index.html" role="menuitem">خانه</a>
+      <a href="monitoring.html" role="menuitem">پایش زنده</a>
+      <a href="radar.html" role="menuitem">رادار</a>
+      <a href="report.html" class="active" role="menuitem" aria-current="page">گزارش مردمی</a>
+      <a href="about.html" role="menuitem">درباره ما</a>
+      <a href="contact.html" role="menuitem">تماس با ما</a>
+      <a href="admin.html" class="nav-admin" role="menuitem">ورود مدیران</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span class="jalali-clock" id="jalaliClock" aria-live="polite" aria-label="تاریخ و ساعت"></span>
+      <button class="hamburger" id="hamburgerBtn" onclick="openMobileMenu()" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main id="main" style="max-width:900px;margin:0 auto;padding:96px 20px 40px;">
+
+  <!-- Page Header -->
+  <div style="margin-bottom:32px;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#00ff8812;border:1px solid #00ff8830;color:#00ff88;font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:12px;">
+      <span>📋</span> سامانه گزارش‌دهی مردمی
+    </div>
+    <h1 style="font-size:2rem;font-weight:900;color:#e8e8e8;margin:0 0 8px;">گزارش مردمی تهدیدات زیستی</h1>
+    <p style="color:#666;font-size:14px;line-height:1.8;">با استفاده از این سامانه می‌توانید موارد مشکوک، آلودگی‌ها و تهدیدات زیستی را به سازمان PBDO گزارش دهید. تمامی گزارش‌ها محرمانه بررسی می‌شوند.</p>
+  </div>
+
+  <!-- Emergency Banner -->
+  <div class="emergency-banner" role="alert" aria-label="خط اضطراری">
+    <div style="font-size:1.4rem;" aria-hidden="true">🚨</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#ff6666;margin-bottom:6px;">خط اضطراری — برای موارد فوری بلافاصله با اورژانس تماس بگیرید</div>
+      <div class="emergency-numbers">
+        <div class="emg-num">اورژانس <span>۱۱۵</span></div>
+        <div class="emg-num">پلیس <span>۱۱۰</span></div>
+        <div class="emg-num">آتش‌نشانی <span>۱۲۵</span></div>
+        <div class="emg-num">اورژانس اجتماعی <span>۱۲۳</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist" aria-label="بخش‌های صفحه">
+    <button class="tab-btn active" id="tab-new" role="tab" aria-selected="true" aria-controls="panel-new" onclick="switchTab('new')">📝 ثبت گزارش جدید</button>
+    <button class="tab-btn" id="tab-track" role="tab" aria-selected="false" aria-controls="panel-track" onclick="switchTab('track')">🔍 پیگیری گزارش</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TAB 1 — NEW REPORT
+  ═══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-new" role="tabpanel" aria-labelledby="tab-new">
+
+    <!-- Success message (hidden initially) -->
+    <div class="success-card" id="successCard" role="status" aria-live="polite">
+      <div style="font-size:3rem;margin-bottom:12px;">✅</div>
+      <h2 style="font-size:1.4rem;font-weight:800;color:#00ff88;margin-bottom:8px;">گزارش شما با موفقیت ثبت شد</h2>
+      <p style="color:#888;font-size:13px;margin-bottom:20px;">گزارش شما دریافت و در صف بررسی قرار گرفت. کارشناسان PBDO در اسرع وقت آن را بررسی خواهند کرد.</p>
+      <div style="margin-bottom:6px;font-size:13px;color:#aaa;">کد پیگیری شما:</div>
+      <div class="tracking-code" id="successCode" aria-label="کد پیگیری">—</div>
+      <p style="color:#ff9900;font-size:12px;margin-top:8px;">⚠️ این کد را ذخیره کنید. برای پیگیری وضعیت گزارش نیاز خواهید داشت.</p>
+      <button onclick="resetForm()" style="margin-top:20px;background:#00ff8820;border:1px solid #00ff8844;color:#00ff88;font-family:inherit;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;cursor:pointer;">➕ ثبت گزارش جدید</button>
+    </div>
+
+    <!-- Report form -->
+    <div class="card" id="reportFormCard">
+      <h2 class="section-title">📋 فرم ثبت گزارش</h2>
+      <p class="section-sub">لطفاً اطلاعات را با دقت و صادقانه وارد کنید</p>
+
+      <form id="reportForm" novalidate onsubmit="submitReport(event)">
+
+        <!-- Anonymous toggle -->
+        <div class="anon-box" onclick="toggleAnon()">
+          <input type="checkbox" id="anonCheck" aria-label="ارسال ناشناس"/>
+          <label for="anonCheck">🕵️ گزارش ناشناس — اطلاعات شخصی من نمایش داده نشود</label>
+        </div>
+
+        <!-- Personal info (hidden when anon) -->
+        <div id="personalFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fullName">نام و نام‌خانوادگی</label>
+              <input type="text" id="fullName" placeholder="نام خود را وارد کنید" autocomplete="name"/>
+              <div class="field-error" id="err-fullName"></div>
+            </div>
+            <div class="form-group">
+              <label for="phone">شماره تماس</label>
+              <input type="tel" id="phone" placeholder="09xxxxxxxxx" dir="ltr" autocomplete="tel"/>
+              <div class="field-error" id="err-phone"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">ایمیل</label>
+            <input type="email" id="email" placeholder="example@email.com" dir="ltr" autocomplete="email"/>
+            <div class="field-error" id="err-email"></div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #1a1a1a;margin:4px 0 20px;"/>
+
+        <!-- Province & City -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="province"><span class="req">*</span> استان</label>
+            <select id="province" onchange="updateCities()" aria-required="true">
+              <option value="">انتخاب استان...</option>
+              <option>آذربایجان شرقی</option>
+              <option>آذربایجان غربی</option>
+              <option>اردبیل</option>
+              <option>اصفهان</option>
+              <option>البرز</option>
+              <option>ایلام</option>
+              <option>بوشهر</option>
+              <option>تهران</option>
+              <option>چهارمحال و بختیاری</option>
+              <option>خراسان جنوبی</option>
+              <option>خراسان رضوی</option>
+              <option>خراسان شمالی</option>
+              <option>خوزستان</option>
+              <option>زنجان</option>
+              <option>سمنان</option>
+              <option>سیستان و بلوچستان</option>
+              <option>فارس</option>
+              <option>قزوین</option>
+              <option>قم</option>
+              <option>کردستان</option>
+              <option>کرمان</option>
+              <option>کرمانشاه</option>
+              <option>کهگیلویه و بویراحمد</option>
+              <option>گلستان</option>
+              <option>گیلان</option>
+              <option>لرستان</option>
+              <option>مازندران</option>
+              <option>مرکزی</option>
+              <option>هرمزگان</option>
+              <option>همدان</option>
+              <option>یزد</option>
+            </select>
+            <div class="field-error" id="err-province"></div>
+          </div>
+          <div class="form-group">
+            <label for="city">شهر / روستا</label>
+            <input type="text" id="city" placeholder="نام شهر یا روستا" list="cityList"/>
+            <datalist id="cityList"></datalist>
+          </div>
+        </div>
+
+        <!-- Threat type -->
+        <div class="form-group">
+          <label for="threatType"><span class="req">*</span> نوع تهدید</label>
+          <select id="threatType" aria-required="true">
+            <option value="">انتخاب نوع تهدید...</option>
+            <option value="bio-attack">⚠️ حمله بیولوژیکی</option>
+            <option value="water-cont">💧 آلودگی آب</option>
+            <option value="air-cont">🌫️ آلودگی هوا</option>
+            <option value="unknown-disease">🦠 بیماری ناشناخته</option>
+            <option value="suspicious-material">🧪 مواد مشکوک</option>
+            <option value="other">📌 سایر</option>
+          </select>
+          <div class="field-error" id="err-threatType"></div>
+        </div>
+
+        <!-- Urgency -->
+        <div class="form-group">
+          <label><span class="req">*</span> سطح فوریت</label>
+          <div class="urgency-group" role="group" aria-label="سطح فوریت">
+            <label class="urgency-label normal">
+              <input type="radio" name="urgency" value="normal" checked aria-label="عادی"/> ✅ عادی
+            </label>
+            <label class="urgency-label urgent">
+              <input type="radio" name="urgency" value="urgent" aria-label="فوری"/> ⚡ فوری
+            </label>
+            <label class="urgency-label critical">
+              <input type="radio" name="urgency" value="critical" aria-label="بحرانی"/> 🚨 بحرانی
+            </label>
+          </div>
+        </div>
+
+        <!-- Date of observation -->
+        <div class="form-group">
+          <label for="obsDate">تاریخ مشاهده</label>
+          <input type="date" id="obsDate" dir="ltr" style="width:100%;"/>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description"><span class="req">*</span> توضیحات <span style="color:#555;font-weight:400;">(حداقل ۲۰ کاراکتر)</span></label>
+          <textarea id="description" rows="5" placeholder="لطفاً جزئیات کامل مشاهدات خود را شرح دهید. محل دقیق، زمان، علائم مشاهده‌شده و هر اطلاعات مرتبط دیگری را ذکر کنید..." aria-required="true" oninput="liveValidateDesc()"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+            <div class="field-error" id="err-description" style="flex:1;"></div>
+            <span id="descCount" style="font-size:11px;color:#555;">0 / 1000</span>
+          </div>
+        </div>
+
+        <!-- File upload -->
+        <div class="form-group">
+          <label>آپلود تصویر / مدرک</label>
+          <div class="file-upload-area" id="fileUploadArea">
+            <input type="file" id="fileInput" accept="image/*,.pdf" aria-label="انتخاب فایل" onchange="handleFileUpload(event)"/>
+            <div id="fileUploadText">
+              <div style="font-size:1.5rem;margin-bottom:6px;">📎</div>
+              <div style="color:#666;font-size:13px;">برای انتخاب فایل کلیک کنید یا بکشید و رها کنید</div>
+              <div style="color:#444;font-size:11px;margin-top:4px;">تصویر یا PDF، حداکثر ۵ مگابایت</div>
+            </div>
+          </div>
+          <div class="file-preview" id="filePreview">
+            <img id="filePreviewImg" src="" alt="پیش‌نمایش فایل"/>
+            <div id="filePreviewName" style="font-size:12px;color:#666;margin-top:6px;"></div>
+            <button type="button" onclick="clearFile()" style="background:none;border:1px solid #ff333344;color:#ff5555;font-family:inherit;font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;margin-top:6px;">× حذف فایل</button>
+          </div>
+        </div>
+
+        <!-- GPS -->
+        <div class="form-group">
+          <label>موقعیت مکانی (اختیاری)</label>
+          <div>
+            <button type="button" class="gps-btn" id="getLocation" onclick="getGPS()">
+              <span>📍</span> دریافت موقعیت من
+            </button>
+            <div class="gps-coords" id="gpsCoords" style="display:none;" aria-live="polite"></div>
+            <input type="hidden" id="gpsLat"/>
+            <input type="hidden" id="gpsLng"/>
+          </div>
+        </div>
+
+        <!-- Math Captcha -->
+        <div class="form-group">
+          <label><span class="req">*</span> تأیید ریاضی</label>
+          <div class="captcha-box">
+            <span class="captcha-question">لطفاً حاصل</span>
+            <span class="captcha-nums" id="captchaQuestion" aria-live="polite">؟ + ؟</span>
+            <span class="captcha-question">را وارد کنید:</span>
+            <input type="number" id="captchaAnswer" placeholder="پاسخ" style="width:90px;flex-shrink:0;" aria-label="پاسخ معادله ریاضی" min="0"/>
+          </div>
+          <div class="field-error" id="err-captcha"></div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submitBtn">📤 ارسال گزارش</button>
+
+      </form>
+    </div>
+  </div><!-- /panel-new -->
+
+  <!-- ═══════════════════════════════════════════════
+       TAB 2 — TRACK REPORT
+  ═══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-track" role="tabpanel" aria-labelledby="tab-track">
+    <div class="card">
+      <h2 class="section-title">🔍 پیگیری گزارش</h2>
+      <p class="section-sub">کد پیگیری دریافتی پس از ثبت گزارش را وارد کنید</p>
+
+      <div class="track-search">
+        <input type="text" id="trackingInput" placeholder="کد پیگیری (مثال: A3X7B2QR)" dir="ltr" aria-label="کد پیگیری" maxlength="8" oninput="this.value=this.value.toUpperCase()"/>
+        <button onclick="trackReport()" aria-label="جستجوی گزارش">🔍 جستجو</button>
+      </div>
+
+      <div id="trackResult" aria-live="polite"></div>
+    </div>
+  </div><!-- /panel-track -->
+
+</main>
+
+<!-- Footer -->
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>🛡️ PBDO</h4>
+        <p style="color:#444;font-size:12px;line-height:1.8;margin-top:4px;">سازمان دفاع زیستی عمومی<br/>جمهوری اسلامی ایران</p>
+      </div>
+      <div class="footer-col">
+        <h4>صفحات اصلی</h4>
+        <a href="index.html">خانه</a>
+        <a href="monitoring.html">پایش زنده</a>
+        <a href="radar.html">رادار تهدیدات</a>
+        <a href="report.html">گزارش مردمی</a>
+      </div>
+      <div class="footer-col">
+        <h4>سازمان</h4>
+        <a href="about.html">درباره ما</a>
+        <a href="contact.html">تماس با ما</a>
+        <a href="faq.html">سؤالات متداول</a>
+        <a href="status.html">وضعیت سرویس</a>
+      </div>
+      <div class="footer-col">
+        <h4>حقوقی</h4>
+        <a href="privacy.html">حریم خصوصی</a>
+        <a href="terms.html">شرایط استفاده</a>
+        <a href="admin.html">ورود مدیران</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© ۱۴۰۴ سازمان دفاع زیستی عمومی PBDO — تمامی حقوق محفوظ است</p>
+      <p style="margin-top:6px;color:#333;">در موارد اضطراری: اورژانس ۱۱۵ | پلیس ۱۱۰</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════ */
+
+function sanitizeHTML(str) {
+  const el = document.createElement('div');
+  el.textContent = String(str);
+  return el.innerHTML;
+}
+
+/* ── Jalali converter (standalone algorithm) ── */
+function toJalali(gy, gm, gd) {
+  const g_d_no = [0,31,29,31,30,31,30,31,31,30,31,30,31];
+  const j_d_no = [0,31,31,31,31,31,31,30,30,30,30,30,29];
+  function isLeapG(y){return (y%4===0&&y%100!==0)||y%400===0;}
+  if(gm<1||gm>12||gd<1||gd>g_d_no[gm]||(gm===2&&!isLeapG(gy)&&gd===29))return null;
+  let jy,jm,jd,g_y,j_y1,gy2,days;
+  gy2=gm>2?gy+1:gy;
+  days=355666+(365*gy)+(~~((gy2+3)/4))-(~~((gy2+99)/100))+(~~((gy2+399)/400));
+  for(let i=1;i<gm;i++)days+=g_d_no[i];
+  if(isLeapG(gy)&&gm>2)days++;
+  days+=gd;
+  jy=~~((days-22)/365.25);
+  j_y1=jy;
+  let jDays=22+(365*jy)+(~~((jy-474+474*179)/2820*683/2820)*683);
+  if(days<jDays){jy--;jDays=22+(365*jy)+(~~((jy-474+474*179)/2820*683/2820)*683);}
+  jm=0;
+  let rem=days-jDays+1;
+  for(let i=1;i<=12;i++){let dc=j_d_no[i];if(i===12)dc=days-jDays-364+(~~((jy-474+474*179)/2820)*683);if(rem<=dc){jm=i;jd=rem;break;}rem-=dc;}
+  return{y:jy,m:jm,d:jd};
+}
+
+const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const JALALI_DAYS   = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+
+function formatJalali(date) {
+  const j = toJalali(date.getFullYear(), date.getMonth()+1, date.getDate());
+  if (!j) return '';
+  const dayName = JALALI_DAYS[date.getDay()];
+  const hh = String(date.getHours()).padStart(2,'0');
+  const mm = String(date.getMinutes()).padStart(2,'0');
+  return `${dayName}، ${j.d} ${JALALI_MONTHS[j.m-1]} ${j.y} — ${hh}:${mm}`;
+}
+
+function updateClock() {
+  const el = document.getElementById('jalaliClock');
+  if (el) el.textContent = formatJalali(new Date());
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+/* ════════════════════════════════════════════════════════
+   MOBILE MENU
+════════════════════════════════════════════════════════ */
+function openMobileMenu() {
+  document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('mobileOverlay').classList.add('open');
+  document.getElementById('hamburgerBtn').setAttribute('aria-expanded','true');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobileOverlay').classList.remove('open');
+  document.getElementById('hamburgerBtn').setAttribute('aria-expanded','false');
+}
+
+/* ════════════════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-selected','false');
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tab-'+name).setAttribute('aria-selected','true');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+/* ════════════════════════════════════════════════════════
+   ANONYMOUS TOGGLE
+════════════════════════════════════════════════════════ */
+function toggleAnon() {
+  const cb = document.getElementById('anonCheck');
+  const fields = document.getElementById('personalFields');
+  cb.checked = !cb.checked;
+  fields.style.display = cb.checked ? 'none' : 'block';
+}
+
+/* ════════════════════════════════════════════════════════
+   PROVINCE → CITIES
+════════════════════════════════════════════════════════ */
+const PROVINCE_CITIES = {
+  'تهران':                    ['تهران','شهریار','ری','اسلامشهر','پاکدشت','دماوند','فیروزکوه','ورامین','رباط‌کریم'],
+  'اصفهان':                   ['اصفهان','کاشان','خمینی‌شهر','نجف‌آباد','شاهین‌شهر','زرین‌شهر','فلاورجان'],
+  'خوزستان':                  ['اهواز','آبادان','خرمشهر','دزفول','ماهشهر','اندیمشک','بهبهان','شوشتر'],
+  'فارس':                     ['شیراز','مرودشت','جهرم','کازرون','داراب','فسا','لارستان'],
+  'خراسان رضوی':              ['مشهد','نیشابور','سبزوار','تربت حیدریه','قوچان','گناباد','بجنورد'],
+  'مازندران':                  ['ساری','آمل','بابل','بابلسر','نوشهر','تنکابن','چالوس','رامسر'],
+  'آذربایجان شرقی':           ['تبریز','مراغه','اهر','مرند','میانه','سراب','بناب','ملکان'],
+  'آذربایجان غربی':           ['ارومیه','خوی','مهاباد','بوکان','میاندوآب','سلماس','نقده'],
+  'کرمانشاه':                 ['کرمانشاه','اسلام‌آباد غرب','هرسین','سرپل ذهاب','کنگاور','صحنه'],
+  'گیلان':                    ['رشت','انزلی','لاهیجان','آستارا','رودسر','لنگرود','تالش'],
+  'البرز':                    ['کرج','فردیس','نظرآباد','ساوجبلاغ','اشتهارد','طالقان'],
+  'کرمان':                    ['کرمان','رفسنجان','سیرجان','جیرفت','زرند','بم','بافت'],
+  'سیستان و بلوچستان':       ['زاهدان','زابل','چابهار','ایرانشهر','سراوان','خاش'],
+  'هرمزگان':                  ['بندر عباس','میناب','قشم','بندر لنگه','رودان','جاسک'],
+  'بوشهر':                    ['بوشهر','دشتستان','کنگان','گناوه','دیلم','تنگستان'],
+  'همدان':                    ['همدان','ملایر','نهاوند','اسدآباد','تویسرکان','بهار'],
+  'قم':                       ['قم','جعفریه'],
+  'زنجان':                    ['زنجان','ابهر','خرمدره','قیدار'],
+  'سمنان':                    ['سمنان','شاهرود','گرمسار','دامغان','مهدیشهر'],
+  'گلستان':                   ['گرگان','گنبد کاووس','آق‌قلا','کردکوی','بندر گز'],
+  'خراسان شمالی':             ['بجنورد','شیروان','اسفراین','جاجرم','فاروج'],
+  'خراسان جنوبی':             ['بیرجند','قاین','طبس','سرایان','بشرویه'],
+  'اردبیل':                   ['اردبیل','پارس‌آباد','مشگین‌شهر','خلخال','گرمی'],
+  'ایلام':                    ['ایلام','دهلران','آبدانان','مهران','شیروان چرداول'],
+  'لرستان':                   ['خرم‌آباد','بروجرد','الیگودرز','دورود','نورآباد'],
+  'چهارمحال و بختیاری':      ['شهرکرد','بروجن','فارسان','لردگان','اردل'],
+  'کهگیلویه و بویراحمد':    ['یاسوج','گچساران','دوگنبدان','لیکک'],
+  'کردستان':                  ['سنندج','سقز','مریوان','بانه','قروه','دیواندره'],
+  'مرکزی':                    ['اراک','ساوه','خمین','تفرش','محلات','دلیجان'],
+  'قزوین':                    ['قزوین','تاکستان','آبیک','البرز','بوئین‌زهرا'],
+  'یزد':                      ['یزد','میبد','اردکان','بافق','تفت','مهریز']
+};
+
+function updateCities() {
+  const province = document.getElementById('province').value;
+  const cityInput = document.getElementById('city');
+  const dataList = document.getElementById('cityList');
+  dataList.innerHTML = '';
+  cityInput.value = '';
+  const cities = PROVINCE_CITIES[province] || [];
+  cities.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    dataList.appendChild(opt);
+  });
+  if (cities.length) cityInput.placeholder = 'مثال: ' + cities[0];
+  else cityInput.placeholder = 'نام شهر یا روستا';
+}
+
+/* ════════════════════════════════════════════════════════
+   FILE UPLOAD
+════════════════════════════════════════════════════════ */
+let fileBase64 = null;
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert('حجم فایل نباید بیشتر از ۵ مگابایت باشد.');
+    event.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    fileBase64 = e.target.result;
+    const preview = document.getElementById('filePreview');
+    const img = document.getElementById('filePreviewImg');
+    const name = document.getElementById('filePreviewName');
+    preview.style.display = 'block';
+    if (file.type.startsWith('image/')) {
+      img.src = fileBase64;
+      img.style.display = 'block';
+    } else {
+      img.style.display = 'none';
+    }
+    name.textContent = '📎 ' + sanitizeHTML(file.name);
+    document.getElementById('fileUploadText').style.opacity = '0.4';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearFile() {
+  fileBase64 = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('filePreview').style.display = 'none';
+  document.getElementById('fileUploadText').style.opacity = '1';
+}
+
+/* ════════════════════════════════════════════════════════
+   GPS LOCATION
+════════════════════════════════════════════════════════ */
+function getGPS() {
+  const btn = document.getElementById('getLocation');
+  const coords = document.getElementById('gpsCoords');
+  if (!navigator.geolocation) {
+    coords.textContent = '⚠️ مرورگر شما از GPS پشتیبانی نمی‌کند.';
+    coords.style.display = 'block';
+    coords.style.color = '#ff5555';
+    return;
+  }
+  btn.textContent = '⏳ در حال دریافت موقعیت...';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      document.getElementById('gpsLat').value = lat;
+      document.getElementById('gpsLng').value = lng;
+      coords.textContent = `📍 Lat: ${lat}  |  Lng: ${lng}`;
+      coords.style.display = 'block';
+      coords.style.color = '#00ff88';
+      btn.innerHTML = '<span>✅</span> موقعیت دریافت شد';
+      btn.disabled = false;
+    },
+    function(err) {
+      coords.textContent = '⚠️ دسترسی به موقعیت مکانی رد شد یا در دسترس نیست.';
+      coords.style.display = 'block';
+      coords.style.color = '#ffaa00';
+      btn.innerHTML = '<span>📍</span> دریافت موقعیت من';
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   CAPTCHA
+════════════════════════════════════════════════════════ */
+let captchaA = 0, captchaB = 0;
+
+function generateCaptcha() {
+  captchaA = Math.floor(Math.random() * 9) + 1;
+  captchaB = Math.floor(Math.random() * 9) + 1;
+  document.getElementById('captchaQuestion').textContent = captchaA + ' + ' + captchaB;
+  document.getElementById('captchaAnswer').value = '';
+}
+generateCaptcha();
+
+/* ════════════════════════════════════════════════════════
+   TRACKING CODE GENERATOR
+════════════════════════════════════════════════════════ */
+function generateTrackingCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+/* ════════════════════════════════════════════════════════
+   FORM VALIDATION
+════════════════════════════════════════════════════════ */
+function showError(id, msg) {
+  const el = document.getElementById('err-' + id);
+  const input = document.getElementById(id);
+  if (el) { el.textContent = msg; el.classList.add('visible'); }
+  if (input) input.classList.add('error');
+}
+
+function clearError(id) {
+  const el = document.getElementById('err-' + id);
+  const input = document.getElementById(id);
+  if (el) { el.textContent = ''; el.classList.remove('visible'); }
+  if (input) input.classList.remove('error');
+}
+
+function clearAllErrors() {
+  ['fullName','phone','email','province','threatType','description','captcha'].forEach(clearError);
+}
+
+function liveValidateDesc() {
+  const val = document.getElementById('description').value;
+  const count = document.getElementById('descCount');
+  count.textContent = val.length + ' / 1000';
+  if (val.length > 1000) count.style.color = '#ff5555';
+  else if (val.length >= 20) count.style.color = '#00ff88';
+  else count.style.color = '#555';
+}
+
+function validateForm() {
+  clearAllErrors();
+  let valid = true;
+
+  const isAnon = document.getElementById('anonCheck').checked;
+  const province = document.getElementById('province').value;
+  const threatType = document.getElementById('threatType').value;
+  const description = document.getElementById('description').value.trim();
+  const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
+
+  if (!isAnon) {
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if (phone && !/^(09|\+989)\d{9}$/.test(phone.replace(/\s/g,''))) {
+      showError('phone', 'فرمت شماره تماس صحیح نیست (مثال: 09xxxxxxxxx)');
+      valid = false;
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('email', 'فرمت آدرس ایمیل صحیح نیست');
+      valid = false;
+    }
+  }
+
+  if (!province) {
+    showError('province', 'انتخاب استان الزامی است');
+    valid = false;
+  }
+
+  if (!threatType) {
+    showError('threatType', 'انتخاب نوع تهدید الزامی است');
+    valid = false;
+  }
+
+  if (description.length < 20) {
+    showError('description', 'توضیحات باید حداقل ۲۰ کاراکتر باشد');
+    valid = false;
+  } else if (description.length > 1000) {
+    showError('description', 'توضیحات نباید بیشتر از ۱۰۰۰ کاراکتر باشد');
+    valid = false;
+  }
+
+  if (isNaN(captchaAnswer) || captchaAnswer !== captchaA + captchaB) {
+    showError('captcha', 'پاسخ معادله ریاضی صحیح نیست');
+    valid = false;
+  }
+
+  return valid;
+}
+
+/* ════════════════════════════════════════════════════════
+   SUBMIT REPORT
+════════════════════════════════════════════════════════ */
+function submitReport(event) {
+  event.preventDefault();
+  if (!validateForm()) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ در حال ثبت...';
+
+  const isAnon = document.getElementById('anonCheck').checked;
+  const urgency = document.querySelector('input[name="urgency"]:checked').value;
+  const trackingCode = generateTrackingCode();
+  const now = new Date();
+
+  const report = {
+    id:           trackingCode,
+    date:         now.toISOString(),
+    dateJalali:   formatJalali(now),
+    anonymous:    isAnon,
+    fullName:     isAnon ? '' : document.getElementById('fullName').value.trim(),
+    phone:        isAnon ? '' : document.getElementById('phone').value.trim(),
+    email:        isAnon ? '' : document.getElementById('email').value.trim(),
+    province:     document.getElementById('province').value,
+    city:         document.getElementById('city').value.trim(),
+    threatType:   document.getElementById('threatType').value,
+    threatLabel:  document.getElementById('threatType').options[document.getElementById('threatType').selectedIndex].text,
+    urgency:      urgency,
+    obsDate:      document.getElementById('obsDate').value,
+    description:  document.getElementById('description').value.trim(),
+    lat:          document.getElementById('gpsLat').value,
+    lng:          document.getElementById('gpsLng').value,
+    file:         fileBase64,
+    status:       'submitted',
+    statusHistory:[{status:'submitted', date: now.toISOString(), note:'گزارش دریافت شد'}],
+    adminNotes:   ''
+  };
+
+  // Persist to localStorage
+  try {
+    const existing = JSON.parse(localStorage.getItem('pbdo_reports') || '[]');
+    existing.push(report);
+    localStorage.setItem('pbdo_reports', JSON.stringify(existing));
+  } catch(e) {
+    console.warn('localStorage write failed:', e);
+  }
+
+  // Show success
+  setTimeout(function() {
+    document.getElementById('reportFormCard').style.display = 'none';
+    const sc = document.getElementById('successCard');
+    sc.classList.add('visible');
+    document.getElementById('successCode').textContent = trackingCode;
+    sc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    generateCaptcha();
+  }, 600);
+}
+
+function resetForm() {
+  document.getElementById('reportForm').reset();
+  document.getElementById('anonCheck').checked = false;
+  document.getElementById('personalFields').style.display = 'block';
+  clearAllErrors();
+  clearFile();
+  document.getElementById('gpsCoords').style.display = 'none';
+  document.getElementById('gpsLat').value = '';
+  document.getElementById('gpsLng').value = '';
+  document.getElementById('descCount').textContent = '0 / 1000';
+  document.getElementById('descCount').style.color = '#555';
+  document.getElementById('getLocation').innerHTML = '<span>📍</span> دریافت موقعیت من';
+  document.getElementById('getLocation').disabled = false;
+  generateCaptcha();
+
+  document.getElementById('successCard').classList.remove('visible');
+  const card = document.getElementById('reportFormCard');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  btn.textContent = '📤 ارسال گزارش';
+}
+
+/* ════════════════════════════════════════════════════════
+   TRACK REPORT
+════════════════════════════════════════════════════════ */
+const STATUS_STEPS = [
+  { key: 'submitted',   label: 'ثبت شده' },
+  { key: 'reviewing',   label: 'در حال بررسی' },
+  { key: 'confirmed',   label: 'تأیید شده' },
+  { key: 'actioned',    label: 'اقدام شده' },
+  { key: 'closed',      label: 'بسته شده' }
+];
+
+const STATUS_ORDER = STATUS_STEPS.map(s => s.key);
+
+function trackReport() {
+  const code = document.getElementById('trackingInput').value.trim().toUpperCase();
+  const resultEl = document.getElementById('trackResult');
+
+  if (!code || code.length < 4) {
+    resultEl.innerHTML = '<div class="not-found"><div class="icon">⚠️</div><p>لطفاً کد پیگیری را وارد کنید</p></div>';
+    return;
+  }
+
+  let reports = [];
+  try {
+    reports = JSON.parse(localStorage.getItem('pbdo_reports') || '[]');
+  } catch(e) { reports = []; }
+
+  const report = reports.find(r => r.id === code);
+
+  if (!report) {
+    resultEl.innerHTML = `
+      <div class="not-found">
+        <div class="icon">🔎</div>
+        <p style="font-size:15px;font-weight:700;color:#888;margin-bottom:6px;">گزارشی با این کد یافت نشد</p>
+        <p style="font-size:13px;color:#555;">مطمئن شوید کد پیگیری را دقیقاً وارد کرده‌اید.</p>
+      </div>`;
+    return;
+  }
+
+  const currentIdx = STATUS_ORDER.indexOf(report.status);
+  const urgencyMap = { normal: ['badge-green','عادی'], urgent: ['badge-yellow','فوری'], critical: ['badge-red','بحرانی'] };
+  const [badgeClass, urgencyLabel] = urgencyMap[report.urgency] || ['badge-blue', report.urgency];
+
+  const timelineHTML = STATUS_STEPS.map((step, i) => {
+    let dotClass = '';
+    let labelClass = '';
+    let dateHTML = '';
+    if (i < currentIdx) {
+      dotClass = 'done'; labelClass = 'done';
+      const hist = (report.statusHistory || []).find(h => h.status === step.key);
+      if (hist) dateHTML = `<div class="step-date">${sanitizeHTML(hist.date ? formatJalali(new Date(hist.date)) : '')}</div>`;
+    } else if (i === currentIdx) {
+      dotClass = 'current'; labelClass = 'current';
+      dateHTML = `<div class="step-date" style="color:#ffaa00;">وضعیت فعلی</div>`;
+    }
+    return `
+      <div class="timeline-step">
+        <div class="step-dot ${dotClass}"></div>
+        <div class="step-info">
+          <div class="step-label ${labelClass}">${sanitizeHTML(step.label)}</div>
+          ${dateHTML}
+        </div>
+      </div>`;
+  }).join('');
+
+  const notesHTML = report.adminNotes
+    ? `<div class="admin-notes"><strong style="color:#00ff88;">یادداشت کارشناس:</strong><br/>${sanitizeHTML(report.adminNotes)}</div>`
+    : '';
+
+  resultEl.innerHTML = `
+    <div class="report-detail">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <div>
+          <div style="font-size:13px;color:#555;margin-bottom:4px;">شناسه گزارش</div>
+          <div style="font-family:'Courier New',monospace;font-size:1.2rem;font-weight:900;color:#00ff88;letter-spacing:2px;">${sanitizeHTML(report.id)}</div>
+        </div>
+        <span class="badge ${badgeClass}">${sanitizeHTML(urgencyLabel)}</span>
+      </div>
+      <div class="detail-row"><span class="detail-label">تاریخ ثبت:</span><span class="detail-value">${sanitizeHTML(report.dateJalali || new Date(report.date).toLocaleDateString('fa-IR'))}</span></div>
+      <div class="detail-row"><span class="detail-label">استان:</span><span class="detail-value">${sanitizeHTML(report.province)}${report.city ? ' — ' + sanitizeHTML(report.city) : ''}</span></div>
+      <div class="detail-row"><span class="detail-label">نوع تهدید:</span><span class="detail-value">${sanitizeHTML(report.threatLabel || report.threatType)}</span></div>
+      <div class="detail-row"><span class="detail-label">ارسال‌کننده:</span><span class="detail-value">${report.anonymous ? '🕵️ ناشناس' : sanitizeHTML(report.fullName || '—')}</span></div>
+    </div>
+    <div class="report-detail">
+      <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:16px;">وضعیت پیگیری</div>
+      <div class="status-timeline" role="list" aria-label="مراحل وضعیت گزارش">
+        ${timelineHTML}
+      </div>
+      ${notesHTML}
+    </div>`;
+}
+
+/* Allow Enter key in tracking input */
+document.getElementById('trackingInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') trackReport();
+});
+
+/* Set today as default observation date */
+(function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('obsDate').value = today;
+})();
+</script>
+
+</body>
+</html>

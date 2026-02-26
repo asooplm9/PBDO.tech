@@ -103,9 +103,10 @@
       <div id="sideRole" class="text-xs text-gray-400 mt-1"></div>
     </div>
     <nav class="flex-1">
-      <div class="nav-item active" onclick="showSection('overview',this)">📊 نمای ک��ی</div>
+      <div class="nav-item active" onclick="showSection('overview',this)">📊 نمای کلی</div>
       <div id="navUsers" class="nav-item hidden" onclick="showSection('users',this)">👥 کاربران</div>
       <div id="navReports" class="nav-item hidden" onclick="showSection('reports',this)">📋 گزارش‌ها</div>
+      <div id="navAlerts" class="nav-item hidden" onclick="showSection('alerts',this)">🔔 هشدارها و اخبار</div>
       <div id="navSubmit" class="nav-item hidden" onclick="showSection('submit',this)">➕ ثبت گزارش</div>
       <div id="navRaw" class="nav-item hidden" onclick="showSection('raw',this)">📡 ثبت داده خام</div>
       <div id="navLogs" class="nav-item hidden" onclick="showSection('logs',this)">🔍 لاگ سیستم</div>
@@ -258,6 +259,35 @@
       </div>
     </div>
 
+    <div id="sectionAlerts" class="hidden">
+      <div class="card overflow-x-auto mb-4">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h3 class="font-bold neon-blue">🔔 مدیریت هشدارها و اخبار</h3>
+          <button onclick="showAlertForm()" class="btn-sm btn-green">➕ هشدار جدید</button>
+        </div>
+        <div id="alertFormSection" class="hidden mb-4 p-4 border border-cyan-900/30 rounded-xl">
+          <h4 class="font-bold mb-3 text-sm text-cyan-400">ایجاد هشدار جدید</h4>
+          <div class="grid md:grid-cols-2 gap-3 mb-3">
+            <div><label class="text-xs text-gray-400 block mb-1">عنوان</label><input type="text" id="alertTitle" placeholder="عنوان هشدار"/></div>
+            <div><label class="text-xs text-gray-400 block mb-1">سطح</label>
+              <select id="alertLevel">
+                <option value="info">🔵 اطلاع‌رسانی</option>
+                <option value="warning">🟡 هشدار</option>
+                <option value="crisis">🟠 بحران</option>
+                <option value="emergency">🔴 اضطراری</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3"><label class="text-xs text-gray-400 block mb-1">متن پیام</label><textarea id="alertMessage" rows="2" placeholder="متن هشدار..."></textarea></div>
+          <div class="flex gap-2">
+            <button onclick="saveAlert()" class="btn-sm btn-green">💾 ذخیره</button>
+            <button onclick="hideAlertForm()" class="btn-sm btn-red">انصراف</button>
+          </div>
+        </div>
+        <div id="alertsList"></div>
+      </div>
+    </div>
+
     <div id="sectionCollabs" class="hidden">
       <div class="card overflow-x-auto">
         <div class="flex justify-between items-center mb-4">
@@ -398,6 +428,7 @@ function setupDashboard(){
   if(currentUser.role==='super_admin'){
     document.getElementById('navUsers').classList.remove('hidden');
     document.getElementById('navReports').classList.remove('hidden');
+    document.getElementById('navAlerts').classList.remove('hidden');
     document.getElementById('navLogs').classList.remove('hidden');
     document.getElementById('navCollabs').classList.remove('hidden');
   } else if(currentUser.role==='regional_admin'){
@@ -407,7 +438,7 @@ function setupDashboard(){
     document.getElementById('navRaw').classList.remove('hidden');
     document.getElementById('navReports').classList.remove('hidden');
   }
-  renderPending();renderReports();renderLogs();renderCollaborations();updateCollabCount();updateTime();setInterval(updateTime,1000);
+  renderPending();renderReports();renderLogs();renderCollaborations();renderAlerts();updateCollabCount();updateTime();setInterval(updateTime,1000);
   setTimeout(initCharts,100);
 }
 
@@ -415,7 +446,7 @@ function getRoleLabel(r){return r==='super_admin'?'مدیر ارشد سیستم'
 function updateTime(){document.getElementById('currentTime').textContent=new Date().toLocaleString('fa-IR');}
 
 function showSection(s,el){
-  ['overview','users','reports','submit','raw','logs','collabs'].forEach(x=>{
+  ['overview','users','reports','alerts','submit','raw','logs','collabs'].forEach(x=>{
     const sec=document.getElementById('section'+x.charAt(0).toUpperCase()+x.slice(1));
     if(sec)sec.classList.add('hidden');
   });
@@ -755,6 +786,54 @@ function globalSearchFn(q){
     if(!sec.classList.contains('hidden'))found+=highlightTextNodes(sec);
   });
   if(found===0){showToast('نتیجه‌ای یافت نشد','info');}
+}
+
+// ======= ALERTS MANAGEMENT =======
+function renderAlerts(){
+  const el=document.getElementById('alertsList');
+  if(!el)return;
+  const alerts=JSON.parse(localStorage.getItem('pbdo_alerts')||'[]');
+  if(!alerts.length){el.innerHTML='<p class="text-gray-500 text-sm text-center py-4">هشداری ثبت نشده</p>';return;}
+  const levelIcon={'info':'🔵','warning':'🟡','crisis':'🟠','emergency':'🔴'};
+  const levelLabel={'info':'اطلاع‌رسانی','warning':'هشدار','crisis':'بحران','emergency':'اضطراری'};
+  el.innerHTML='<table><thead><tr><th>سطح</th><th>عنوان</th><th>پیام</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>'+
+    alerts.map((a,i)=>`<tr>
+      <td>${sanitizeHTML(levelIcon[a.level]||'🔵')} ${sanitizeHTML(levelLabel[a.level]||a.level)}</td>
+      <td class="font-bold">${sanitizeHTML(a.title||'')}</td>
+      <td class="text-sm text-gray-400">${sanitizeHTML(a.message||'')}</td>
+      <td>${a.active?'<span class="status-green">فعال</span>':'<span class="status-red">غیرفعال</span>'}</td>
+      <td><button class="btn-sm btn-yellow mr-1" onclick="toggleAlert(${i})">${a.active?'غیرفعال':'فعال'}</button><button class="btn-sm btn-red" onclick="deleteAlert(${i})">حذف</button></td>
+    </tr>`).join('')+'</tbody></table>';
+}
+function showAlertForm(){document.getElementById('alertFormSection').classList.remove('hidden');}
+function hideAlertForm(){document.getElementById('alertFormSection').classList.add('hidden');}
+function saveAlert(){
+  const title=document.getElementById('alertTitle').value.trim();
+  const message=document.getElementById('alertMessage').value.trim();
+  const level=document.getElementById('alertLevel').value;
+  if(!title||!message){showToast('عنوان و متن هشدار الزامی است','error');return;}
+  const alerts=JSON.parse(localStorage.getItem('pbdo_alerts')||'[]');
+  alerts.unshift({id:Date.now(),title:sanitizeHTML(title),message:sanitizeHTML(message),level,active:true,createdAt:new Date().toLocaleString('fa-IR')});
+  localStorage.setItem('pbdo_alerts',JSON.stringify(alerts));
+  document.getElementById('alertTitle').value='';
+  document.getElementById('alertMessage').value='';
+  hideAlertForm();renderAlerts();
+  logAction(currentUser,'ثبت هشدار',sanitizeHTML(title));
+  showToast('✅ هشدار با موفقیت ذخیره شد','success');
+}
+function toggleAlert(i){
+  const alerts=JSON.parse(localStorage.getItem('pbdo_alerts')||'[]');
+  if(alerts[i])alerts[i].active=!alerts[i].active;
+  localStorage.setItem('pbdo_alerts',JSON.stringify(alerts));
+  renderAlerts();
+}
+function deleteAlert(i){
+  if(!confirm('آیا از حذف این هشدار مطمئنید؟'))return;
+  const alerts=JSON.parse(localStorage.getItem('pbdo_alerts')||'[]');
+  alerts.splice(i,1);
+  localStorage.setItem('pbdo_alerts',JSON.stringify(alerts));
+  renderAlerts();
+  showToast('هشدار حذف شد','info');
 }
 
 // Keyboard shortcut Ctrl+K or / to focus search

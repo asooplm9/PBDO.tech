@@ -111,32 +111,33 @@
 <div id="mobileOverlay" onclick="closeMobileMenu()" aria-hidden="true"></div>
 <!-- Mobile Menu -->
 <nav id="mobileMenu" role="navigation" aria-label="منوی موبایل">
-  <a href="#home" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">خانه</a>
-  <a href="#about" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">درباره ما</a>
-  <a href="#dashboard" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">داشبورد</a>
-  <a href="#projects" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">پروژه‌ها</a>
-  <a href="#team" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">تیم</a>
-  <a href="#collaborate" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">همکاری</a>
-  <a href="admin.html" class="btn-primary text-sm py-2 px-4 text-center mt-4">ورود به پنل</a>
+  <a href="index.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30 neon-blue" aria-label="صفحه خانه">خانه</a>
+  <a href="monitoring.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30" aria-label="پایش زنده">پایش زنده</a>
+  <a href="radar.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30" aria-label="رادار">رادار</a>
+  <a href="report.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30" aria-label="گزارش مردمی">گزارش مردمی</a>
+  <a href="about.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30" aria-label="درباره ما">درباره ما</a>
+  <a href="contact.html" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30" aria-label="تماس با ما">تماس با ما</a>
+  <a href="admin.html" class="btn-primary text-sm py-2 px-4 text-center mt-4" aria-label="ورود مدیران">ورود مدیران</a>
 </nav>
 
 <div class="ticker-wrap">
-  <span class="ticker text-white text-sm font-bold px-4">
+  <span id="tickerContent" class="ticker text-white text-sm font-bold px-4">
     🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴ &nbsp;|&nbsp; 🛡️ Project Aegis: عملیاتی &nbsp;|&nbsp; 🔬 Thermal Laser Project: مرحله آزمایش
   </span>
 </div>
+<div id="emergencyBanner" style="display:none;background:#ff003c;padding:8px 16px;text-align:center;font-size:13px;font-weight:700;color:white;" role="alert"></div>
 
 <nav role="navigation" aria-label="منوی اصلی">
   <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="text-xl font-black neon-blue">🛡️ PBDO</div>
-    <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
-      <a href="#home" class="hover:text-cyan-400 transition" aria-label="صفحه خانه">خانه</a>
-      <a href="#about" class="hover:text-cyan-400 transition" aria-label="درباره ما">درباره ما</a>
-      <a href="#dashboard" class="hover:text-cyan-400 transition" aria-label="داشبورد پایش">داشبورد</a>
-      <a href="#projects" class="hover:text-cyan-400 transition" aria-label="پروژه‌های تحقیقاتی">پروژه‌ها</a>
-      <a href="#team" class="hover:text-cyan-400 transition" aria-label="تیم ما">تیم</a>
-      <a href="#collaborate" class="hover:text-cyan-400 transition" aria-label="همکاری با ما">همکاری</a>
-      <a href="admin.html" class="btn-primary text-sm py-2 px-4" aria-label="ورود به پنل مدیریت">ورود به پنل</a>
+    <div class="hidden md:flex items-center gap-4 text-sm font-semibold">
+      <a href="index.html" class="hover:text-cyan-400 transition neon-blue" aria-label="صفحه خانه">خانه</a>
+      <a href="monitoring.html" class="hover:text-cyan-400 transition" aria-label="پایش زنده">پایش زنده</a>
+      <a href="radar.html" class="hover:text-cyan-400 transition" aria-label="رادار">رادار</a>
+      <a href="report.html" class="hover:text-cyan-400 transition" aria-label="گزارش مردمی">گزارش مردمی</a>
+      <a href="about.html" class="hover:text-cyan-400 transition" aria-label="درباره ما">درباره ما</a>
+      <a href="contact.html" class="hover:text-cyan-400 transition" aria-label="تماس با ما">تماس با ما</a>
+      <a href="admin.html" class="btn-primary text-sm py-2 px-4" aria-label="ورود مدیران">ورود مدیران</a>
     </div>
     <!-- Hamburger button for mobile -->
     <button id="hamburgerBtn" class="md:hidden flex flex-col gap-1.5 p-2" onclick="openMobileMenu()" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobileMenu">
@@ -175,6 +176,14 @@
   </div>
 </section>
 
+<!-- ======= LIVE STATS BAR ======= -->
+<div class="py-4 border-b border-cyan-900/30 bg-black/20">
+  <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 text-sm">
+    <div id="jalaliDate" class="text-cyan-400 font-bold"></div>
+    <div class="flex items-center gap-2 text-green-400 font-bold"><span class="pulse">●</span> سیستم پایش فعال</div>
+  </div>
+</div>
+
 <!-- ======= ABOUT US SECTION ======= -->
 <section id="about" class="py-20 bg-gradient-to-b from-blue-950/10 to-transparent" aria-label="درباره ما">
   <div class="max-w-7xl mx-auto px-4">
@@ -200,6 +209,41 @@
           <li class="flex items-center gap-2"><span class="neon-green">✓</span> همکاری بین‌المللی</li>
           <li class="flex items-center gap-2"><span class="neon-green">✓</span> حفاظت از حریم خصوصی</li>
         </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="radar-preview" class="py-16" aria-label="رادار پایش">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">📡 رادار پایش زنده</h2>
+    <p class="text-gray-400 mb-8 reveal">سامانه رادار بیولوژیکی ۲۴ ساعته</p>
+    <div class="grid md:grid-cols-3 gap-8 items-center">
+      <div class="md:col-span-1 flex justify-center">
+        <div style="position:relative;width:240px;height:240px;">
+          <canvas id="miniRadar" width="240" height="240" style="border-radius:50%;"></canvas>
+        </div>
+      </div>
+      <div class="md:col-span-2 grid grid-cols-2 gap-4">
+        <div class="card">
+          <div class="text-xs text-gray-400 mb-1">وضعیت رادار</div>
+          <div class="text-green-400 font-bold">● فعال</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-gray-400 mb-1">آخرین اسکن</div>
+          <div class="text-cyan-400 font-bold text-sm" id="lastScanTime">--</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-gray-400 mb-1">تهدیدات شناسایی‌شده</div>
+          <div class="text-yellow-400 font-bold" id="threatCount">۳</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-gray-400 mb-1">پوشش</div>
+          <div class="text-green-400 font-bold">۱۰۰٪</div>
+        </div>
+        <div class="card col-span-2">
+          <a href="radar.html" class="btn-primary w-full block text-center">مشاهده رادار کامل ←</a>
+        </div>
       </div>
     </div>
   </div>
@@ -479,6 +523,94 @@ function animateCounter(id,target,suffix=''){  let c=0;const step=Math.ceil(targ
   const t=setInterval(()=>{c=Math.min(c+step,target);document.getElementById(id).textContent=c+suffix;if(c>=target)clearInterval(t);},40);
 }
 animateCounter('c1',31);animateCounter('c2',2);animateCounter('c3',120,'+');animateCounter('c4',3);
+
+// ======= MINI RADAR =======
+(function(){
+  const canvas=document.getElementById('miniRadar');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const cx=120,cy=120,r=110;
+  let angle=0;
+  const contacts=[
+    {a:0.8,d:0.6,fade:1},{a:2.1,d:0.4,fade:0.7},{a:4.5,d:0.8,fade:0.5}
+  ];
+  function drawRadar(){
+    ctx.clearRect(0,0,240,240);
+    ctx.fillStyle='#001a00';
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+    for(let i=1;i<=4;i++){
+      ctx.beginPath();ctx.arc(cx,cy,r*i/4,0,Math.PI*2);
+      ctx.strokeStyle='rgba(0,255,136,0.2)';ctx.lineWidth=1;ctx.stroke();
+    }
+    ctx.strokeStyle='rgba(0,255,136,0.2)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx-r,cy);ctx.lineTo(cx+r,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,cy-r);ctx.lineTo(cx,cy+r);ctx.stroke();
+    for(let i=0;i<30;i++){
+      const a=angle-i*(Math.PI/60);
+      const alpha=(30-i)/30*0.4;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,a,a+Math.PI/60);
+      ctx.closePath();
+      ctx.fillStyle=`rgba(0,255,136,${alpha})`;
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
+    ctx.strokeStyle='rgba(0,255,136,0.9)';ctx.lineWidth=2;ctx.stroke();
+    contacts.forEach(c=>{
+      const px=cx+r*c.d*Math.cos(c.a);
+      const py=cy+r*c.d*Math.sin(c.a);
+      const diff=Math.abs(((angle-c.a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2));
+      const bright=diff<0.3?1:c.fade*0.6;
+      ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,${diff<0.3?200:100},0,${bright})`;ctx.fill();
+    });
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(0,255,136,0.5)';ctx.lineWidth=2;ctx.stroke();
+    angle=(angle+0.02)%(Math.PI*2);
+    requestAnimationFrame(drawRadar);
+  }
+  drawRadar();
+})();
+
+// ======= JALALI DATE =======
+function toJalali(d){
+  const g=[0,31,59,90,120,151,181,212,243,273,304,334];
+  const leap=d.getFullYear()%4===0&&(d.getFullYear()%100!==0||d.getFullYear()%400===0);
+  let jd=d.getFullYear()*365+Math.floor((d.getFullYear()-1)/4)-Math.floor((d.getFullYear()-1)/100)+Math.floor((d.getFullYear()-1)/400)+g[d.getMonth()]+(d.getMonth()>1&&leap?1:0)+d.getDate()-1948320;
+  let jy=Math.floor((jd-1)/365.25);
+  jd-=365*jy+Math.floor(jy/4)-Math.floor(jy/100)+Math.floor(jy/400);
+  if(jd<1){jy--;jd+=365+(jy%4===3?1:0);}
+  const jm=[31,31,31,31,31,31,30,30,30,30,30,29+(jy%4===3?1:0)];
+  let jmonth=0;
+  for(;jmonth<12&&jd>jm[jmonth];jmonth++)jd-=jm[jmonth];
+  return `${jy}/${String(jmonth+1).padStart(2,'0')}/${String(jd).padStart(2,'0')}`;
+}
+function updateJalali(){
+  const now=new Date();
+  const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const el=document.getElementById('jalaliDate');
+  if(el)el.textContent=`📅 ${toJalali(now)} ⏰ ${t}`;
+  const ls=document.getElementById('lastScanTime');
+  if(ls)ls.textContent=t;
+}
+updateJalali();
+setInterval(updateJalali,30000);
+
+// ======= TICKER FROM LOCALSTORAGE =======
+(function(){
+  const ticker=document.getElementById('tickerContent');
+  if(!ticker)return;
+  try{
+    const alerts=JSON.parse(localStorage.getItem('pbdo_alerts')||'[]');
+    const active=alerts.filter(a=>a.active);
+    if(active.length>0){
+      ticker.textContent=active.map(a=>`${a.level==='emergency'?'🔴':a.level==='crisis'?'🟠':a.level==='warning'?'🟡':'🔵'} ${a.message}`).join(' | ');
+    }
+  }catch(e){}
+})();
 
 function openVault(){document.getElementById('vaultModal').classList.add('active');}
 function closeVault(){
