@@ -41,6 +41,7 @@
     td{padding:10px 12px;border-bottom:1px solid #ffffff11;font-size:14px;}
     tr:hover td{background:#ffffff08;}
     .hero-grid{background-image:linear-gradient(rgba(0,240,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.05) 1px,transparent 1px);background-size:40px 40px;}
+    .pbdo-logo svg{filter:drop-shadow(0 0 8px #00f0ff99);}
   </style>
 </head>
 <body>
@@ -52,8 +53,54 @@
 </div>
 
 <nav>
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    <div class="text-xl font-black neon-blue">🛡️ PBDO</div>
+  <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+    <div class="pbdo-logo flex items-center gap-3">
+      <svg width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Laurel Left -->
+        <g fill="#00f0ff" opacity="0.85">
+          <ellipse cx="28" cy="100" rx="7" ry="13" transform="rotate(-30 28 100)"/>
+          <ellipse cx="20" cy="80" rx="6" ry="11" transform="rotate(-50 20 80)"/>
+          <ellipse cx="18" cy="58" rx="5" ry="10" transform="rotate(-65 18 58)"/>
+          <ellipse cx="25" cy="40" rx="5" ry="9" transform="rotate(-75 25 40)"/>
+          <ellipse cx="38" cy="28" rx="5" ry="8" transform="rotate(-85 38 28)"/>
+          <ellipse cx="30" cy="120" rx="6" ry="11" transform="rotate(-15 30 120)"/>
+          <ellipse cx="36" cy="140" rx="6" ry="10" transform="rotate(-5 36 140)"/>
+          <ellipse cx="48" cy="158" rx="5" ry="9" transform="rotate(10 48 158)"/>
+        </g>
+        <!-- Laurel Right -->
+        <g fill="#00f0ff" opacity="0.85">
+          <ellipse cx="172" cy="100" rx="7" ry="13" transform="rotate(30 172 100)"/>
+          <ellipse cx="180" cy="80" rx="6" ry="11" transform="rotate(50 180 80)"/>
+          <ellipse cx="182" cy="58" rx="5" ry="10" transform="rotate(65 182 58)"/>
+          <ellipse cx="175" cy="40" rx="5" ry="9" transform="rotate(75 175 40)"/>
+          <ellipse cx="162" cy="28" rx="5" ry="8" transform="rotate(85 162 28)"/>
+          <ellipse cx="170" cy="120" rx="6" ry="11" transform="rotate(15 170 120)"/>
+          <ellipse cx="164" cy="140" rx="6" ry="10" transform="rotate(5 164 140)"/>
+          <ellipse cx="152" cy="158" rx="5" ry="9" transform="rotate(-10 152 158)"/>
+        </g>
+        <!-- Shield -->
+        <path d="M60 50 L140 50 L148 130 L100 165 L52 130 Z" fill="#0d1528" stroke="#00f0ff" stroke-width="4"/>
+        <!-- Biohazard Symbol -->
+        <circle cx="100" cy="108" r="12" fill="none" stroke="#00f0ff" stroke-width="4"/>
+        <path d="M100 96 A24 24 0 0 1 120 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M120 132 A24 24 0 0 1 80 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M80 132 A24 24 0 0 1 100 96" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <!-- Sword -->
+        <line x1="100" y1="22" x2="100" y2="162" stroke="#00f0ff" stroke-width="4" stroke-linecap="round"/>
+        <line x1="84" y1="70" x2="116" y2="70" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="100" cy="22" r="5" fill="#00f0ff"/>
+        <!-- Wings -->
+        <path d="M100 38 Q75 28 55 38 Q70 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+        <path d="M100 38 Q125 28 145 38 Q130 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+        <path d="M100 38 Q68 20 45 32 Q62 14 100 26 Z" fill="#00f0ff" opacity="0.6"/>
+        <path d="M100 38 Q132 20 155 32 Q138 14 100 26 Z" fill="#00f0ff" opacity="0.6"/>
+        <!-- Snake left -->
+        <path d="M94 42 Q88 55 92 65 Q96 75 90 85 Q86 95 92 105" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round"/>
+        <!-- Snake right -->
+        <path d="M106 42 Q112 55 108 65 Q104 75 110 85 Q114 95 108 105" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="text-xl font-black neon-blue">PBDO</span>
+    </div>
     <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
       <a href="#home" class="hover:text-cyan-400 transition">خانه</a>
       <a href="#dashboard" class="hover:text-cyan-400 transition">داشبورد</a>
@@ -67,6 +114,45 @@
   <div class="max-w-7xl mx-auto px-4 text-center">
     <div class="inline-block bg-red-900/30 border border-red-500 text-red-400 text-xs px-4 py-1 rounded-full mb-6 pulse">
       🔴 سیستم در وضعیت هشدار فعال
+    </div>
+    <!-- Big Logo in Hero -->
+    <div class="flex justify-center mb-8">
+      <svg width="140" height="140" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 18px #00f0ffaa)">
+        <g fill="#00f0ff" opacity="0.85">
+          <ellipse cx="28" cy="100" rx="7" ry="13" transform="rotate(-30 28 100)"/>
+          <ellipse cx="20" cy="80" rx="6" ry="11" transform="rotate(-50 20 80)"/>
+          <ellipse cx="18" cy="58" rx="5" ry="10" transform="rotate(-65 18 58)"/>
+          <ellipse cx="25" cy="40" rx="5" ry="9" transform="rotate(-75 25 40)"/>
+          <ellipse cx="38" cy="28" rx="5" ry="8" transform="rotate(-85 38 28)"/>
+          <ellipse cx="30" cy="120" rx="6" ry="11" transform="rotate(-15 30 120)"/>
+          <ellipse cx="36" cy="140" rx="6" ry="10" transform="rotate(-5 36 140)"/>
+          <ellipse cx="48" cy="158" rx="5" ry="9" transform="rotate(10 48 158)"/>
+        </g>
+        <g fill="#00f0ff" opacity="0.85">
+          <ellipse cx="172" cy="100" rx="7" ry="13" transform="rotate(30 172 100)"/>
+          <ellipse cx="180" cy="80" rx="6" ry="11" transform="rotate(50 180 80)"/>
+          <ellipse cx="182" cy="58" rx="5" ry="10" transform="rotate(65 182 58)"/>
+          <ellipse cx="175" cy="40" rx="5" ry="9" transform="rotate(75 175 40)"/>
+          <ellipse cx="162" cy="28" rx="5" ry="8" transform="rotate(85 162 28)"/>
+          <ellipse cx="170" cy="120" rx="6" ry="11" transform="rotate(15 170 120)"/>
+          <ellipse cx="164" cy="140" rx="6" ry="10" transform="rotate(5 164 140)"/>
+          <ellipse cx="152" cy="158" rx="5" ry="9" transform="rotate(-10 152 158)"/>
+        </g>
+        <path d="M60 50 L140 50 L148 130 L100 165 L52 130 Z" fill="#0d1528" stroke="#00f0ff" stroke-width="4"/>
+        <circle cx="100" cy="108" r="12" fill="none" stroke="#00f0ff" stroke-width="4"/>
+        <path d="M100 96 A24 24 0 0 1 120 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M120 132 A24 24 0 0 1 80 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <path d="M80 132 A24 24 0 0 1 100 96" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <line x1="100" y1="22" x2="100" y2="162" stroke="#00f0ff" stroke-width="4" stroke-linecap="round"/>
+        <line x1="84" y1="70" x2="116" y2="70" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="100" cy="22" r="5" fill="#00f0ff"/>
+        <path d="M100 38 Q75 28 55 38 Q70 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+        <path d="M100 38 Q125 28 145 38 Q130 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+        <path d="M100 38 Q68 20 45 32 Q62 14 100 26 Z" fill="#00f0ff" opacity="0.6"/>
+        <path d="M100 38 Q132 20 155 32 Q138 14 100 26 Z" fill="#00f0ff" opacity="0.6"/>
+        <path d="M94 42 Q88 55 92 65 Q96 75 90 85 Q86 95 92 105" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round"/>
+        <path d="M106 42 Q112 55 108 65 Q104 75 110 85 Q114 95 108 105" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round"/>
+      </svg>
     </div>
     <h1 class="text-4xl md:text-7xl font-black mb-4 neon-blue">سازمان پدافند زیستی</h1>
     <h2 class="text-2xl md:text-4xl font-bold text-white/60 mb-6">Public Bio Defense Organization</h2>
@@ -159,7 +245,35 @@
 <footer class="py-12 border-t border-cyan-900/30">
   <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
     <div>
-      <div class="text-2xl font-black neon-blue mb-3">🛡️ PBDO</div>
+      <div class="flex items-center gap-3 mb-3">
+        <svg width="36" height="36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 6px #00f0ff88)">
+          <g fill="#00f0ff" opacity="0.85">
+            <ellipse cx="28" cy="100" rx="7" ry="13" transform="rotate(-30 28 100)"/>
+            <ellipse cx="20" cy="80" rx="6" ry="11" transform="rotate(-50 20 80)"/>
+            <ellipse cx="18" cy="58" rx="5" ry="10" transform="rotate(-65 18 58)"/>
+            <ellipse cx="30" cy="120" rx="6" ry="11" transform="rotate(-15 30 120)"/>
+            <ellipse cx="36" cy="140" rx="6" ry="10" transform="rotate(-5 36 140)"/>
+          </g>
+          <g fill="#00f0ff" opacity="0.85">
+            <ellipse cx="172" cy="100" rx="7" ry="13" transform="rotate(30 172 100)"/>
+            <ellipse cx="180" cy="80" rx="6" ry="11" transform="rotate(50 180 80)"/>
+            <ellipse cx="182" cy="58" rx="5" ry="10" transform="rotate(65 182 58)"/>
+            <ellipse cx="170" cy="120" rx="6" ry="11" transform="rotate(15 170 120)"/>
+            <ellipse cx="164" cy="140" rx="6" ry="10" transform="rotate(5 164 140)"/>
+          </g>
+          <path d="M60 50 L140 50 L148 130 L100 165 L52 130 Z" fill="#0d1528" stroke="#00f0ff" stroke-width="4"/>
+          <circle cx="100" cy="108" r="12" fill="none" stroke="#00f0ff" stroke-width="4"/>
+          <path d="M100 96 A24 24 0 0 1 120 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+          <path d="M120 132 A24 24 0 0 1 80 132" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+          <path d="M80 132 A24 24 0 0 1 100 96" fill="none" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+          <line x1="100" y1="22" x2="100" y2="162" stroke="#00f0ff" stroke-width="4" stroke-linecap="round"/>
+          <line x1="84" y1="70" x2="116" y2="70" stroke="#00f0ff" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="100" cy="22" r="5" fill="#00f0ff"/>
+          <path d="M100 38 Q75 28 55 38 Q70 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+          <path d="M100 38 Q125 28 145 38 Q130 22 100 30 Z" fill="#00f0ff" opacity="0.9"/>
+        </svg>
+        <div class="text-2xl font-black neon-blue">PBDO</div>
+      </div>
       <p class="text-gray-500 text-sm leading-7">سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری</p>
     </div>
     <div>
@@ -184,15 +298,6 @@
 </footer>
 
 <script>
-// ======= SUPABASE CONFIGURATION =======
-// برای فعال‌سازی دیتابیس، کامنت‌های زیر را بردارید:
-// const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'
-// const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'
-// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-// const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-// مثال واکشی داده: const { data } = await supabase.from('city_monitoring').select('*')
-// ====================================== 
-
 const cities=[
   {name:'تهران',province:'تهران',status:'green',lat:35.6892,lng:51.3890,report:'وضعیت عادی - هیچ تهدیدی شناسایی نشده',time:'۱۰ دقیقه پیش'},
   {name:'مشهد',province:'خراسان رضوی',status:'green',lat:36.2972,lng:59.6067,report:'پایش مستمر - شاخص‌ها در محدوده نرمال',time:'۱۵ دقیقه پیش'},
@@ -238,7 +343,7 @@ function filterTable(){
   renderTable(cities.filter(c=>(!prov||c.province===prov)&&(!stat||c.status===stat)));
 }
 
-function animateCounter(id,target,suffix=''){  let c=0;const step=Math.ceil(target/40);
+function animateCounter(id,target,suffix=''){let c=0;const step=Math.ceil(target/40);
   const t=setInterval(()=>{c=Math.min(c+step,target);document.getElementById(id).textContent=c+suffix;if(c>=target)clearInterval(t);},40);
 }
 animateCounter('c1',31);animateCounter('c2',2);animateCounter('c3',120,'+');animateCounter('c4',3);
