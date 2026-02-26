@@ -47,7 +47,7 @@
 
 <div class="ticker-wrap">
   <span class="ticker text-white text-sm font-bold px-4">
-    🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴ &nbsp;|&nbsp; 🛡️ Project Aegis: عملیاتی &nbsp;|&nbsp; 🔬 Thermal Laser Project: مرحله آزمایش
+    🔴 وضعیت اضطراری: رصد فعال در ۳۱ استان کشور &nbsp;|&nbsp; ⚠️ هشدار زیستی سطح ۲ در استان خوزستان &nbsp;|&nbsp; 🟢 سیستم پایش ملی PBDO آنلاین و فعال است &nbsp;|&nbsp; 📡 آخرین به‌روزرسانی: ۲۶ بهمن ۱۴۰۴
   </span>
 </div>
 
@@ -57,7 +57,6 @@
     <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
       <a href="#home" class="hover:text-cyan-400 transition">خانه</a>
       <a href="#dashboard" class="hover:text-cyan-400 transition">داشبورد</a>
-      <a href="#projects" class="hover:text-cyan-400 transition">پروژه‌ها</a>
       <a href="#collaborate" class="hover:text-cyan-400 transition">همکاری</a>
       <a href="admin.html" class="btn-primary text-sm py-2 px-4">ورود به پنل</a>
     </div>
@@ -123,39 +122,6 @@
   </div>
 </section>
 
-<section id="projects" class="py-20 bg-gradient-to-b from-transparent to-blue-950/20">
-  <div class="max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl font-black neon-blue mb-2">🔬 پروژه‌های تحقیقاتی</h2>
-    <p class="text-gray-400 mb-10">سامانه‌های دفاعی پیشرفته PBDO</p>
-    <div class="grid md:grid-cols-2 gap-8">
-      <div class="card">
-        <div class="text-5xl mb-4">🛡️</div>
-        <h3 class="text-2xl font-bold neon-blue mb-3">Project Aegis</h3>
-        <p class="text-gray-400 leading-7 mb-6">سیستم دفاع لیزری چندلایه با قابلیت شناسایی و خنثی‌سازی تهدیدات زیستی در لحظه. ادغام هوش مصنوعی با سیستم‌های اپتیکی برای دقت بی‌نظیر.</p>
-        <div class="flex flex-wrap gap-2 mb-6">
-          <span class="status-green">AI</span>
-          <span class="status-green">Laser</span>
-          <span class="status-green">Defense</span>
-          <span class="status-yellow">عملیاتی</span>
-        </div>
-        <button onclick="openVault()" class="btn-outline w-full">🔒 مشاهده مستندات محرمانه</button>
-      </div>
-      <div class="card">
-        <div class="text-5xl mb-4">🔥</div>
-        <h3 class="text-2xl font-bold mb-3" style="color:#ff6b35;text-shadow:0 0 8px #ff6b35">Thermal Laser Project</h3>
-        <p class="text-gray-400 leading-7 mb-6">پروژه لیزر حرارتی پیشرفته با بهره‌گیری از فوتونیک و علم مواد. طراحی شده برای محیط‌های بیولوژیک حساس با حداقل آسیب جانبی.</p>
-        <div class="flex flex-wrap gap-2 mb-6">
-          <span class="status-green">Photonics</span>
-          <span class="status-green">Thermal</span>
-          <span class="status-green">Military</span>
-          <span class="status-yellow">مرحله آزمایش</span>
-        </div>
-        <button onclick="openVault()" class="btn-outline w-full" style="border-color:#ff6b35;color:#ff6b35">🔒 مشاهده مستندات محرمانه</button>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section id="collaborate" class="py-20">
   <div class="max-w-3xl mx-auto px-4">
     <h2 class="text-3xl font-black neon-blue mb-2">🤝 پورتال همکاری نخبگان</h2>
@@ -200,7 +166,6 @@
       <h4 class="font-bold text-cyan-400 mb-4">دسترسی سریع</h4>
       <ul class="space-y-2 text-sm text-gray-400">
         <li><a href="#dashboard" class="hover:text-cyan-400">داشبورد پایش</a></li>
-        <li><a href="#projects" class="hover:text-cyan-400">پروژه‌ها</a></li>
         <li><a href="#collaborate" class="hover:text-cyan-400">همکاری</a></li>
         <li><a href="admin.html" class="hover:text-cyan-400">پنل مدیریت</a></li>
       </ul>
@@ -208,9 +173,8 @@
     <div>
       <h4 class="font-bold text-cyan-400 mb-4">تماس</h4>
       <ul class="space-y-2 text-sm text-gray-400">
-        <li>📧 info@pbdo.tech</li>
+        <li>📧 admin@pbdo.tech</li>
         <li>🌐 pbdo.tech</li>
-        <li>🔒 اطلاعات محرمانه: vault@pbdo.tech</li>
       </ul>
     </div>
   </div>
@@ -218,31 +182,6 @@
     © ۱۴۰۴ سازمان پدافند زیستی عمومی PBDO — تمامی حقوق محفوظ است
   </div>
 </footer>
-
-<div id="vaultModal" class="modal">
-  <div class="card max-w-md w-full mx-4" style="max-height:80vh;overflow-y:auto;">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-xl font-bold neon-blue">🔐 Secure Vault</h3>
-      <button onclick="closeVault()" class="text-gray-400 hover:text-white text-xl">✕</button>
-    </div>
-    <div id="vaultLogin">
-      <p class="text-gray-400 mb-4 text-sm">دسترسی به مستندات فنی محرمانه نیاز به کلید دسترسی دارد.</p>
-      <input type="password" id="vaultPass" placeholder="کلید دسترسی را وارد کنید" class="mb-3" dir="ltr"/>
-      <div id="vaultError" class="text-red-400 text-sm mb-3 hidden">❌ کلید دسترسی اشتباه است</div>
-      <button onclick="checkVault()" class="btn-primary w-full">🔓 ورود</button>
-    </div>
-    <div id="vaultContent" class="hidden">
-      <div class="text-green-400 text-sm mb-4">✅ دسترسی مجاز — مستندات محرمانه</div>
-      <ul class="space-y-3 text-sm">
-        <li class="card p-3"><span class="neon-blue">📄</span> Aegis-TechSpec-v3.2.pdf</li>
-        <li class="card p-3"><span class="neon-blue">📄</span> ThermalLaser-Architecture-2025.pdf</li>
-        <li class="card p-3"><span class="neon-blue">📄</span> BioThreat-CounterMeasures-Manual.pdf</li>
-        <li class="card p-3"><span class="neon-blue">📄</span> AI-Integration-Protocol-v2.pdf</li>
-        <li class="card p-3"><span class="neon-blue">📄</span> National-MonitoringSystem-Specs.pdf</li>
-      </ul>
-    </div>
-  </div>
-</div>
 
 <script>
 // ======= SUPABASE CONFIGURATION =======
@@ -304,27 +243,12 @@ function animateCounter(id,target,suffix=''){  let c=0;const step=Math.ceil(targ
 }
 animateCounter('c1',31);animateCounter('c2',2);animateCounter('c3',120,'+');animateCounter('c4',3);
 
-function openVault(){document.getElementById('vaultModal').classList.add('active');}
-function closeVault(){
-  document.getElementById('vaultModal').classList.remove('active');
-  document.getElementById('vaultPass').value='';
-  document.getElementById('vaultError').classList.add('hidden');
-  document.getElementById('vaultLogin').classList.remove('hidden');
-  document.getElementById('vaultContent').classList.add('hidden');
-}
-function checkVault(){
-  if(document.getElementById('vaultPass').value==='PBDO@vault2025'){
-    document.getElementById('vaultLogin').classList.add('hidden');
-    document.getElementById('vaultContent').classList.remove('hidden');
-  }else{document.getElementById('vaultError').classList.remove('hidden');}
-}
 function submitForm(e){
   e.preventDefault();
   const btn=document.getElementById('submitBtn');
   btn.textContent='⏳ در حال ارسال...';btn.disabled=true;
   setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);
 }
-document.getElementById('vaultModal').addEventListener('click',function(e){if(e.target===this)closeVault();});
 </script>
 </body>
 </html>
