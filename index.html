@@ -4,6 +4,23 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PBDO | سازمان پدافند زیستی عمومی</title>
+  <meta name="description" content="سازمان پدافند زیستی عمومی (PBDO) — پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات زیستی و طراحی معماری‌های دفاع لیزری با بهره‌گیری از هوش مصنوعی، اپتیک و فوتونیک"/>
+  <link rel="canonical" href="https://pbdo.tech/"/>
+  <link rel="icon" type="image/svg+xml" href="logo.svg"/>
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://pbdo.tech/"/>
+  <meta property="og:title" content="PBDO | سازمان پدافند زیستی عمومی"/>
+  <meta property="og:description" content="سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات زیستی و طراحی معماری‌های دفاع لیزری"/>
+  <meta property="og:image" content="https://pbdo.tech/logo.svg"/>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="PBDO | سازمان پدافند زیستی عمومی"/>
+  <meta name="twitter:description" content="سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات زیستی و دفاع لیزری"/>
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"سازمان پدافند زیستی عمومی PBDO","url":"https://pbdo.tech","logo":"https://pbdo.tech/logo.svg","description":"سازمان پدافند زیستی عمومی — پیشرو در امنیت بیولوژیک و دفاع لیزری","contactPoint":{"@type":"ContactPoint","email":"info@pbdo.tech","contactType":"customer service"}}
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -41,9 +58,49 @@
     td{padding:10px 12px;border-bottom:1px solid #ffffff11;font-size:14px;}
     tr:hover td{background:#ffffff08;}
     .hero-grid{background-image:linear-gradient(rgba(0,240,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.05) 1px,transparent 1px);background-size:40px 40px;}
+    /* Preloader */
+    #preloader{position:fixed;inset:0;background:#0a0f1e;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s;}
+    #preloader.hide{opacity:0;visibility:hidden;}
+    .loader-ring{width:60px;height:60px;border:3px solid #00f0ff22;border-top-color:#00f0ff;border-radius:50%;animation:spin .9s linear infinite;margin-top:16px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    /* Scroll Reveal */
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.active{opacity:1;transform:translateY(0);}
+    /* Particle Canvas */
+    #particleCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+    /* Mobile Menu */
+    #mobileMenu{position:fixed;top:0;right:-100%;width:75%;max-width:280px;height:100%;background:#060c1a;border-left:1px solid #00f0ff33;z-index:300;transition:right .3s ease;padding:80px 20px 20px;display:flex;flex-direction:column;gap:12px;}
+    #mobileMenu.open{right:0;}
+    #mobileOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299;}
+    #mobileOverlay.open{display:block;}
+    /* Skip to content */
+    .skip-link{position:absolute;top:-40px;right:0;background:#00f0ff;color:#000;padding:8px 16px;font-weight:700;border-radius:0 0 0 8px;transition:top .2s;z-index:9999;}
+    .skip-link:focus{top:0;}
   </style>
 </head>
 <body>
+
+<!-- Skip to main content (accessibility) -->
+<a href="#home" class="skip-link">رفتن به محتوای اصلی</a>
+
+<!-- Preloader -->
+<div id="preloader" role="status" aria-label="در حال بارگذاری">
+  <div class="text-3xl font-black neon-blue">🛡️ PBDO</div>
+  <div class="loader-ring"></div>
+</div>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobileOverlay" onclick="closeMobileMenu()" aria-hidden="true"></div>
+<!-- Mobile Menu -->
+<nav id="mobileMenu" role="navigation" aria-label="منوی موبایل">
+  <a href="#home" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">خانه</a>
+  <a href="#about" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">درباره ما</a>
+  <a href="#dashboard" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">داشبورد</a>
+  <a href="#projects" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">پروژه‌ها</a>
+  <a href="#team" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">تیم</a>
+  <a href="#collaborate" onclick="closeMobileMenu()" class="text-sm font-semibold hover:text-cyan-400 transition py-3 border-b border-cyan-900/30">همکاری</a>
+  <a href="admin.html" class="btn-primary text-sm py-2 px-4 text-center mt-4">ورود به پنل</a>
+</nav>
 
 <div class="ticker-wrap">
   <span class="ticker text-white text-sm font-bold px-4">
@@ -51,49 +108,89 @@
   </span>
 </div>
 
-<nav>
+<nav role="navigation" aria-label="منوی اصلی">
   <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="text-xl font-black neon-blue">🛡️ PBDO</div>
     <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
-      <a href="#home" class="hover:text-cyan-400 transition">خانه</a>
-      <a href="#dashboard" class="hover:text-cyan-400 transition">داشبورد</a>
-      <a href="#projects" class="hover:text-cyan-400 transition">پروژه‌ها</a>
-      <a href="#collaborate" class="hover:text-cyan-400 transition">همکاری</a>
-      <a href="admin.html" class="btn-primary text-sm py-2 px-4">ورود به پنل</a>
+      <a href="#home" class="hover:text-cyan-400 transition" aria-label="صفحه خانه">خانه</a>
+      <a href="#about" class="hover:text-cyan-400 transition" aria-label="درباره ما">درباره ما</a>
+      <a href="#dashboard" class="hover:text-cyan-400 transition" aria-label="داشبورد پایش">داشبورد</a>
+      <a href="#projects" class="hover:text-cyan-400 transition" aria-label="پروژه‌های تحقیقاتی">پروژه‌ها</a>
+      <a href="#team" class="hover:text-cyan-400 transition" aria-label="تیم ما">تیم</a>
+      <a href="#collaborate" class="hover:text-cyan-400 transition" aria-label="همکاری با ما">همکاری</a>
+      <a href="admin.html" class="btn-primary text-sm py-2 px-4" aria-label="ورود به پنل مدیریت">ورود به پنل</a>
     </div>
+    <!-- Hamburger button for mobile -->
+    <button id="hamburgerBtn" class="md:hidden flex flex-col gap-1.5 p-2" onclick="openMobileMenu()" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobileMenu">
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+      <span class="w-6 h-0.5 bg-cyan-400 block"></span>
+    </button>
   </div>
 </nav>
 
-<section id="home" class="hero-grid min-h-screen flex items-center pt-32 pb-20">
-  <div class="max-w-7xl mx-auto px-4 text-center">
-    <div class="inline-block bg-red-900/30 border border-red-500 text-red-400 text-xs px-4 py-1 rounded-full mb-6 pulse">
+<section id="home" class="hero-grid min-h-screen flex items-center pt-32 pb-20 relative overflow-hidden" role="main" aria-label="بخش اصلی">
+  <!-- Particle effect canvas -->
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+    <div class="inline-block bg-red-900/30 border border-red-500 text-red-400 text-xs px-4 py-1 rounded-full mb-6 pulse reveal">
       🔴 سیستم در وضعیت هشدار فعال
     </div>
-    <h1 class="text-4xl md:text-7xl font-black mb-4 neon-blue">سازمان پدافند زیستی</h1>
-    <h2 class="text-2xl md:text-4xl font-bold text-white/60 mb-6">Public Bio Defense Organization</h2>
-    <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-10 leading-8">
+    <h1 class="text-4xl md:text-7xl font-black mb-4 neon-blue reveal" style="transition-delay:.1s">سازمان پدافند زیستی</h1>
+    <h2 class="text-2xl md:text-4xl font-bold text-white/60 mb-6 reveal" style="transition-delay:.2s">Public Bio Defense Organization</h2>
+    <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-10 leading-8 reveal" style="transition-delay:.3s">
       پیشرو در امنیت بیولوژیک، پایش هوشمند تهدیدات و طراحی معماری‌های دفاع لیزری با بهره‌گیری از هوش مصنوعی، اپتیک و فوتونیک
     </p>
-    <div class="flex flex-wrap gap-4 justify-center">
-      <button onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})" class="btn-primary">📊 مشاهده داشبورد</button>
-      <button onclick="document.getElementById('collaborate').scrollIntoView({behavior:'smooth'})" class="btn-outline">🤝 همکاری با ما</button>
+    <div class="flex flex-wrap gap-4 justify-center reveal" style="transition-delay:.4s">
+      <button onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})" class="btn-primary" aria-label="مشاهده داشبورد پایش ملی">📊 مشاهده داشبورد</button>
+      <button onclick="document.getElementById('collaborate').scrollIntoView({behavior:'smooth'})" class="btn-outline" aria-label="همکاری با سازمان">🤝 همکاری با ما</button>
     </div>
   </div>
 </section>
 
-<section class="py-16 border-y border-cyan-900/30">
+<section class="py-16 border-y border-cyan-900/30" aria-label="آمار کلی">
   <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-    <div class="card"><div class="text-4xl font-black neon-blue" id="c1">0</div><div class="text-gray-400 mt-2">استان رصدشده</div></div>
-    <div class="card"><div class="text-4xl font-black neon-green" id="c2">0</div><div class="text-gray-400 mt-2">پروژه فعال</div></div>
-    <div class="card"><div class="text-4xl font-black" style="color:#ffd700" id="c3">0</div><div class="text-gray-400 mt-2">متخصص همکار</div></div>
-    <div class="card"><div class="text-4xl font-black" style="color:#ff003c" id="c4">0</div><div class="text-gray-400 mt-2">هشدار فعال</div></div>
+    <div class="card reveal"><div class="text-4xl font-black neon-blue" id="c1">0</div><div class="text-gray-400 mt-2">استان رصدشده</div></div>
+    <div class="card reveal" style="transition-delay:.1s"><div class="text-4xl font-black neon-green" id="c2">0</div><div class="text-gray-400 mt-2">پروژه فعال</div></div>
+    <div class="card reveal" style="transition-delay:.2s"><div class="text-4xl font-black" style="color:#ffd700" id="c3">0</div><div class="text-gray-400 mt-2">متخصص همکار</div></div>
+    <div class="card reveal" style="transition-delay:.3s"><div class="text-4xl font-black" style="color:#ff003c" id="c4">0</div><div class="text-gray-400 mt-2">هشدار فعال</div></div>
   </div>
 </section>
 
-<section id="dashboard" class="py-20">
+<!-- ======= ABOUT US SECTION ======= -->
+<section id="about" class="py-20 bg-gradient-to-b from-blue-950/10 to-transparent" aria-label="درباره ما">
   <div class="max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl font-black neon-blue mb-2">📡 داشبورد پایش ملی ۲۴ ساعته</h2>
-    <p class="text-gray-400 mb-8">رصد لحظه‌ای وضعیت زیستی تمام شهرهای ایران</p>
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">🏛️ درباره ما</h2>
+    <p class="text-gray-400 mb-10 reveal" style="transition-delay:.1s">آشنایی با سازمان پدافند زیستی عمومی</p>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="card reveal" style="transition-delay:.1s">
+        <div class="text-4xl mb-4" aria-hidden="true">🎯</div>
+        <h3 class="text-xl font-bold neon-blue mb-3">ماموریت</h3>
+        <p class="text-gray-400 leading-7 text-sm">پایش مستمر و هوشمند تهدیدات زیستی در سراسر کشور با استفاده از فناوری‌های پیشرفته هوش مصنوعی و سیستم‌های اپتیکی، به منظور حفاظت از سلامت عمومی و امنیت ملی.</p>
+      </div>
+      <div class="card reveal" style="transition-delay:.2s">
+        <div class="text-4xl mb-4" aria-hidden="true">🔭</div>
+        <h3 class="text-xl font-bold neon-blue mb-3">چشم‌انداز</h3>
+        <p class="text-gray-400 leading-7 text-sm">تبدیل شدن به پیشروترین سازمان دفاع زیستی در منطقه خاورمیانه با ایجاد شبکه‌ای یکپارچه از سیستم‌های پایش لحظه‌ای و واکنش سریع به تهدیدات نوظهور.</p>
+      </div>
+      <div class="card reveal" style="transition-delay:.3s">
+        <div class="text-4xl mb-4" aria-hidden="true">💎</div>
+        <h3 class="text-xl font-bold neon-blue mb-3">ارزش‌های اصلی</h3>
+        <ul class="text-gray-400 text-sm space-y-2">
+          <li class="flex items-center gap-2"><span class="neon-green">✓</span> شفافیت و پاسخگویی</li>
+          <li class="flex items-center gap-2"><span class="neon-green">✓</span> نوآوری و تحقیق مداوم</li>
+          <li class="flex items-center gap-2"><span class="neon-green">✓</span> همکاری بین‌المللی</li>
+          <li class="flex items-center gap-2"><span class="neon-green">✓</span> حفاظت از حریم خصوصی</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard" class="py-20" aria-label="داشبورد پایش ملی">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">📡 داشبورد پایش ملی ۲۴ ساعته</h2>
+    <p class="text-gray-400 mb-8 reveal" style="transition-delay:.1s">رصد لحظه‌ای وضعیت زیستی تمام شهرهای ایران</p>
     <div class="flex flex-wrap gap-4 mb-6">
       <select id="filterProvince" onchange="filterTable()" style="background:#0d1528;border:1px solid #00f0ff44;color:#e0e8ff;padding:10px 14px;border-radius:8px;width:auto;">
         <option value="">همه استان‌ها</option>
@@ -123,12 +220,12 @@
   </div>
 </section>
 
-<section id="projects" class="py-20 bg-gradient-to-b from-transparent to-blue-950/20">
+<section id="projects" class="py-20 bg-gradient-to-b from-transparent to-blue-950/20" aria-label="پروژه‌های تحقیقاتی">
   <div class="max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl font-black neon-blue mb-2">🔬 پروژه‌های تحقیقاتی</h2>
-    <p class="text-gray-400 mb-10">سامانه‌های دفاعی پیشرفته PBDO</p>
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">🔬 پروژه‌های تحقیقاتی</h2>
+    <p class="text-gray-400 mb-10 reveal" style="transition-delay:.1s">سامانه‌های دفاعی پیشرفته PBDO</p>
     <div class="grid md:grid-cols-2 gap-8">
-      <div class="card">
+      <div class="card reveal" style="transition-delay:.1s">
         <div class="text-5xl mb-4">🛡️</div>
         <h3 class="text-2xl font-bold neon-blue mb-3">Project Aegis</h3>
         <p class="text-gray-400 leading-7 mb-6">سیستم دفاع لیزری چندلایه با قابلیت شناسایی و خنثی‌سازی تهدیدات زیستی در لحظه. ادغام هوش مصنوعی با سیستم‌های اپتیکی برای دقت بی‌نظیر.</p>
@@ -138,10 +235,9 @@
           <span class="status-green">Defense</span>
           <span class="status-yellow">عملیاتی</span>
         </div>
-        <button onclick="openVault()" class="btn-outline w-full">🔒 مشاهده مستندات محرمانه</button>
+        <button onclick="openVault()" class="btn-outline w-full" aria-label="مشاهده مستندات محرمانه Project Aegis">🔒 مشاهده مستندات محرمانه</button>
       </div>
-      <div class="card">
-        <div class="text-5xl mb-4">🔥</div>
+      <div class="card reveal" style="transition-delay:.2s">
         <h3 class="text-2xl font-bold mb-3" style="color:#ff6b35;text-shadow:0 0 8px #ff6b35">Thermal Laser Project</h3>
         <p class="text-gray-400 leading-7 mb-6">پروژه لیزر حرارتی پیشرفته با بهره‌گیری از فوتونیک و علم مواد. طراحی شده برای محیط‌های بیولوژیک حساس با حداقل آسیب جانبی.</p>
         <div class="flex flex-wrap gap-2 mb-6">
@@ -150,17 +246,51 @@
           <span class="status-green">Military</span>
           <span class="status-yellow">مرحله آزمایش</span>
         </div>
-        <button onclick="openVault()" class="btn-outline w-full" style="border-color:#ff6b35;color:#ff6b35">🔒 مشاهده مستندات محرمانه</button>
+        <button onclick="openVault()" class="btn-outline w-full" style="border-color:#ff6b35;color:#ff6b35" aria-label="مشاهده مستندات محرمانه Thermal Laser Project">🔒 مشاهده مستندات محرمانه</button>
       </div>
     </div>
   </div>
 </section>
 
-<section id="collaborate" class="py-20">
+<!-- ======= TEAM SECTION ======= -->
+<section id="team" class="py-20" aria-label="تیم متخصصین">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">👥 تیم متخصصین</h2>
+    <p class="text-gray-400 mb-10 reveal" style="transition-delay:.1s">نخبگان و متخصصان سازمان PBDO</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="card text-center reveal" style="transition-delay:.1s">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-3xl" aria-hidden="true">👨‍🔬</div>
+        <h3 class="font-bold text-sm mb-1">دکتر علی رضایی</h3>
+        <p class="text-cyan-400 text-xs mb-2">مدیر ارشد تحقیقات</p>
+        <p class="text-gray-500 text-xs">بیوتکنولوژی و ژنتیک مولکولی</p>
+      </div>
+      <div class="card text-center reveal" style="transition-delay:.2s">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500 to-cyan-700 flex items-center justify-center text-3xl" aria-hidden="true">👩‍💻</div>
+        <h3 class="font-bold text-sm mb-1">دکتر سارا محمدی</h3>
+        <p class="text-cyan-400 text-xs mb-2">رئیس هوش مصنوعی</p>
+        <p class="text-gray-500 text-xs">یادگیری ماشین و داده‌کاوی</p>
+      </div>
+      <div class="card text-center reveal" style="transition-delay:.3s">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-500 to-red-700 flex items-center justify-center text-3xl" aria-hidden="true">👨‍🚀</div>
+        <h3 class="font-bold text-sm mb-1">مهندس حسین احمدی</h3>
+        <p class="text-cyan-400 text-xs mb-2">سرپرست فوتونیک</p>
+        <p class="text-gray-500 text-xs">لیزر و سیستم‌های اپتیکی</p>
+      </div>
+      <div class="card text-center reveal" style="transition-delay:.4s">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-blue-700 flex items-center justify-center text-3xl" aria-hidden="true">👩‍⚕️</div>
+        <h3 class="font-bold text-sm mb-1">دکتر مریم کریمی</h3>
+        <p class="text-cyan-400 text-xs mb-2">متخصص امنیت زیستی</p>
+        <p class="text-gray-500 text-xs">اپیدمیولوژی و بهداشت عمومی</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="collaborate" class="py-20" aria-label="پورتال همکاری">
   <div class="max-w-3xl mx-auto px-4">
-    <h2 class="text-3xl font-black neon-blue mb-2">🤝 پورتال همکاری نخبگان</h2>
-    <p class="text-gray-400 mb-8">به تیم پیشرو PBDO بپیوندید</p>
-    <div class="card">
+    <h2 class="text-3xl font-black neon-blue mb-2 reveal">🤝 پورتال همکاری نخبگان</h2>
+    <p class="text-gray-400 mb-8 reveal" style="transition-delay:.1s">به تیم پیشرو PBDO بپیوندید</p>
+    <div class="card reveal" style="transition-delay:.2s">
       <form onsubmit="submitForm(event)">
         <div class="grid md:grid-cols-2 gap-4 mb-4">
           <div><label class="text-sm text-gray-400 block mb-2">نام کامل *</label><input type="text" required placeholder="نام و نام خانوادگی"/></div>
@@ -199,8 +329,10 @@
     <div>
       <h4 class="font-bold text-cyan-400 mb-4">دسترسی سریع</h4>
       <ul class="space-y-2 text-sm text-gray-400">
+        <li><a href="#about" class="hover:text-cyan-400">درباره ما</a></li>
         <li><a href="#dashboard" class="hover:text-cyan-400">داشبورد پایش</a></li>
         <li><a href="#projects" class="hover:text-cyan-400">پروژه‌ها</a></li>
+        <li><a href="#team" class="hover:text-cyan-400">تیم</a></li>
         <li><a href="#collaborate" class="hover:text-cyan-400">همکاری</a></li>
         <li><a href="admin.html" class="hover:text-cyan-400">پنل مدیریت</a></li>
       </ul>
@@ -223,7 +355,7 @@
   <div class="card max-w-md w-full mx-4" style="max-height:80vh;overflow-y:auto;">
     <div class="flex justify-between items-center mb-6">
       <h3 class="text-xl font-bold neon-blue">🔐 Secure Vault</h3>
-      <button onclick="closeVault()" class="text-gray-400 hover:text-white text-xl">✕</button>
+      <button onclick="closeVault()" class="text-gray-400 hover:text-white text-xl" aria-label="بستن پنجره vault">✕</button>
     </div>
     <div id="vaultLogin">
       <p class="text-gray-400 mb-4 text-sm">دسترسی به مستندات فنی محرمانه نیاز به کلید دسترسی دارد.</p>
@@ -312,8 +444,14 @@ function closeVault(){
   document.getElementById('vaultLogin').classList.remove('hidden');
   document.getElementById('vaultContent').classList.add('hidden');
 }
-function checkVault(){
-  if(document.getElementById('vaultPass').value==='PBDO@vault2025'){
+// Security: SHA-256 hash comparison (hash of 'PBDO@vault2025')
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function checkVault(){
+  const hash=await sha256(document.getElementById('vaultPass').value);
+  if(hash==='bd8062acc16920fc4b7551fc37f617bf1fe0e2364569a5f0ec66bdb4d70919f8'){
     document.getElementById('vaultLogin').classList.add('hidden');
     document.getElementById('vaultContent').classList.remove('hidden');
   }else{document.getElementById('vaultError').classList.remove('hidden');}
@@ -325,6 +463,67 @@ function submitForm(e){
   setTimeout(()=>{btn.textContent='✅ درخواست با موفقیت ارسال شد!';btn.style.background='linear-gradient(135deg,#39ff14,#00aa00)';},2000);
 }
 document.getElementById('vaultModal').addEventListener('click',function(e){if(e.target===this)closeVault();});
+
+// ======= PRELOADER =======
+window.addEventListener('load',function(){
+  const pre=document.getElementById('preloader');
+  pre.classList.add('hide');
+  setTimeout(()=>{pre.style.display='none';},600);
+});
+
+// ======= MOBILE MENU =======
+function openMobileMenu(){
+  document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('mobileOverlay').classList.add('open');
+  document.getElementById('hamburgerBtn').setAttribute('aria-expanded','true');
+}
+function closeMobileMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobileOverlay').classList.remove('open');
+  document.getElementById('hamburgerBtn').setAttribute('aria-expanded','false');
+}
+
+// ======= SCROLL REVEAL =======
+(function(){
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('active');observer.unobserve(e.target);}});
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+})();
+
+// ======= PARTICLE EFFECT =======
+(function(){
+  const canvas=document.getElementById('particleCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let particles=[];
+  function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+  function Particle(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.r=Math.random()*2+0.5;
+    this.vx=(Math.random()-.5)*0.4;
+    this.vy=(Math.random()-.5)*0.4;
+    this.alpha=Math.random()*0.5+0.1;
+  }
+  for(let i=0;i<80;i++)particles.push(new Particle());
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>canvas.width)p.vx*=-1;
+      if(p.y<0||p.y>canvas.height)p.vy*=-1;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,240,255,${p.alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>

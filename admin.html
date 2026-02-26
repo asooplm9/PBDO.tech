@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
   <title>PBDO | پنل مدیریت</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
   <style>
     *{font-family:'Vazirmatn',sans-serif;}
@@ -27,6 +28,17 @@
     .sidebar{background:#060c1a;border-left:1px solid #00f0ff22;min-height:100vh;width:220px;flex-shrink:0;}
     .nav-item{padding:12px 16px;cursor:pointer;border-radius:8px;margin:2px 8px;font-size:14px;transition:all .2s;}
     .nav-item:hover,.nav-item.active{background:#00f0ff22;color:#00f0ff;}
+    /* Mobile Sidebar */
+    #sidebarOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;}
+    #sidebarOverlay.open{display:block;}
+    @media(max-width:767px){
+      .sidebar{position:fixed;top:0;right:-240px;height:100%;z-index:200;transition:right .3s ease;width:220px;}
+      .sidebar.open{right:0;}
+      #sidebarToggle{display:flex;}
+    }
+    @media(min-width:768px){
+      #sidebarToggle{display:none;}
+    }
   </style>
 </head>
 <body>
@@ -50,16 +62,16 @@
       <input type="password" id="loginPass" placeholder="password" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <button onclick="doLogin()" class="btn-primary mb-4">🔐 ورود به سیستم</button>
-    <div class="text-xs text-gray-600 text-center mt-4 border-t border-gray-800 pt-4">
-      <p class="mb-1">🔵 Super Admin: superadmin / pbdo@super2025</p>
-      <p class="mb-1">🟡 Regional: admin_west / pbdo@west2025</p>
-      <p>🟢 Operator: operator1 / pbdo@op2025</p>
+    <div class="text-xs text-gray-500 text-center mt-4 border-t border-gray-800 pt-4">
+      <p>برای دریافت دسترسی با مدیر سیستم تماس بگیرید</p>
     </div>
   </div>
 </div>
 
 <div id="dashboard" class="hidden flex min-h-screen">
-  <div class="sidebar flex flex-col py-6">
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebarOverlay" onclick="closeSidebar()" aria-hidden="true"></div>
+  <div class="sidebar flex flex-col py-6" id="adminSidebar">
     <div class="text-center mb-8 px-4">
       <div class="text-2xl font-black neon-blue">🛡️ PBDO</div>
       <div id="sideRole" class="text-xs text-gray-400 mt-1"></div>
@@ -80,9 +92,15 @@
 
   <div class="flex-1 overflow-y-auto p-6">
     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-      <div>
-        <h1 class="text-2xl font-black neon-blue">پنل مدیریت PBDO</h1>
-        <p id="welcomeMsg" class="text-gray-400 text-sm"></p>
+      <div class="flex items-center gap-3">
+        <!-- Mobile sidebar toggle -->
+        <button id="sidebarToggle" onclick="openSidebar()" class="p-2 text-cyan-400 border border-cyan-900 rounded-lg" aria-label="باز کردن منوی مدیریت" aria-expanded="false" aria-controls="adminSidebar">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+        </button>
+        <div>
+          <h1 class="text-2xl font-black neon-blue">پنل مدیریت PBDO</h1>
+          <p id="welcomeMsg" class="text-gray-400 text-sm"></p>
+        </div>
       </div>
       <div class="flex items-center gap-3">
         <div class="text-xs text-gray-500" id="currentTime"></div>
@@ -100,6 +118,19 @@
       <div class="card">
         <h3 class="font-bold mb-4 neon-blue">📋 گزارش‌های در انتظار تایید</h3>
         <div id="pendingReports"></div>
+      </div>
+      <!-- Charts -->
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="card">
+          <h3 class="font-bold mb-4 neon-blue">🗺️ وضعیت شهرها</h3>
+          <div style="max-height:260px;display:flex;justify-content:center;">
+            <canvas id="cityStatusChart" aria-label="نمودار وضعیت شهرها"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3 class="font-bold mb-4 neon-blue">📈 روند گزارش‌های هفتگی</h3>
+          <canvas id="weeklyReportsChart" aria-label="نمودار روند گزارش‌های هفتگی"></canvas>
+        </div>
       </div>
     </div>
 
@@ -232,6 +263,7 @@ function setupDashboard(){
     document.getElementById('navReports').classList.remove('hidden');
   }
   renderPending();renderReports();renderLogs();updateTime();setInterval(updateTime,1000);
+  setTimeout(initCharts,100);
 }
 
 function getRoleLabel(r){return r==='super_admin'?'مدیر ارشد سیستم':r==='regional_admin'?'مدیر منطقه‌ای':'اپراتور';}
@@ -328,6 +360,48 @@ function doLogout(){
   document.getElementById('loginPage').classList.remove('hidden');
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
+}
+
+// ======= MOBILE SIDEBAR =======
+function openSidebar(){
+  document.getElementById('adminSidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+  const btn=document.getElementById('sidebarToggle');
+  if(btn)btn.setAttribute('aria-expanded','true');
+}
+function closeSidebar(){
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  const btn=document.getElementById('sidebarToggle');
+  if(btn)btn.setAttribute('aria-expanded','false');
+}
+
+// ======= CHARTS =======
+function initCharts(){
+  // Doughnut chart - city status
+  const ctxDoughnut=document.getElementById('cityStatusChart');
+  if(ctxDoughnut&&!ctxDoughnut._chartInstance){
+    ctxDoughnut._chartInstance=new Chart(ctxDoughnut,{
+      type:'doughnut',
+      data:{
+        labels:['عادی 🟢','احتیاط 🟡','هشدار 🔴'],
+        datasets:[{data:[9,5,3],backgroundColor:['#39ff1488','#ffd70088','#ff003c88'],borderColor:['#39ff14','#ffd700','#ff003c'],borderWidth:2}]
+      },
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#e0e8ff',font:{family:'Vazirmatn'}}}}}
+    });
+  }
+  // Line chart - weekly reports
+  const ctxLine=document.getElementById('weeklyReportsChart');
+  if(ctxLine&&!ctxLine._chartInstance){
+    ctxLine._chartInstance=new Chart(ctxLine,{
+      type:'line',
+      data:{
+        labels:['شنبه','یک‌شنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنج‌شنبه','جمعه'],
+        datasets:[{label:'گزارش‌های ثبت‌شده',data:[8,12,7,15,11,9,13],borderColor:'#00f0ff',backgroundColor:'#00f0ff22',tension:.4,fill:true,pointBackgroundColor:'#00f0ff'}]
+      },
+      options:{responsive:true,plugins:{legend:{labels:{color:'#e0e8ff',font:{family:'Vazirmatn'}}}},scales:{x:{ticks:{color:'#aaa',font:{family:'Vazirmatn'}},grid:{color:'#ffffff11'}},y:{ticks:{color:'#aaa'},grid:{color:'#ffffff11'}}}}
+    });
+  }
 }
 </script>
 </body>
