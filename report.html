@@ -24,6 +24,9 @@
     .site-nav{position:fixed;top:0;width:100%;z-index:200;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.88);border-bottom:1px solid rgba(0,255,136,.15);}
     .nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;}
     .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-size:1.15rem;font-weight:900;color:#00ff88;text-shadow:0 0 10px #00ff8866;}
+    .site-logo{width:80px;height:auto;filter:invert(1) sepia(1) saturate(5) hue-rotate(100deg);transition:transform .3s ease;vertical-align:middle;}
+    .site-logo:hover{transform:scale(1.05);}
+    @media(max-width:768px){.site-logo{width:50px;}}
     .nav-links{display:flex;align-items:center;gap:4px;}
     .nav-links a{color:#a0a0a0;text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 12px;border-radius:6px;transition:color .2s,background .2s;}
     .nav-links a:hover{color:#00ff88;background:rgba(0,255,136,.08);}
@@ -204,7 +207,7 @@
 <nav class="site-nav" role="navigation" aria-label="منوی اصلی">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo" aria-label="صفحه اصلی PBDO">
-      🛡️ <span>PBDO</span>
+      <img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo">🛡️ <span>PBDO</span>
       <span style="font-size:11px;font-weight:400;color:#555;padding-right:4px;">سازمان دفاع زیستی عمومی</span>
     </a>
     <div class="nav-links" role="menubar">

@@ -63,6 +63,9 @@
     /* Nav links */
     .nav-link{font-size:13px;color:#aaa;transition:color .2s;}
     .nav-link:hover,.nav-link.active{color:#00ff88;}
+    .site-logo{width:80px;height:auto;filter:invert(1) sepia(1) saturate(5) hue-rotate(100deg);transition:transform .3s ease;vertical-align:middle;}
+    .site-logo:hover{transform:scale(1.05);}
+    @media(max-width:768px){.site-logo{width:50px;}}
     /* Footer */
     footer{background:#060606;border-top:1px solid #00ff8822;padding:40px 16px 24px;color:#555;font-size:13px;}
     a{color:#00ff88;text-decoration:none;}
@@ -80,7 +83,7 @@
 <!-- ناوبری -->
 <nav>
   <div style="max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:20px;height:56px;flex-wrap:wrap;">
-    <a href="index.html" class="neon" style="font-size:1.2rem;font-weight:900;white-space:nowrap;">🛡️ PBDO</a>
+    <a href="index.html" class="neon" style="font-size:1.2rem;font-weight:900;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;"><img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo">🛡️ PBDO</a>
     <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-right:auto;">
       <a href="index.html" class="nav-link">خانه</a>
       <a href="monitoring.html" class="nav-link">پایش زنده</a>

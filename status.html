@@ -31,6 +31,9 @@
     footer{background:#060606;border-top:1px solid #00ff8822;padding:32px 16px;text-align:center;color:#555;font-size:13px;}
     a{color:#00ff88;text-decoration:none;}
     a:hover{text-decoration:underline;}
+    .site-logo{width:80px;height:auto;filter:invert(1) sepia(1) saturate(5) hue-rotate(100deg);transition:transform .3s ease;vertical-align:middle;}
+    .site-logo:hover{transform:scale(1.05);}
+    @media(max-width:768px){.site-logo{width:50px;}}
     .overall-ok{background:linear-gradient(135deg,#00ff8811,#00ff8822);border-color:#00ff8844;}
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
     .pulse-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:8px;animation:pulse 2s infinite;}
@@ -39,7 +42,7 @@
 <body>
 <nav>
   <div style="max-width:900px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;">🛡️ PBDO</a>
+    <a href="index.html" class="neon" style="font-size:1.25rem;font-weight:900;display:inline-flex;align-items:center;gap:8px;"><img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo">🛡️ PBDO</a>
     <a href="index.html" style="font-size:14px;color:#aaa;">→ بازگشت به صفحه اصلی</a>
   </div>
 </nav>
