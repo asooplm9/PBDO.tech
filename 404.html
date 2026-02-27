@@ -21,9 +21,16 @@
     .float{animation:float 3s ease-in-out infinite;}
     .glitch{animation:glitch 3s ease-in-out infinite;}
     .grid-bg{background-image:linear-gradient(rgba(0,240,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.04) 1px,transparent 1px);background-size:40px 40px;position:fixed;inset:0;z-index:0;}
+    .site-logo{width:80px;height:auto;filter:invert(1) sepia(1) saturate(5) hue-rotate(100deg);transition:transform .3s ease;vertical-align:middle;}
+    .site-logo:hover{transform:scale(1.05);}
+    @media(max-width:768px){.site-logo{width:50px;}}
+    .page-header{position:fixed;top:0;right:0;left:0;z-index:10;padding:12px 20px;display:flex;align-items:center;}
   </style>
 </head>
 <body>
+  <div class="page-header">
+    <a href="index.html"><img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo"></a>
+  </div>
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="relative z-10 text-center px-4">
     <div class="float mb-6 text-8xl" aria-hidden="true">🛡️</div>

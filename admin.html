@@ -45,6 +45,9 @@
     @media(min-width:768px){
       #sidebarToggle{display:none;}
     }
+    .site-logo{width:80px;height:auto;filter:invert(1) sepia(1) saturate(5) hue-rotate(100deg);transition:transform .3s ease;vertical-align:middle;}
+    .site-logo:hover{transform:scale(1.05);}
+    @media(max-width:768px){.site-logo{width:50px;}}
     /* Toast Notifications */
     #toastContainer{position:fixed;top:16px;left:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
     .toast{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:8px;font-size:13px;min-width:240px;max-width:360px;pointer-events:auto;animation:toastIn .3s ease;border:1px solid;}
@@ -72,7 +75,7 @@
 <div id="loginPage" class="min-h-screen flex items-center justify-center px-4">
   <div class="card w-full max-w-sm">
     <div class="text-center mb-8">
-      <div class="text-4xl mb-3">🛡️</div>
+      <div class="text-4xl mb-3"><a href="index.html" style="display:inline-block;"><img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo">🛡️</a></div>
       <h1 class="text-2xl font-black neon-blue">PBDO Admin</h1>
       <p class="text-gray-400 text-sm mt-1">سامانه مدیریت پدافند زیستی</p>
     </div>
@@ -99,7 +102,7 @@
   <div id="sidebarOverlay" onclick="closeSidebar()" aria-hidden="true"></div>
   <div class="sidebar flex flex-col py-6" id="adminSidebar">
     <div class="text-center mb-8 px-4">
-      <div class="text-2xl font-black neon-blue">🛡️ PBDO</div>
+      <div class="text-2xl font-black neon-blue"><a href="index.html" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;"><img src="logo.png" alt="لوگوی سازمان دفاع زیستی عمومی" class="site-logo">🛡️ PBDO</a></div>
       <div id="sideRole" class="text-xs text-gray-400 mt-1"></div>
     </div>
     <nav class="flex-1">
